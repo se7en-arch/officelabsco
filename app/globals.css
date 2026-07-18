@@ -76,6 +76,7 @@ img { display: block; max-width: 100%; }
   background: var(--danger); color: #fff;
   font-size: 10px; font-weight: 700; padding: 0 5px;
   display: flex; align-items: center; justify-content: center;
+  position: absolute; top: -4px; right: -4px;
 }
 .cart-pill--icon { padding: 7px 10px; }
 
