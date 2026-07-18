@@ -7,6 +7,7 @@ import { routing } from '@/i18n/routing';
 import '../globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import AnnouncementBanner from '@/components/AnnouncementBanner';
 import CartInitializer from '@/components/CartInitializer';
 import UTMCapture from '@/components/UTMCapture';
 
@@ -61,6 +62,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <CartInitializer />
           <UTMCapture />
+          <AnnouncementBanner />
           <Navbar />
           {children}
           <Footer />
