@@ -5,13 +5,13 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { prisma } from '@/lib/prisma';
 
 export const metadata: Metadata = {
-  title: 'Магазин | .office labs — Премиум офис мебели',
+  title: 'Магазин | OfficeLabs Co — Премиум офис мебели',
   description: 'Разгледай всички серии офис мебели — NOVA, ASTRA, TERRA, LOFT. Бюра, маси, шкафове, етажерки. Безплатна доставка.',
   openGraph: {
-    title: 'Магазин | .office labs',
+    title: 'Магазин | OfficeLabs Co',
     description: 'Разгледай всички серии офис мебели — NOVA, ASTRA, TERRA, LOFT.',
     type: 'website',
-    siteName: '.office labs',
+    siteName: 'OfficeLabs Co',
   },
 };
 import ProductCard from '@/components/ProductCard';

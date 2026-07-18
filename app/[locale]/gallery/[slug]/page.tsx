@@ -49,7 +49,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const g = galleries[slug];
   if (!g) return {};
-  return { title: `${g.tag} — Галерия | .office labs` };
+  return { title: `${g.tag} — Галерия | OfficeLabs Co` };
 }
 
 export default async function GalleryPage({

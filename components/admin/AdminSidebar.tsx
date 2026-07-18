@@ -75,7 +75,7 @@ export default function AdminSidebar() {
             <ellipse cx="8" cy="12.8" rx="2.6" ry="3.2" />
             <ellipse cx="3.2" cy="8" rx="3.2" ry="2.6" />
           </svg>
-          .office labs
+          OfficeLabs Co
         </div>
         <div className="admin-sidebar__label">Admin Panel</div>
       </div>

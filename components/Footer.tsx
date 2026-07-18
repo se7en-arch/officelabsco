@@ -30,7 +30,7 @@ export default async function Footer() {
     <footer>
       <div className="ftr__top">
         <div>
-          <div className="ftr__logo">.office labs</div>
+          <div className="ftr__logo">OfficeLabs Co</div>
           <p className="ftr__tagline">{t('tagline')}</p>
         </div>
 

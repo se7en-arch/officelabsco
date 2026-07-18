@@ -21,7 +21,7 @@
     "returns": "Returns",
     "faq": "FAQ",
     "social": "Social media",
-    "copyright": "© 2026 .office labs. All rights reserved.",
+    "copyright": "© 2026 OfficeLabs Co. All rights reserved.",
     "terms": "Terms of use",
     "privacy": "Privacy policy"
   },
@@ -165,7 +165,7 @@
     "review2Text": "We furnished our entire office with this furniture. Exceptional quality for the price, precise craftsmanship and fast delivery. We will definitely be back for the next order."
   },
   "shop": {
-    "heroTitle": "Explore the diverse collection of .office labs",
+    "heroTitle": "Explore the diverse collection of OfficeLabs Co",
     "heroTagline": "Don't miss our collection — you won't regret it.",
     "furniture": "Furniture",
     "productsCount": "{count} products",
@@ -194,7 +194,7 @@
     "heroNote": "Four series. One belief.",
     "storyEyebrow": "WHO WE ARE",
     "storyTitle": "Is your space\nworking for you —\nor against you?",
-    "storyP1": ".office labs was born from a simple observation: people who love their work also love the space where they do it. It's no coincidence. Environment shapes thought. The desk shapes habit. The room shapes character.",
+    "storyP1": "OfficeLabs Co was born from a simple observation: people who love their work also love the space where they do it. It's no coincidence. Environment shapes thought. The desk shapes habit. The room shapes character.",
     "storyP2": "We don't sell furniture to fill a room. We sell furniture because we believe the environment you choose is a silent statement about who you want to be. And the people for whom that matters — they are our people.",
     "storyP3": "We started with four series, each with a different character and philosophy. Not to cover the market, but to find the right person for the right piece. Because the furniture that truly works for you isn't what you need — it's what you recognise yourself in.",
     "statSeries": "Original series",
@@ -255,7 +255,7 @@
     "exploreBtn": "Explore the collection →"
   },
   "contact": {
-    "meta": "Contact — .office labs",
+    "meta": "Contact — OfficeLabs Co",
     "metaDesc": "Get in touch with us for questions about products, orders or partnerships.",
     "eyebrow": "GET IN TOUCH",
     "title": "How can we help?",
@@ -279,7 +279,7 @@
     "successNote": "We respond within 1 business day."
   },
   "delivery": {
-    "meta": "Delivery — .office labs",
+    "meta": "Delivery — OfficeLabs Co",
     "metaDesc": "Delivery information — timeframes, methods and pricing.",
     "eyebrow": "DELIVERY",
     "title": "Fast & free delivery",
@@ -306,8 +306,8 @@
     "s4Body": "Orders placed before 2:00 PM on business days are processed the same day. You will receive an email with a tracking number immediately after dispatch."
   },
   "returns": {
-    "meta": "Returns — .office labs",
-    "metaDesc": "Return policy and warranty information for .office labs.",
+    "meta": "Returns — OfficeLabs Co",
+    "metaDesc": "Return policy and warranty information for OfficeLabs Co.",
     "eyebrow": "RETURNS",
     "title": "14 days, no questions",
     "sub": "Not satisfied? We accept returns within 14 days of receiving your order.",
@@ -326,7 +326,7 @@
     "s5Body": "If you received a defective product — contact us within 48 hours of delivery with photos of the issue. We will arrange a replacement or full refund at our expense."
   },
   "faq": {
-    "meta": "FAQ — .office labs",
+    "meta": "FAQ — OfficeLabs Co",
     "metaDesc": "Answers to the most common questions about orders, delivery, payment and products.",
     "eyebrow": "FAQ",
     "title": "Frequently asked questions",

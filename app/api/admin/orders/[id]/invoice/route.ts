@@ -182,7 +182,7 @@ tbody tr:last-child{border-bottom:2px solid #1c1c1c}
     <div class="brand">
       <div class="brand-sq"></div>
       <div>
-        <div class="brand-name">.OFFICE LABS</div>
+        <div class="brand-name">OFFICELABS CO</div>
         <div class="brand-tag">Офис мебели и обзавеждане</div>
       </div>
     </div>
@@ -270,8 +270,8 @@ tbody tr:last-child{border-bottom:2px solid #1c1c1c}
     </div>
     <div>
       <div class="footer-label">Изготвил</div>
-      <div class="footer-sig">.office labs</div>
-      <div class="footer-text">.OFFICE LABS<br>Административен отдел</div>
+      <div class="footer-sig">OfficeLabs Co</div>
+      <div class="footer-text">OFFICELABS CO<br>Административен отдел</div>
     </div>
   </div>
 

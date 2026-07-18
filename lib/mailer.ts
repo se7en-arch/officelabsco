@@ -71,7 +71,7 @@ function buildHtml(order: OrderEmailData): string {
               <tr>
                 <td style="background:#fff;width:32px;height:32px;border-radius:4px"></td>
                 <td style="padding-left:10px">
-                  <div style="font-size:16px;font-weight:800;color:#fff;letter-spacing:-0.3px">.OFFICE LABS</div>
+                  <div style="font-size:16px;font-weight:800;color:#fff;letter-spacing:-0.3px">OFFICELABS CO</div>
                   <div style="font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:0.8px;margin-top:2px">Офис мебели и обзавеждане</div>
                 </td>
               </tr>
@@ -174,7 +174,7 @@ function buildHtml(order: OrderEmailData): string {
     <td style="background:#f5f5f5;padding:18px 32px;border-radius:0 0 10px 10px;border-top:1px solid #eee">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-          <td style="font-size:11px;color:#aaa">.office labs &nbsp;·&nbsp; Офис мебели и обзавеждане</td>
+          <td style="font-size:11px;color:#aaa">OfficeLabs Co &nbsp;·&nbsp; Офис мебели и обзавеждане</td>
           <td align="right" style="font-size:11px;color:#aaa">${invoiceNo}</td>
         </tr>
       </table>
@@ -197,11 +197,11 @@ export async function sendOrderNotification(order: OrderEmailData): Promise<void
 
   const resend = new Resend(process.env.RESEND_API_KEY);
   const to      = process.env.NOTIFY_EMAIL ?? 'office@modenainterior.com';
-  const subject = `Нова поръчка #${String(order.id).padStart(4, '0')} — €${order.total.toFixed(2)} | .office labs`;
+  const subject = `Нова поръчка #${String(order.id).padStart(4, '0')} — €${order.total.toFixed(2)} | OfficeLabs Co`;
 
   try {
     const { error } = await resend.emails.send({
-      from:     'Office Labs <noreply@officelabsco.com>',
+      from:     'OfficeLabs Co <noreply@officelabsco.com>',
       to,
       replyTo:  order.email,
       subject,

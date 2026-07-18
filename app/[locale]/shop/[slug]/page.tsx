@@ -25,7 +25,7 @@ export async function generateMetadata({
   if (!product || product.archived) return {};
 
   const displayName = en ? (product.nameEn || product.name) : product.name;
-  const title = `${displayName} | .office labs`;
+  const title = `${displayName} | OfficeLabs Co`;
   const description = (en ? product.descriptionEn : null) ?? product.description ?? `${displayName} — ${product.series.name} серия офис мебели`;
   const imageUrl = product.image.startsWith('http')
     ? product.image
@@ -39,7 +39,7 @@ export async function generateMetadata({
       description,
       images: [{ url: imageUrl, width: 1200, height: 630, alt: displayName }],
       type: 'website',
-      siteName: '.office labs',
+      siteName: 'OfficeLabs Co',
     },
     twitter: {
       card: 'summary_large_image',
@@ -103,7 +103,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
     description: product.description ?? undefined,
     image: imageUrl,
     sku: product.sku ?? undefined,
-    brand: { '@type': 'Brand', name: '.office labs' },
+    brand: { '@type': 'Brand', name: 'OfficeLabs Co' },
     offers: {
       '@type': 'Offer',
       price: product.price,

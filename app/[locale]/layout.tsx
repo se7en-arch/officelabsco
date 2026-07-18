@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: '.office labs – Премиум мебели',
+  title: 'OfficeLabs Co – Премиум мебели',
   description: 'Авторски мебели в четири серии: ASTRA, TERRA, NOVA, LOFT. Бюра, маси, шкафове, етажерки.',
 };
 

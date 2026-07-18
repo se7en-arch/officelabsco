@@ -4,7 +4,7 @@ import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: 'За нас — .office labs',
+  title: 'За нас — OfficeLabs Co',
   description: 'Авторски мебели, създадени с убеждението, че средата, в която работиш, определя кой ставаш.',
 };
 
@@ -59,7 +59,7 @@ export default async function AboutPage() {
               </h2>
             </div>
             <div className="about-story__right">
-              <p><strong>.office labs</strong> {t('storyP1').replace('.office labs ', '')}</p>
+              <p><strong>OfficeLabs Co</strong> {t('storyP1').replace('OfficeLabs Co ', '')}</p>
               <p>{t('storyP2')}</p>
               <p>{t('storyP3')}</p>
             </div>

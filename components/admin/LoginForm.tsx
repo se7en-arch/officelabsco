@@ -39,7 +39,7 @@ export default function LoginForm() {
             <ellipse cx="8" cy="12.8" rx="2.6" ry="3.2" />
             <ellipse cx="3.2" cy="8" rx="3.2" ry="2.6" />
           </svg>
-          .office labs
+          OfficeLabs Co
         </div>
         <h1>Вход в администрацията</h1>
         <form onSubmit={handleSubmit}>
