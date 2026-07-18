@@ -30,16 +30,24 @@ async function getCredentials(): Promise<{ username: string; passwordHash: strin
   };
 }
 
-async function makeToken(username: string, passwordHash: string): Promise<string> {
-  return sha256hex(`${username}:${passwordHash}:${SECRET}`);
+const TOKEN_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+async function makeToken(username: string, passwordHash: string, issuedAt: number): Promise<string> {
+  const sig = await sha256hex(`${username}:${passwordHash}:${SECRET}:${issuedAt}`);
+  return `${issuedAt.toString(36)}.${sig}`;
 }
 
 export async function isAdminAuthenticated(): Promise<boolean> {
   const cookieStore = await cookies();
   const token = cookieStore.get('admin_token')?.value;
   if (!token) return false;
+  const [issuedAtHex, sig] = token.split('.');
+  if (!issuedAtHex || !sig) return false;
+  const issuedAt = parseInt(issuedAtHex, 36);
+  if (isNaN(issuedAt) || Date.now() - issuedAt > TOKEN_MAX_AGE_MS) return false;
   const creds = await getCredentials();
-  return token === await makeToken(creds.username, creds.passwordHash);
+  const expected = await sha256hex(`${creds.username}:${creds.passwordHash}:${SECRET}:${issuedAt}`);
+  return sig === expected;
 }
 
 export async function verifyCredentials(username: string, password: string): Promise<boolean> {
@@ -50,5 +58,5 @@ export async function verifyCredentials(username: string, password: string): Pro
 
 export async function getAdminToken(): Promise<string> {
   const creds = await getCredentials();
-  return makeToken(creds.username, creds.passwordHash);
+  return makeToken(creds.username, creds.passwordHash, Date.now());
 }

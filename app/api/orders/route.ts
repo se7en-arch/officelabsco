@@ -70,8 +70,12 @@ function isValidEmail(email: string) {
 }
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-  if (isRateLimited(ip)) {
+  const ip        = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+                 ?? req.headers.get('x-real-ip')
+                 ?? req.headers.get('cf-connecting-ip')
+                 ?? null;
+
+  if (isRateLimited(ip ?? 'unknown')) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 
@@ -97,11 +101,6 @@ export async function POST(req: NextRequest) {
   }
 
   const body = raw as unknown as OrderBody;
-
-  const ip        = req.headers.get('x-forwarded-for')?.split(',')[0].trim()
-                 ?? req.headers.get('x-real-ip')
-                 ?? req.headers.get('cf-connecting-ip')
-                 ?? null;
   const ua        = req.headers.get('user-agent') ?? null;
   const referer   = req.headers.get('referer') ?? req.headers.get('origin') ?? null;
   const acceptLang = req.headers.get('accept-language')?.split(',')[0] ?? null;
