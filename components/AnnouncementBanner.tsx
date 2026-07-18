@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 const ITEMS = [
   { icon: '💳', text: 'Плащане с карта (Stripe) — не е имплементирано' },
   { icon: '📲', text: 'Социални мрежи — Facebook, Instagram, LinkedIn линкове не са добавени' },
+  { icon: '🚧', text: 'Преди пускане: изтрий Under Construction (PREVIEW_SECRET от Vercel + /app/under-construction + /api/unlock)' },
 ];
 
 export default function AnnouncementBanner() {
