@@ -26,9 +26,15 @@ export default function TermsPage() {
       title="Условия за ползване"
       updated="18 юли 2026"
       sections={SECTIONS}
+      icon={
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M16 3L5 7.5V15c0 6.075 4.8 11.75 11 13 6.2-1.25 11-6.925 11-13V7.5L16 3z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" fill="none"/>
+          <path d="M11 16l3.5 3.5L21 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      }
     >
 
-      <section className="legal-section" id="general">
+      <section className="lgl-section" id="general">
         <h2>Общи разпоредби</h2>
         <p>
           Настоящите О��щи условия уреждат отношенията между <strong>OfficeLabs Co</strong>
@@ -52,7 +58,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="orders">
+      <section className="lgl-section" id="orders">
         <h2>Поръчки</h2>
         <p>
           Поставянето на артикул в количката не резервира наличността. Поръчката се
@@ -81,7 +87,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="prices">
+      <section className="lgl-section" id="prices">
         <h2>Цени и плащане</h2>
         <p>
           Всички цени на сайта са в евро (€) и включват приложимите данъци. Дружеството
@@ -100,7 +106,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="delivery">
+      <section className="lgl-section" id="delivery">
         <h2>Доставка</h2>
         <p>
           Доставките с�� извършва�� на територията на Република България чрез куриерски
@@ -121,9 +127,9 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="withdrawal">
+      <section className="lgl-section" id="withdrawal">
         <h2>Право на отказ</h2>
-        <div className="legal-notice">
+        <div className="lgl-notice">
           Съгласно За��она за защита на потребителите и Д��ректива 2011/83/ЕС имате право
           да се откажете от поръчката без да посочвате причина в срок от <strong>14 календарни
           дни</strong> от датата на получаване на стоката.
@@ -151,7 +157,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="returns">
+      <section className="lgl-section" id="returns">
         <h2>Връщане на стоки</h2>
         <p>
           Извън законовото право на отказ приемаме връщ��не на стоки в срок до{' '}
@@ -169,7 +175,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="warranty">
+      <section className="lgl-section" id="warranty">
         <h2>Гаранция</h2>
         <p>
           Всички продукти се ползва�� с <strong>законова гаранция от 2 години</strong>{' '}
@@ -191,7 +197,7 @@ export default function TermsPage() {
         </ul>
       </section>
 
-      <section className="legal-section" id="ip">
+      <section className="lgl-section" id="ip">
         <h2>Интелектуална собственост</h2>
         <p>
           Всички материали на сайта — текстове, снимки, лога, ��изайн, графики и
@@ -206,7 +212,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="liability">
+      <section className="lgl-section" id="liability">
         <h2>Ограничаване на отговорността</h2>
         <p>
           Полагаме максимални усилия за точност на информацията на сайта, но не
@@ -223,7 +229,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="law">
+      <section className="lgl-section" id="law">
         <h2>Приложимо право</h2>
         <p>
           Настоящите условия се уреждат от законодателството на Република Б��лгария.
@@ -239,7 +245,7 @@ export default function TermsPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="contact">
+      <section className="lgl-section" id="contact">
         <h2>Контакти</h2>
         <p>
           При въпроси о��носно настоящите Общи условия се свържете с нас:

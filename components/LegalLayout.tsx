@@ -1,237 +1,359 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface Section { id: string; title: string; }
 
 export default function LegalLayout({
   title,
   updated,
+  icon,
   sections,
   children,
 }: {
   title: string;
   updated: string;
+  icon?: React.ReactNode;
   sections: Section[];
   children: React.ReactNode;
 }) {
   const [activeId, setActiveId] = useState(sections[0]?.id ?? '');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    observerRef.current?.disconnect();
+    observerRef.current = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => { if (e.isIntersecting) setActiveId(e.target.id); });
       },
-      { rootMargin: '-10% 0px -80% 0px' }
+      { rootMargin: '-8% 0px -82% 0px' }
     );
     sections.forEach((s) => {
       const el = document.getElementById(s.id);
-      if (el) observer.observe(el);
+      if (el) observerRef.current?.observe(el);
     });
-    return () => observer.disconnect();
+    return () => observerRef.current?.disconnect();
   }, [sections]);
 
   return (
     <>
       <style>{`
-        .legal-hero {
-          background: #f5f5f7;
-          border-bottom: 1px solid #d2d2d7;
-          padding: 52px 40px 40px;
-        }
-        .legal-hero__inner {
-          max-width: 1080px;
-          margin: 0 auto;
-        }
-        .legal-hero h1 {
-          font-size: clamp(2rem, 4vw, 2.8rem);
-          font-weight: 700;
-          letter-spacing: -.03em;
-          color: #1d1d1f;
-          line-height: 1.1;
-          margin-bottom: 10px;
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-        }
-        .legal-hero__meta {
-          font-size: 14px;
-          color: #6e6e73;
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+        :root {
+          --accent:     oklch(0.705 0.213 47.604);
+          --accent-dim: oklch(0.62 0.18 47.604);
+          --accent-bg:  oklch(0.705 0.213 47.604 / 0.08);
+          --txt:        #1d1d1f;
+          --txt2:       #3a3a3c;
+          --txt3:       #6e6e73;
+          --border:     #d2d2d7;
+          --bg-hero:    #f5f5f7;
+          --bg-page:    #fff;
+          --sidebar-w:  260px;
         }
 
-        /* mobile TOC toggle */
-        .legal-toc-toggle {
+        html { scroll-behavior: smooth; }
+
+        /* ── HERO ──────────────────────────────────────── */
+        .lgl-hero {
+          background: var(--bg-hero);
+          padding: 64px 52px 52px;
+          border-bottom: 1px solid var(--border);
+        }
+        .lgl-hero__in {
+          max-width: 1080px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          gap: 32px;
+        }
+        .lgl-hero__icon {
+          width: 64px;
+          height: 64px;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--accent-bg);
+          border-radius: 18px;
+          color: var(--accent);
+          transition: transform .3s ease;
+        }
+        .lgl-hero__icon:hover { transform: scale(1.05) rotate(-3deg); }
+        .lgl-hero h1 {
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+          font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+          font-weight: 700;
+          letter-spacing: -.04em;
+          color: var(--txt);
+          line-height: 1.08;
+          margin-bottom: 8px;
+        }
+        .lgl-hero__meta {
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-size: 13px;
+          color: var(--txt3);
+          letter-spacing: .01em;
+        }
+
+        /* ── MOBILE TOC TOGGLE ────────────────────────── */
+        .lgl-toggle {
           display: none;
           width: 100%;
-          background: #fff;
+          background: var(--bg-page);
           border: none;
-          border-bottom: 1px solid #d2d2d7;
-          padding: 14px 24px;
+          border-bottom: 1px solid var(--border);
+          padding: 14px 20px;
           font-size: 14px;
           font-weight: 600;
-          color: #1d1d1f;
+          color: var(--txt);
           text-align: left;
           cursor: pointer;
           font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
           align-items: center;
           justify-content: space-between;
-          gap: 8px;
+          position: sticky;
+          top: 0;
+          z-index: 40;
+          box-shadow: ${`0 1px 0 var(--border)`};
+          transition: background .2s;
         }
-        .legal-toc-toggle svg { flex-shrink: 0; transition: transform .2s; }
-        .legal-toc-toggle.open svg { transform: rotate(180deg); }
+        .lgl-toggle__chevron {
+          transition: transform .25s ease;
+          color: var(--txt3);
+        }
+        .lgl-toggle.open .lgl-toggle__chevron { transform: rotate(180deg); }
+        .lgl-toggle:hover { background: var(--bg-hero); }
 
-        .legal-outer {
+        /* ── OUTER GRID ───────────────────────────────── */
+        .lgl-outer {
           max-width: 1080px;
           margin: 0 auto;
-          padding: 0 40px 80px;
+          padding: 0 52px 96px;
           display: grid;
-          grid-template-columns: 240px 1fr;
-          gap: 64px;
+          grid-template-columns: var(--sidebar-w) 1fr;
+          gap: 80px;
           align-items: start;
         }
 
-        /* sidebar */
-        .legal-sidebar {
+        /* ── SIDEBAR ──────────────────────────────────── */
+        .lgl-sidebar {
           position: sticky;
-          top: 80px;
-          padding-top: 40px;
+          top: 24px;
+          padding-top: 44px;
+          transition: top .2s ease;
         }
-        .legal-sidebar nav {
-          display: flex;
-          flex-direction: column;
-        }
-        .legal-sidebar__label {
+        .lgl-sidebar__label {
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
           font-size: 11px;
           font-weight: 700;
-          letter-spacing: .08em;
+          letter-spacing: .1em;
           text-transform: uppercase;
-          color: #6e6e73;
-          margin-bottom: 10px;
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          color: var(--txt3);
+          margin-bottom: 12px;
+          padding-left: 14px;
         }
-        .legal-sidebar a {
+        .lgl-sidebar nav {
+          display: flex;
+          flex-direction: column;
+          gap: 1px;
+        }
+        .lgl-sidebar a {
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
           font-size: 13px;
-          color: #424245;
+          line-height: 1.45;
+          color: var(--txt2);
           text-decoration: none;
-          padding: 7px 10px 7px 12px;
-          border-left: 2px solid transparent;
-          line-height: 1.4;
-          transition: color .15s, border-color .15s;
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          padding: 7px 14px;
+          border-radius: 6px;
+          position: relative;
+          transition: color .18s ease, background .18s ease;
+          display: block;
         }
-        .legal-sidebar a:hover { color: #1d1d1f; }
-        .legal-sidebar a.active {
-          color: #0066cc;
-          border-left-color: #0066cc;
+        .lgl-sidebar a::before {
+          content: '';
+          position: absolute;
+          left: 0; top: 50%;
+          transform: translateY(-50%) scaleY(0);
+          width: 2.5px;
+          height: 60%;
+          background: var(--accent);
+          border-radius: 2px;
+          transition: transform .2s ease, opacity .2s ease;
+          opacity: 0;
+        }
+        .lgl-sidebar a:hover {
+          color: var(--txt);
+          background: var(--bg-hero);
+        }
+        .lgl-sidebar a.active {
+          color: var(--accent);
           font-weight: 500;
+          background: var(--accent-bg);
+        }
+        .lgl-sidebar a.active::before {
+          transform: translateY(-50%) scaleY(1);
+          opacity: 1;
         }
 
-        /* content */
-        .legal-content {
-          padding-top: 40px;
+        /* ── CONTENT ──────────────────────────────────── */
+        .lgl-content {
+          padding-top: 44px;
+          min-width: 0;
+        }
+
+        .lgl-section {
+          padding-bottom: 52px;
+          margin-bottom: 52px;
+          border-bottom: 1px solid var(--border);
+          scroll-margin-top: 32px;
+        }
+        .lgl-section:last-child {
+          border-bottom: none;
+          padding-bottom: 0;
+          margin-bottom: 0;
+        }
+
+        .lgl-section h2 {
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+          font-size: 1.4rem;
+          font-weight: 700;
+          letter-spacing: -.025em;
+          color: var(--txt);
+          margin-bottom: 20px;
+          line-height: 1.2;
+        }
+        .lgl-section h3 {
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-size: .95rem;
+          font-weight: 600;
+          color: var(--txt);
+          margin: 26px 0 10px;
+        }
+        .lgl-section p {
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-size: 16px;
+          color: var(--txt2);
+          line-height: 1.8;
+          margin-bottom: 14px;
+        }
+        .lgl-section p:last-child { margin-bottom: 0; }
+        .lgl-section ul,
+        .lgl-section ol {
+          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-size: 16px;
+          color: var(--txt2);
+          line-height: 1.8;
+          padding-left: 20px;
+          margin-bottom: 14px;
+        }
+        .lgl-section li { margin-bottom: 6px; }
+        .lgl-section li:last-child { margin-bottom: 0; }
+        .lgl-section a {
+          color: var(--accent);
+          text-decoration: none;
+          border-bottom: 1px solid transparent;
+          transition: border-color .15s ease, color .15s ease;
+        }
+        .lgl-section a:hover {
+          color: var(--accent-dim);
+          border-bottom-color: var(--accent-dim);
+        }
+        .lgl-section strong { color: var(--txt); font-weight: 600; }
+        .lgl-section code {
+          font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+          font-size: .875em;
+          background: var(--bg-hero);
+          padding: 2px 6px;
+          border-radius: 4px;
+          color: var(--txt2);
+        }
+
+        .lgl-notice {
+          background: var(--accent-bg);
+          border-left: 3px solid var(--accent);
+          border-radius: 0 8px 8px 0;
+          padding: 16px 20px;
+          font-size: 15px;
+          color: var(--txt2);
+          line-height: 1.7;
+          margin-bottom: 20px;
           font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
         }
-        .legal-section {
-          padding-bottom: 48px;
-          margin-bottom: 48px;
-          border-bottom: 1px solid #d2d2d7;
-        }
-        .legal-section:last-child {
-          border-bottom: none;
-          margin-bottom: 0;
-          padding-bottom: 0;
-        }
-        .legal-section h2 {
-          font-size: 1.35rem;
-          font-weight: 700;
-          letter-spacing: -.02em;
-          color: #1d1d1f;
-          margin-bottom: 18px;
-          line-height: 1.25;
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-        }
-        .legal-section h3 {
-          font-size: 1rem;
-          font-weight: 600;
-          color: #1d1d1f;
-          margin: 24px 0 10px;
-        }
-        .legal-section p {
-          font-size: 16px;
-          color: #3a3a3c;
-          line-height: 1.75;
-          margin-bottom: 14px;
-        }
-        .legal-section p:last-child { margin-bottom: 0; }
-        .legal-section ul,
-        .legal-section ol {
-          font-size: 16px;
-          color: #3a3a3c;
-          line-height: 1.75;
-          padding-left: 22px;
-          margin-bottom: 14px;
-        }
-        .legal-section ul li,
-        .legal-section ol li { margin-bottom: 6px; }
-        .legal-section a { color: #0066cc; text-decoration: none; }
-        .legal-section a:hover { text-decoration: underline; }
-        .legal-section strong { color: #1d1d1f; font-weight: 600; }
+        .lgl-notice strong { color: var(--txt); }
 
-        .legal-notice {
-          background: #f5f5f7;
-          border-radius: 10px;
-          padding: 18px 22px;
-          font-size: 15px;
-          color: #3a3a3c;
-          line-height: 1.65;
-          margin-bottom: 16px;
-        }
-
-        @media (max-width: 768px) {
-          .legal-hero { padding: 36px 20px 28px; }
-          .legal-toc-toggle { display: flex; }
-          .legal-outer {
+        /* ── RESPONSIVE ──────────────────────────────── */
+        @media (max-width: 860px) {
+          .lgl-hero { padding: 40px 24px 36px; }
+          .lgl-hero__in { flex-direction: column; align-items: flex-start; gap: 20px; }
+          .lgl-toggle { display: flex; }
+          .lgl-outer {
             grid-template-columns: 1fr;
             gap: 0;
-            padding: 0 20px 60px;
+            padding: 0 24px 64px;
           }
-          .legal-sidebar {
+          .lgl-sidebar {
             position: static;
             padding-top: 0;
-            border-bottom: 1px solid #d2d2d7;
-            margin-bottom: 36px;
             overflow: hidden;
             max-height: 0;
-            transition: max-height .3s ease;
+            transition: max-height .3s ease, opacity .3s ease;
+            opacity: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
           }
-          .legal-sidebar.open {
-            max-height: 800px;
+          .lgl-sidebar.open {
+            max-height: 1000px;
+            opacity: 1;
           }
-          .legal-sidebar nav { padding: 12px 0 20px; }
-          .legal-content { padding-top: 0; }
+          .lgl-sidebar nav { padding: 16px 0 20px; }
+          .lgl-sidebar__label { padding-left: 4px; }
+          .lgl-content { padding-top: 0; }
+          .lgl-section { scroll-margin-top: 56px; }
+        }
+
+        @media (max-width: 480px) {
+          .lgl-hero h1 { font-size: 1.7rem; }
+          .lgl-section h2 { font-size: 1.2rem; }
+          .lgl-section p,
+          .lgl-section ul,
+          .lgl-section ol { font-size: 15px; }
         }
       `}</style>
 
-      <div className="legal-hero">
-        <div className="legal-hero__inner">
-          <h1>{title}</h1>
-          <p className="legal-hero__meta">Последно обновяване: {updated}</p>
+      {/* HERO */}
+      <div className="lgl-hero">
+        <div className="lgl-hero__in">
+          {icon && <div className="lgl-hero__icon">{icon}</div>}
+          <div>
+            <h1>{title}</h1>
+            <p className="lgl-hero__meta">Последно обновяване: {updated}</p>
+          </div>
         </div>
       </div>
 
+      {/* MOBILE TOGGLE */}
       <button
-        className={`legal-toc-toggle${menuOpen ? ' open' : ''}`}
+        className={`lgl-toggle${menuOpen ? ' open' : ''}`}
         onClick={() => setMenuOpen(v => !v)}
       >
-        Съдържание
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <span>Съдържание</span>
+        <svg className="lgl-toggle__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </button>
 
-      <div className="legal-outer">
-        <aside className={`legal-sidebar${menuOpen ? ' open' : ''}`}>
+      {/* BODY */}
+      <div className="lgl-outer">
+        <aside className={`lgl-sidebar${menuOpen ? ' open' : ''}`}>
+          <div className="lgl-sidebar__label">Съдържание</div>
           <nav>
-            <div className="legal-sidebar__label">Съдържание</div>
             {sections.map((s) => (
               <a
                 key={s.id}
@@ -245,7 +367,7 @@ export default function LegalLayout({
           </nav>
         </aside>
 
-        <main className="legal-content">
+        <main className="lgl-content">
           {children}
         </main>
       </div>

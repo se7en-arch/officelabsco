@@ -27,9 +27,16 @@ export default function PrivacyPage() {
       title="Политика за поверителност"
       updated="18 юли 2026"
       sections={SECTIONS}
+      icon={
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect x="6" y="14" width="20" height="14" rx="3" stroke="currentColor" strokeWidth="2"/>
+          <path d="M10 14v-4a6 6 0 0 1 12 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="16" cy="21" r="2" fill="currentColor"/>
+        </svg>
+      }
     >
 
-      <section className="legal-section" id="controller">
+      <section className="lgl-section" id="controller">
         <h2>Администратор на данни</h2>
         <p>
           <strong>OfficeLabs Co</strong> („ние", „����с") е администратор на лични данни
@@ -45,7 +52,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="collect">
+      <section className="lgl-section" id="collect">
         <h2>Какви данни събираме</h2>
 
         <h3>Дан��и, предоставени от вас при поръчка</h3>
@@ -79,7 +86,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="use">
+      <section className="lgl-section" id="use">
         <h2>Как използваме данните</h2>
 
         <h3>Изпълнение на поръчки</h3>
@@ -108,7 +115,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="basis">
+      <section className="lgl-section" id="basis">
         <h2>Правно основание (GDPR)</h2>
         <p>Обработваме лични��е ви данни на следните правни основания:</p>
         <ul>
@@ -128,7 +135,7 @@ export default function PrivacyPage() {
         </ul>
       </section>
 
-      <section className="legal-section" id="sharing">
+      <section className="lgl-section" id="sharing">
         <h2>Споделяне с трети страни</h2>
         <p>
           Не продаваме и не отдаваме личните ви данни под наем. Данните могат да
@@ -173,7 +180,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="cookies">
+      <section className="lgl-section" id="cookies">
         <h2>Бисквитки</h2>
         <p>
           Сайтът използв�� минимален брой бисквитки, необхо��ими за функционирането му.
@@ -206,7 +213,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="rights">
+      <section className="lgl-section" id="rights">
         <h2>Вашите права</h2>
         <p>
           Като субект на данни по GDPR им��те следните права:
@@ -249,7 +256,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="retention">
+      <section className="lgl-section" id="retention">
         <h2>Съхранение на данните</h2>
         <ul>
           <li>
@@ -271,7 +278,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="security">
+      <section className="lgl-section" id="security">
         <h2>Сигурност</h2>
         <p>
           Прилагаме технически и организационни мерки за защита на данните ви:
@@ -289,7 +296,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="children">
+      <section className="lgl-section" id="children">
         <h2>Деца</h2>
         <p>
           Сайтът не е п��едназначен за лица под 18 години и съзнателно не събира
@@ -298,7 +305,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="changes">
+      <section className="lgl-section" id="changes">
         <h2>Промени в политиката</h2>
         <p>
           Може да актуализираме тази политика периодично, за да отразим промени в
@@ -310,7 +317,7 @@ export default function PrivacyPage() {
         </p>
       </section>
 
-      <section className="legal-section" id="contact">
+      <section className="lgl-section" id="contact">
         <h2>Свър��ете се с нас</h2>
         <p>
           При въпроси, искания и��и жалби, свързани с личните ви данни:
