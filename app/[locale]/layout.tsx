@@ -15,9 +15,24 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabsco.com';
+
 export const metadata: Metadata = {
   title: 'OfficeLabs Co – Премиум мебели',
   description: 'Авторски мебели в четири серии: ASTRA, TERRA, NOVA, LOFT. Бюра, маси, шкафове, етажерки.',
+  metadataBase: new URL(SITE_URL),
+  openGraph: {
+    title: 'OfficeLabs Co – Премиум мебели',
+    description: 'Авторски мебели в четири серии: ASTRA, TERRA, NOVA, LOFT. Бюра, маси, шкафове, етажерки.',
+    url: SITE_URL,
+    siteName: 'OfficeLabs Co',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'OfficeLabs Co – Премиум мебели',
+    description: 'Авторски мебели в четири серии: ASTRA, TERRA, NOVA, LOFT. Бюра, маси, шкафове, етажерки.',
+  },
 };
 
 export const viewport: Viewport = {
