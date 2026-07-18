@@ -5,15 +5,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useCart } from '@/lib/cart-store';
 import { useState, useEffect, useRef } from 'react';
 
-function LogoMark() {
-  return (
-    <svg width="13" height="16" viewBox="0 0 18 22" fill="currentColor" aria-hidden="true">
-      <rect x="0"   y="6" width="4" height="16" rx="0.6" />
-      <rect x="6.5" y="0" width="4" height="22" rx="0.6" />
-      <rect x="13"  y="9" width="4" height="13" rx="0.6" />
-    </svg>
-  );
-}
 
 function CartIcon() {
   return (
@@ -86,9 +77,8 @@ export default function Navbar() {
     <>
       <header className="hdr">
         <div className="hdr__in">
-          <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: 8, letterSpacing: '-.02em', fontFamily: 'var(--font-inter), system-ui, sans-serif' }}>
-            <LogoMark />
-            <span style={{ fontWeight: 700 }}>Office</span><span style={{ fontWeight: 500 }}>Labs</span><span style={{ fontWeight: 300, fontSize: '0.82em', opacity: 0.48, letterSpacing: '.04em' }}>Co.</span>
+          <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: 2, letterSpacing: '-.03em', fontFamily: 'var(--font-inter), system-ui, sans-serif', fontSize: '1.05rem' }}>
+            <span style={{ fontWeight: 700 }}>OfficeLabs</span><span style={{ fontWeight: 300, fontStyle: 'italic', fontSize: '0.88em', letterSpacing: '0', opacity: 0.7 }}>co.</span>
           </Link>
 
           <nav className="nav-links">
