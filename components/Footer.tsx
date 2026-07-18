@@ -45,8 +45,8 @@ export default async function Footer() {
         <div className="ftr__col">
           <h4>{t('support')}</h4>
           <ul>
-            <li><Link href="/delivery">{t('delivery')}</Link></li>
-            <li><Link href="/returns">{t('returns')}</Link></li>
+            <li><Link href="/terms#delivery">{t('delivery')}</Link></li>
+            <li><Link href="/terms#returns">{t('returns')}</Link></li>
             <li><Link href="/faq">{t('faq')}</Link></li>
           </ul>
         </div>
