@@ -1383,11 +1383,10 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
   background: #060606;
 }
 .about-beliefs__bg-img {
-  position: absolute; inset: -12px;
+  position: absolute; inset: 0;
   background: url('/images/Hero AboutUs 2.webp') center center / cover no-repeat;
   opacity: .65;
   z-index: 0;
-  filter: blur(8px);
 }
 .about-beliefs::before {
   content: ''; position: absolute; inset: 0; z-index: 0;
