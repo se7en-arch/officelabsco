@@ -10,20 +10,13 @@ export default function Icon() {
         style={{
           width: 32,
           height: 32,
-          background: '#1c1c1c',
-          borderRadius: 7,
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #1ed760 0%, #17a84a 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#ffffff',
-          fontSize: 13,
-          fontWeight: 700,
-          fontFamily: 'sans-serif',
-          letterSpacing: '-0.5px',
         }}
-      >
-        OL
-      </div>
+      />
     ),
     { ...size }
   );
