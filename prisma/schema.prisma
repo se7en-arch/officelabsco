@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Series {
+  id            Int       @id @default(autoincrement())
+  name          String    @unique
+  slug          String    @unique
+  tagline       String
+  taglineEn     String?
+  description   String
+  descriptionEn String?
+  color         String
+  image         String?
+  products      Product[]
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  nameEn   String?
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id            Int         @id @default(autoincrement())
+  name          String
+  nameEn        String?
+  slug          String      @unique
+  sku           String?     @unique
+  price         Float
+  originalPrice Float?
+  description   String
+  descriptionEn String?
+  dimensions    String?
+  weight        String?
+  colors        String?
+  colorsEn      String?
+  material      String?
+  materialEn    String?
+  image         String
+  images        String      @default("[]")
+  badge         String?
+  featured      Boolean     @default(false)
+  archived      Boolean     @default(false)
+  stock         Int         @default(10)
+  seriesId      Int
+  categoryId    Int
+  series        Series      @relation(fields: [seriesId], references: [id])
+  category      Category    @relation(fields: [categoryId], references: [id])
+  orderItems    OrderItem[]
+  reviews       Review[]
+  createdAt     DateTime    @default(now())
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  status    String      @default("pending")
+  firstName String
+  lastName  String
+  email     String
+  phone     String
+  company   String?
+  eik       String?
+  vat       String?
+  mol       String?
+  carrier   String
+  delivType String
+  city      String
+  address   String?
+  postcode  String?
+  payment     String
+  total       Float
+  ipAddress   String?
+  userAgent   String?
+  referer     String?
+  acceptLang  String?
+  timezone    String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  geoCountry  String?
+  geoRegion   String?
+  geoCity     String?
+  geoIsp      String?
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  productId Int?
+  name      String
+  slug      String
+  price     Float
+  quantity  Int
+  image     String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+}
+
+model SiteSettings {
+  key   String @id
+  value String
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  rating    Int      @default(5)
+  text      String
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

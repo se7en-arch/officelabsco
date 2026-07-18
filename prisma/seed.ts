@@ -1,0 +1,518 @@
+﻿import { PrismaClient } from '../lib/generated/prisma/client';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
+
+const url = process.env.DATABASE_URL ?? 'file:dev.db';
+const authToken = process.env.TURSO_AUTH_TOKEN;
+const prisma = new PrismaClient({ adapter: new PrismaLibSql({ url, ...(authToken ? { authToken } : {}) }) });
+
+async function main() {
+  // Clean existing data
+  await prisma.product.deleteMany();
+  await prisma.category.deleteMany();
+  await prisma.series.deleteMany();
+
+  // Series
+  const seriesData = [
+    {
+      name: 'ASTRA',
+      slug: 'astra',
+      tagline: 'Минималистичен premium',
+      description: 'Чисти линии, бели и кремови тонове. Дизайн за тези, които ценят простотата.',
+      color: '#F5F0EB',
+    },
+    {
+      name: 'TERRA',
+      slug: 'terra',
+      tagline: 'Скандинавски дизайн',
+      description: 'Светло дърво, функционалност и природна топлина. Вдъхновен от Севера.',
+      color: '#E8EDE8',
+    },
+    {
+      name: 'NOVA',
+      slug: 'nova',
+      tagline: 'Ръчна изработка',
+      description: 'Масивно дърво, тъмни тонове, ръчна изработка. За ценителите на истинския занаят.',
+      color: '#3D2B1F',
+    },
+    {
+      name: 'LOFT',
+      slug: 'loft',
+      tagline: 'Индустриален характер',
+      description: 'Метал и тъмен дъб в градски индустриален стил. Смело и съвременно.',
+      color: '#2C2C2C',
+    },
+  ];
+
+  const series = await Promise.all(
+    seriesData.map((s) => prisma.series.create({ data: s }))
+  );
+
+  const [astra, terra, nova, loft] = series;
+
+  // Categories
+  const categoryData = [
+    { name: 'Бюра', slug: 'byura' },
+    { name: 'Маси', slug: 'masi' },
+    { name: 'Ниски шкафове', slug: 'niski-shkafove' },
+    { name: 'Високи шкафове', slug: 'visoki-shkafove' },
+    { name: 'Пана за стена', slug: 'pana-za-stena' },
+    { name: 'Шкаф за класьори', slug: 'shkaf-za-klasiori' },
+    { name: 'Шкаф за саксии', slug: 'shkaf-za-saksii' },
+    { name: 'Етажерки', slug: 'etazherki' },
+  ];
+
+  const categories = await Promise.all(
+    categoryData.map((c) => prisma.category.create({ data: c }))
+  );
+
+  const [catBiura, catMasi, catNiski, catVisoki, catPana, catKlasiori, catSaksii, catEtazherki] =
+    categories;
+
+  // Products — 4 per category (1 per series) = 32 total
+  const products = [
+    // ── БЮРА (desks) ──
+    {
+      name: 'Astra Бюро 120',
+      slug: 'astra-desk-120',
+      sku: '101001',
+      price: 1290,
+      originalPrice: null,
+      description: 'Елегантно бюро с матово бяло покритие и скрити кабелни канали. Плот 120×65 cm.',
+      image: '/products/desk-1.png',
+      badge: 'НОВ',
+      featured: true,
+      seriesId: astra.id,
+      categoryId: catBiura.id,
+    },
+    {
+      name: 'Terra Бюро Дъб',
+      slug: 'terra-desk-oak',
+      sku: '201001',
+      price: 1190,
+      originalPrice: null,
+      description: 'Бюро от масивен светъл дъб. Естествено маслено покритие, 130×65 cm.',
+      image: '/products/desk-2.png',
+      badge: null,
+      featured: true,
+      seriesId: terra.id,
+      categoryId: catBiura.id,
+    },
+    {
+      name: 'Loft Стоманено бюро',
+      slug: 'loft-steel-desk',
+      sku: '401001',
+      price: 1490,
+      originalPrice: null,
+      description: 'Бюро с плот от тъмен дъб и рамка от матово черен метал. 150×70 cm.',
+      image: '/products/desk-3.png',
+      badge: 'НОВ',
+      featured: true,
+      seriesId: loft.id,
+      categoryId: catBiura.id,
+    },
+    {
+      name: 'Nova Орехово бюро',
+      slug: 'nova-walnut-desk',
+      sku: '301001',
+      price: 2490,
+      originalPrice: null,
+      description: 'Бюро от масивен орех. Ръчна изработка, маслено финиширане. 140×70 cm.',
+      image: '/products/desk-4.png',
+      badge: null,
+      featured: true,
+      seriesId: nova.id,
+      categoryId: catBiura.id,
+    },
+
+    // ── МАСИ (tables) ──
+    {
+      name: 'Astra Маса',
+      slug: 'astra-table',
+      sku: '102001',
+      price: 890,
+      originalPrice: null,
+      description: 'Правоъгълна маса за трапезария. Бяло покритие, крака от стомана. 140×80 cm.',
+      image: '/products/table-1.png',
+      badge: null,
+      featured: true,
+      seriesId: astra.id,
+      categoryId: catMasi.id,
+    },
+    {
+      name: 'Terra Трапезна маса',
+      slug: 'terra-dining-table',
+      sku: '202001',
+      price: 1350,
+      originalPrice: null,
+      description: 'Трапезна маса от бреза. Четири крака от масивна бреза, 160×90 cm.',
+      image: '/products/table-2.png',
+      badge: 'НОВ',
+      featured: true,
+      seriesId: terra.id,
+      categoryId: catMasi.id,
+    },
+    {
+      name: 'Loft Желязна маса',
+      slug: 'loft-iron-table',
+      sku: '402001',
+      price: 1180,
+      originalPrice: 1400,
+      description: 'Трапезна маса с железни крака и плот от регенерирано дърво. 160×85 cm.',
+      image: '/products/table-3.png',
+      badge: 'SALE',
+      featured: false,
+      seriesId: loft.id,
+      categoryId: catMasi.id,
+    },
+    {
+      name: 'Nova Фермерска маса',
+      slug: 'nova-farm-table',
+      sku: '302001',
+      price: 2800,
+      originalPrice: null,
+      description: 'Масивна трапезна маса от орех. Фермерски стил, 180×95 cm.',
+      image: '/products/table-4.png',
+      badge: 'НОВ',
+      featured: true,
+      seriesId: nova.id,
+      categoryId: catMasi.id,
+    },
+
+    // ── НИСКИ ШКАФОВЕ (low cabinets) ──
+    {
+      name: 'Astra Нисък шкаф',
+      slug: 'astra-low-cabinet',
+      sku: '103001',
+      price: 750,
+      originalPrice: null,
+      description: 'Нисък шкаф с три врати. Матово бяло, дискретни метални дръжки.',
+      image: '/products/low-cab-1.png',
+      badge: null,
+      featured: false,
+      seriesId: astra.id,
+      categoryId: catNiski.id,
+    },
+    {
+      name: 'Terra Нисък шкаф',
+      slug: 'terra-low-cabinet',
+      sku: '203001',
+      price: 870,
+      originalPrice: null,
+      description: 'Нисък шкаф от светла бреза. Две врати, естествено маслено покритие.',
+      image: '/products/low-cab-2.png',
+      badge: null,
+      featured: false,
+      seriesId: terra.id,
+      categoryId: catNiski.id,
+    },
+    {
+      name: 'Loft Нисък шкаф',
+      slug: 'loft-low-cabinet',
+      sku: '403001',
+      price: 920,
+      originalPrice: null,
+      description: 'Нисък шкаф — метална рамка с дървени врати. Индустриален характер.',
+      image: '/products/low-cab-3.png',
+      badge: null,
+      featured: true,
+      seriesId: loft.id,
+      categoryId: catNiski.id,
+    },
+    {
+      name: 'Nova Тъмен шкаф',
+      slug: 'nova-dark-cabinet',
+      sku: '303001',
+      price: 1950,
+      originalPrice: 2300,
+      description: 'Нисък шкаф от тъмен орех. Ръчно издялани дървени дръжки.',
+      image: '/products/low-cab-4.png',
+      badge: 'SALE',
+      featured: false,
+      seriesId: nova.id,
+      categoryId: catNiski.id,
+    },
+
+    // ── ВИСОКИ ШКАФОВЕ (high cabinets) ──
+    {
+      name: 'Astra Висок шкаф',
+      slug: 'astra-high-cabinet',
+      sku: '104001',
+      price: 1650,
+      originalPrice: null,
+      description: 'Висок шкаф с матово бяло покритие. Три секции, скрити пантели. Н 200 cm.',
+      image: '/products/high-cab-1.png',
+      badge: null,
+      featured: false,
+      seriesId: astra.id,
+      categoryId: catVisoki.id,
+    },
+    {
+      name: 'Terra Висок шкаф',
+      slug: 'terra-high-cabinet',
+      sku: '204001',
+      price: 1850,
+      originalPrice: 2100,
+      description: 'Висок шкаф от светла бреза. Две врати, три чекмеджета. Н 200 cm.',
+      image: '/products/high-cab-2.png',
+      badge: 'SALE',
+      featured: false,
+      seriesId: terra.id,
+      categoryId: catVisoki.id,
+    },
+    {
+      name: 'Loft Висок шкаф',
+      slug: 'loft-high-cabinet',
+      sku: '404001',
+      price: 2100,
+      originalPrice: null,
+      description: 'Висок шкаф с метална рамка и дъбови врати. Н 210 cm, индустриален.',
+      image: '/products/high-cab-3.png',
+      badge: null,
+      featured: false,
+      seriesId: loft.id,
+      categoryId: catVisoki.id,
+    },
+    {
+      name: 'Nova Висок гардероб',
+      slug: 'nova-tall-wardrobe',
+      sku: '304001',
+      price: 3200,
+      originalPrice: null,
+      description: 'Висок гардероб от масивен орех. Две врати, скрити метални пантела. Н 220 cm.',
+      image: '/products/high-cab-4.png',
+      badge: null,
+      featured: true,
+      seriesId: nova.id,
+      categoryId: catVisoki.id,
+    },
+
+    // ── ПАНА ЗА СТЕНА (wall panels) ──
+    {
+      name: 'Astra Стенно пано',
+      slug: 'astra-wall-panel',
+      sku: '105001',
+      price: 420,
+      originalPrice: 520,
+      description: 'Декоративно стенно пано с рафт. Бяло лакирано дърво, монтаж включен.',
+      image: '/products/acc-panel-1.png',
+      badge: 'SALE',
+      featured: false,
+      seriesId: astra.id,
+      categoryId: catPana.id,
+    },
+    {
+      name: 'Terra Стенно пано',
+      slug: 'terra-wall-panel',
+      sku: '205001',
+      price: 480,
+      originalPrice: null,
+      description: 'Стенно пано от бреза с три рафта. Скандинавски минимализъм.',
+      image: '/products/acc-panel-2.png',
+      badge: null,
+      featured: false,
+      seriesId: terra.id,
+      categoryId: catPana.id,
+    },
+    {
+      name: 'Loft Стенен рафт',
+      slug: 'loft-wall-shelf',
+      sku: '405001',
+      price: 380,
+      originalPrice: null,
+      description: 'Стенен рафт от метал и масив. Издръжлив, носимост до 30 кг.',
+      image: '/products/acc-panel-3.png',
+      badge: null,
+      featured: false,
+      seriesId: loft.id,
+      categoryId: catPana.id,
+    },
+    {
+      name: 'Nova Стенно пано',
+      slug: 'nova-wall-panel',
+      sku: '305001',
+      price: 650,
+      originalPrice: null,
+      description: 'Стенно пано от масивен орех. Ръчна изработка, три рафта с нерегулярна форма.',
+      image: '/products/acc-panel-4.png',
+      badge: 'НОВ',
+      featured: true,
+      seriesId: nova.id,
+      categoryId: catPana.id,
+    },
+
+    // ── ШКАФ ЗА КЛАСЬОРИ (filing cabinets) ──
+    {
+      name: 'Astra Шкаф за класьори',
+      slug: 'astra-filing-cabinet',
+      sku: '106001',
+      price: 590,
+      originalPrice: null,
+      description: 'Шкаф за класьори от бяло МДФ. Две нива, А4 формат, заключване.',
+      image: '/products/big-cont-1.png',
+      badge: null,
+      featured: false,
+      seriesId: astra.id,
+      categoryId: catKlasiori.id,
+    },
+    {
+      name: 'Terra Шкаф за класьори',
+      slug: 'terra-filing-cabinet',
+      sku: '206001',
+      price: 690,
+      originalPrice: null,
+      description: 'Шкаф за класьори на две нива. Светла бреза, А4 формат.',
+      image: '/products/big-cont-2.png',
+      badge: 'НОВ',
+      featured: false,
+      seriesId: terra.id,
+      categoryId: catKlasiori.id,
+    },
+    {
+      name: 'Loft Шкаф за класьори',
+      slug: 'loft-filing-cabinet',
+      sku: '406001',
+      price: 780,
+      originalPrice: null,
+      description: 'Метален шкаф за класьори с дъбов плот. Три нива, индустриален вид.',
+      image: '/products/big-cont-3.png',
+      badge: null,
+      featured: false,
+      seriesId: loft.id,
+      categoryId: catKlasiori.id,
+    },
+    {
+      name: 'Nova Шкаф за класьори',
+      slug: 'nova-filing-cabinet',
+      sku: '306001',
+      price: 1380,
+      originalPrice: null,
+      description: 'Шкаф за класьори от орех. Три нива, А4 формат, ключалка.',
+      image: '/products/big-cont-4.png',
+      badge: null,
+      featured: false,
+      seriesId: nova.id,
+      categoryId: catKlasiori.id,
+    },
+
+    // ── ШКАФ ЗА САКСИИ (plant stands) ──
+    {
+      name: 'Astra Стойка за саксии',
+      slug: 'astra-plant-stand',
+      sku: '107001',
+      price: 260,
+      originalPrice: null,
+      description: 'Стелаж за саксии от бяло МДФ. Три нива, лесен монтаж. Н 75 cm.',
+      image: '/products/plant-1.png',
+      badge: null,
+      featured: false,
+      seriesId: astra.id,
+      categoryId: catSaksii.id,
+    },
+    {
+      name: 'Terra Стойка за саксии',
+      slug: 'terra-plant-stand',
+      sku: '207001',
+      price: 290,
+      originalPrice: null,
+      description: 'Трипластов стелаж за саксии от бамбук и бреза. Н 80 cm.',
+      image: '/products/plant-2.png',
+      badge: null,
+      featured: false,
+      seriesId: terra.id,
+      categoryId: catSaksii.id,
+    },
+    {
+      name: 'Loft Стойка за саксии',
+      slug: 'loft-plant-stand',
+      sku: '407001',
+      price: 320,
+      originalPrice: null,
+      description: 'Метален стелаж за саксии с дъбови рафтове. Индустриален дизайн, Н 85 cm.',
+      image: '/products/plant-3.png',
+      badge: 'НОВ',
+      featured: false,
+      seriesId: loft.id,
+      categoryId: catSaksii.id,
+    },
+    {
+      name: 'Nova Стойка за саксии',
+      slug: 'nova-plant-stand',
+      sku: '307001',
+      price: 490,
+      originalPrice: null,
+      description: 'Стелаж за саксии от масивен орех. Ръчна изработка, Н 90 cm.',
+      image: '/products/plant-4.png',
+      badge: null,
+      featured: false,
+      seriesId: nova.id,
+      categoryId: catSaksii.id,
+    },
+
+    // ── ЕТАЖЕРКИ (bookshelves) ──
+    {
+      name: 'Astra Етажерка',
+      slug: 'astra-bookshelf',
+      sku: '108001',
+      price: 590,
+      originalPrice: null,
+      description: 'Четири рафта, бяло покритие. Перфектна за книги и декорация.',
+      image: '/products/shelf-1.png',
+      badge: 'НОВ',
+      featured: true,
+      seriesId: astra.id,
+      categoryId: catEtazherki.id,
+    },
+    {
+      name: 'Terra Висока етажерка',
+      slug: 'terra-bookshelf-tall',
+      sku: '208001',
+      price: 780,
+      originalPrice: null,
+      description: 'Висока етажерка с пет рафта от бреза. Скандинавска функционалност.',
+      image: '/products/shelf-2.png',
+      badge: null,
+      featured: true,
+      seriesId: terra.id,
+      categoryId: catEtazherki.id,
+    },
+    {
+      name: 'Loft Тръбна етажерка',
+      slug: 'loft-pipe-bookshelf',
+      sku: '408001',
+      price: 860,
+      originalPrice: null,
+      description: 'Етажерка с тръбни метални крака и дъбови рафтове. Четири нива.',
+      image: '/products/shelf-3.png',
+      badge: 'НОВ',
+      featured: true,
+      seriesId: loft.id,
+      categoryId: catEtazherki.id,
+    },
+    {
+      name: 'Nova Открита етажерка',
+      slug: 'nova-open-shelf',
+      sku: '308001',
+      price: 1100,
+      originalPrice: null,
+      description: 'Открита етажерка от масивен орех. Пет рафта с нерегулярна дълбочина.',
+      image: '/products/shelf-4.png',
+      badge: null,
+      featured: true,
+      seriesId: nova.id,
+      categoryId: catEtazherki.id,
+    },
+  ];
+
+  for (const p of products) {
+    await prisma.product.create({ data: p });
+  }
+
+  console.log(`✅ Seed complete: ${series.length} серии, ${categories.length} категории, ${products.length} продукта`);
+}
+
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());
