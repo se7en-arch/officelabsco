@@ -153,7 +153,7 @@ export default function CheckoutPage() {
     const ss = typeof sessionStorage !== 'undefined' ? sessionStorage : null;
 
     try {
-      await fetch('/api/orders', {
+      const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -174,7 +174,11 @@ export default function CheckoutPage() {
           utmCampaign: ss?.getItem('utm_campaign') ?? null,
         }),
       });
-    } catch {}
+      if (!res.ok) throw new Error('order_failed');
+    } catch {
+      alert('Възникна грешка при изпращане на поръчката. Моля опитайте отново.');
+      return;
+    }
     clear();
     setDone(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });

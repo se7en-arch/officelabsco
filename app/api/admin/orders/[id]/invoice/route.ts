@@ -278,7 +278,7 @@ tbody tr:last-child{border-bottom:2px solid #1c1c1c}
   <!-- Bottom -->
   <div class="bottom">
     <div>Въпроси? Пишете ни на <strong>info@officelabsco.com</strong></div>
-    <div>officelabs.bg &nbsp;·&nbsp; facebook &nbsp;·&nbsp; instagram</div>
+    <div>officelabsco.com &nbsp;·&nbsp; facebook &nbsp;·&nbsp; instagram</div>
   </div>
 
 </div>

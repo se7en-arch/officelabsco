@@ -29,7 +29,7 @@ export async function generateMetadata({
   const description = (en ? product.descriptionEn : null) ?? product.description ?? `${displayName} — ${product.series.name} серия офис мебели`;
   const imageUrl = product.image.startsWith('http')
     ? product.image
-    : `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabs.bg'}${product.image}`;
+    : `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabsco.com'}${product.image}`;
 
   return {
     title,
@@ -93,7 +93,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
     },
   });
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabs.bg';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabsco.com';
   const imageUrl = product.image.startsWith('http') ? product.image : `${siteUrl}${product.image}`;
 
   const jsonLd = {

@@ -1,11 +1,11 @@
 import type { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL?.startsWith('http://localhost')
-  ? 'https://officelabs.bg'
-  : (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabs.bg');
+  ? 'https://officelabsco.com'
+  : (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabsco.com');
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const products = await prisma.product.findMany({

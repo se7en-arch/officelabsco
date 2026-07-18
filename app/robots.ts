@@ -1,8 +1,8 @@
 import type { MetadataRoute } from 'next';
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL?.startsWith('http://localhost')
-  ? 'https://officelabs.bg'
-  : (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabs.bg');
+  ? 'https://officelabsco.com'
+  : (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabsco.com');
 
 export default function robots(): MetadataRoute.Robots {
   return {
