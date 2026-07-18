@@ -201,7 +201,7 @@ export async function sendOrderNotification(order: OrderEmailData): Promise<void
 
   try {
     const { error } = await resend.emails.send({
-      from:     'Office Labs <onboarding@resend.dev>',
+      from:     'Office Labs <noreply@officelabsco.com>',
       to,
       replyTo:  order.email,
       subject,
