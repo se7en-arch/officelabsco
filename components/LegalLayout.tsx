@@ -212,7 +212,7 @@ export default function LegalLayout({
           padding-bottom: 52px;
           margin-bottom: 52px;
           border-bottom: 1px solid var(--border);
-          scroll-margin-top: 32px;
+          scroll-margin-top: 80px;
         }
         .lgl-section:last-child {
           border-bottom: none;
@@ -315,7 +315,7 @@ export default function LegalLayout({
           .lgl-sidebar nav { padding: 16px 0 20px; }
           .lgl-sidebar__label { padding-left: 4px; }
           .lgl-content { padding-top: 0; }
-          .lgl-section { scroll-margin-top: 56px; }
+          .lgl-section { scroll-margin-top: 116px; }
         }
 
         @media (max-width: 480px) {
