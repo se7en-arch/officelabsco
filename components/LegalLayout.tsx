@@ -87,7 +87,7 @@ export default function LegalLayout({
         }
         .lgl-hero__icon:hover { transform: scale(1.05) rotate(-3deg); }
         .lgl-hero h1 {
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
           font-size: clamp(1.9rem, 3.5vw, 2.8rem);
           font-weight: 700;
           letter-spacing: -.04em;
@@ -96,7 +96,7 @@ export default function LegalLayout({
           margin-bottom: 8px;
         }
         .lgl-hero__meta {
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
           font-size: 13px;
           color: var(--txt3);
           letter-spacing: .01em;
@@ -115,7 +115,7 @@ export default function LegalLayout({
           color: var(--txt);
           text-align: left;
           cursor: pointer;
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
           align-items: center;
           justify-content: space-between;
           position: sticky;
@@ -150,7 +150,7 @@ export default function LegalLayout({
           transition: top .2s ease;
         }
         .lgl-sidebar__label {
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
           font-size: 11px;
           font-weight: 700;
           letter-spacing: .1em;
@@ -165,7 +165,7 @@ export default function LegalLayout({
           gap: 1px;
         }
         .lgl-sidebar a {
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
           font-size: 13px;
           line-height: 1.45;
           color: var(--txt2);
@@ -221,7 +221,7 @@ export default function LegalLayout({
         }
 
         .lgl-section h2 {
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
           font-size: 1.4rem;
           font-weight: 700;
           letter-spacing: -.025em;
@@ -230,14 +230,14 @@ export default function LegalLayout({
           line-height: 1.2;
         }
         .lgl-section h3 {
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
           font-size: .95rem;
           font-weight: 600;
           color: var(--txt);
           margin: 26px 0 10px;
         }
         .lgl-section p {
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
           font-size: 16px;
           color: var(--txt2);
           line-height: 1.8;
@@ -246,7 +246,7 @@ export default function LegalLayout({
         .lgl-section p:last-child { margin-bottom: 0; }
         .lgl-section ul,
         .lgl-section ol {
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
           font-size: 16px;
           color: var(--txt2);
           line-height: 1.8;
@@ -284,7 +284,7 @@ export default function LegalLayout({
           color: var(--txt2);
           line-height: 1.7;
           margin-bottom: 20px;
-          font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+          font-family: var(--font-inter), system-ui, sans-serif;
         }
         .lgl-notice strong { color: var(--txt); }
 
