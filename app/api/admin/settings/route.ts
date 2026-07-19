@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   const body: Record<string, string> = await req.json();
 
-  const ALLOWED = ['heroTitle', 'heroSubtitle', 'seoTitle', 'seoDescription', 'metaKeywords'];
+  const ALLOWED = ['heroTitle', 'heroSubtitle', 'seoTitle', 'seoDescription', 'metaKeywords', 'vat_rate'];
 
   for (const [key, value] of Object.entries(body)) {
     if (!ALLOWED.includes(key)) continue;

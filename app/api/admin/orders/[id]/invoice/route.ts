@@ -15,11 +15,13 @@ export async function GET(
   }
 
   const { id } = await params;
-  const order = await prisma.order.findUnique({
-    where: { id: parseInt(id) },
-    include: { items: true },
-  });
+  const [order, vatSetting] = await Promise.all([
+    prisma.order.findUnique({ where: { id: parseInt(id) }, include: { items: true } }),
+    prisma.siteSettings.findUnique({ where: { key: 'vat_rate' } }),
+  ]);
   if (!order) return new NextResponse('Not found', { status: 404 });
+
+  const vatPct = parseFloat(vatSetting?.value ?? '0') || 0;
 
   const isCompany = !!(order.company || order.eik);
   const year = new Date(order.createdAt).getFullYear();
@@ -28,6 +30,8 @@ export async function GET(
     .toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const subtotal = order.items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const vatAmount = vatPct > 0 ? parseFloat(((subtotal * vatPct) / (100 + vatPct)).toFixed(2)) : 0;
+  const netAmount = vatPct > 0 ? parseFloat((subtotal - vatAmount).toFixed(2)) : subtotal;
 
   const rows = order.items.map((item, idx) => `
     <tr class="${idx % 2 !== 0 ? 'alt' : ''}">
@@ -235,14 +239,25 @@ tbody tr:last-child{border-bottom:2px solid #1c1c1c}
       <div class="total-big">€ ${order.total.toFixed(2)}</div>
     </div>
     <div class="total-rows">
+      ${vatPct > 0 ? `
+      <div class="total-row">
+        <span>Без ДДС</span>
+        <span>€ ${netAmount.toFixed(2)}</span>
+      </div>
+      <div class="total-row">
+        <span>ДДС ${vatPct}%</span>
+        <span>€ ${vatAmount.toFixed(2)}</span>
+      </div>
+      ` : `
       <div class="total-row">
         <span>Подтотал</span>
         <span>€ ${subtotal.toFixed(2)}</span>
       </div>
       <div class="total-row">
         <span>ДДС</span>
-        <span>0</span>
+        <span>—</span>
       </div>
+      `}
       <div class="total-row total-row-grand">
         <span>Крайна сума</span>
         <span>€ ${order.total.toFixed(2)}</span>

@@ -10,12 +10,35 @@ export default function SettingsForm({ initialSettings }: { initialSettings: Rec
     metaKeywords: initialSettings.metaKeywords ?? '',
   });
 
+  const [vatRate, setVatRate] = useState(initialSettings.vat_rate ?? '0');
+  const [savingVat, setSavingVat] = useState(false);
+  const [savedVat, setSavedVat] = useState(false);
+  const [vatError, setVatError] = useState('');
+
   const [pass, setPass] = useState({ newUsername: '', newPassword: '', confirmPassword: '' });
   const [savingSeo, setSavingSeo] = useState(false);
   const [savedSeo, setSavedSeo] = useState(false);
   const [savingPass, setSavingPass] = useState(false);
   const [savedPass, setSavedPass] = useState(false);
   const [passError, setPassError] = useState('');
+
+  async function saveVat() {
+    setVatError('');
+    const num = parseFloat(vatRate);
+    if (isNaN(num) || num < 0 || num > 100) {
+      setVatError('Въведи валидна стойност между 0 и 100');
+      return;
+    }
+    setSavingVat(true);
+    await fetch('/api/admin/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vat_rate: String(num) }),
+    });
+    setSavingVat(false);
+    setSavedVat(true);
+    setTimeout(() => setSavedVat(false), 2500);
+  }
 
   async function saveSeo() {
     setSavingSeo(true);
@@ -47,6 +70,44 @@ export default function SettingsForm({ initialSettings }: { initialSettings: Rec
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+      {/* VAT / Invoicing */}
+      <div className="admin-card">
+        <div className="admin-card__header"><h2>Фактуриране (ДДС)</h2></div>
+        <div style={{ padding: 20 }}>
+          <div className="admin-form-row">
+            <div className="admin-form-group">
+              <label className="admin-form-label">ДДС ставка (%)</label>
+              <input
+                className="admin-form-input"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                value={vatRate}
+                onChange={e => setVatRate(e.target.value)}
+                placeholder="напр. 20"
+                style={{ maxWidth: 160 }}
+              />
+              <p style={{ marginTop: 6, fontSize: 13, color: 'var(--muted)' }}>
+                Въведи 0 ако не си ДДС регистриран. При 20% — фактурите ще показват ДДС включен в крайната цена.
+              </p>
+            </div>
+          </div>
+          {vatError && <p className="admin-error" style={{ marginBottom: 12 }}>{vatError}</p>}
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8 }}>
+            <button className="admin-action-btn" onClick={saveVat} disabled={savingVat} style={{ padding: '9px 20px' }}>
+              {savingVat ? 'Запазване...' : 'Запази ДДС настройката'}
+            </button>
+            {savedVat && (
+              <span style={{ color: 'var(--success)', fontSize: 14, fontWeight: 600, display: 'flex', gap: 6, alignItems: 'center' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Запазено
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
 
       {/* SEO & Content */}
       <div className="admin-card">
