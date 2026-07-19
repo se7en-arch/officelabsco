@@ -84,41 +84,26 @@ export default function CartPage() {
                 />
               </div>
 
-              <div className="cart-item__info">
-                <div className="cart-item__series">{item.seriesName}</div>
-
-                <div className="cart-item__main-row">
+              <div className="cart-item__body">
+                <div className="cart-item__top">
                   <Link href={`/shop/${item.slug}`} className="cart-item__name">
                     {item.name}
                   </Link>
-                  <div className="cart-item__actions">
-                    <div className="qty" style={{ height: 34 }}>
-                      <button
-                        className="qty__btn"
-                        style={{ height: 34, width: 34 }}
-                        onClick={() => updateQty(item.id, item.quantity - 1)}
-                      >
-                        −
-                      </button>
-                      <span className="qty__val" style={{ lineHeight: '34px' }}>{item.quantity}</span>
-                      <button
-                        className="qty__btn"
-                        style={{ height: 34, width: 34 }}
-                        onClick={() => updateQty(item.id, item.quantity + 1)}
-                      >
-                        +
-                      </button>
-                    </div>
-                    <button className="btn-remove" onClick={() => removeItem(item.id)}>
-                      {t('remove')}
-                    </button>
-                  </div>
-                  <div className="cart-item__price">
-                    {item.price * item.quantity} €
-                  </div>
+                  <span className="cart-item__price">{item.price * item.quantity} €</span>
                 </div>
 
-                <div className="cart-item__category">{item.categoryName}</div>
+                <div className="cart-item__meta">{item.seriesName} · {item.categoryName}</div>
+
+                <div className="cart-item__actions">
+                  <div className="qty">
+                    <button className="qty__btn" onClick={() => updateQty(item.id, item.quantity - 1)}>−</button>
+                    <span className="qty__val">{item.quantity}</span>
+                    <button className="qty__btn" onClick={() => updateQty(item.id, item.quantity + 1)}>+</button>
+                  </div>
+                  <button className="btn-remove" onClick={() => removeItem(item.id)}>
+                    {t('remove')}
+                  </button>
+                </div>
               </div>
             </div>
           ))}
