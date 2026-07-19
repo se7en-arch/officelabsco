@@ -17,7 +17,6 @@ export default function LegalLayout({
   children: React.ReactNode;
 }) {
   const [activeId, setActiveId] = useState(sections[0]?.id ?? '');
-  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
@@ -102,34 +101,6 @@ export default function LegalLayout({
           letter-spacing: .01em;
         }
 
-        /* ── MOBILE TOC TOGGLE ────────────────────────── */
-        .lgl-toggle {
-          display: none;
-          width: 100%;
-          background: var(--bg-page);
-          border: none;
-          border-bottom: 1px solid var(--border);
-          padding: 14px 20px;
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--txt);
-          text-align: left;
-          cursor: pointer;
-          font-family: var(--font-inter), system-ui, sans-serif;
-          align-items: center;
-          justify-content: space-between;
-          position: sticky;
-          top: 0;
-          z-index: 40;
-          box-shadow: ${`0 1px 0 var(--border)`};
-          transition: background .2s;
-        }
-        .lgl-toggle__chevron {
-          transition: transform .25s ease;
-          color: var(--txt3);
-        }
-        .lgl-toggle.open .lgl-toggle__chevron { transform: rotate(180deg); }
-        .lgl-toggle:hover { background: var(--bg-hero); }
 
         /* ── OUTER GRID ───────────────────────────────── */
         .lgl-outer {
@@ -292,7 +263,6 @@ export default function LegalLayout({
         @media (max-width: 860px) {
           .lgl-hero { padding: 40px 24px 36px; }
           .lgl-hero__in { flex-direction: column; align-items: flex-start; gap: 20px; }
-          .lgl-toggle { display: flex; }
           .lgl-outer {
             grid-template-columns: 1fr;
             gap: 0;
@@ -301,21 +271,13 @@ export default function LegalLayout({
           .lgl-sidebar {
             position: static;
             padding-top: 0;
-            overflow: hidden;
-            max-height: 0;
-            transition: max-height .3s ease, opacity .3s ease;
-            opacity: 0;
             border-bottom: 1px solid var(--border);
             margin-bottom: 32px;
-          }
-          .lgl-sidebar.open {
-            max-height: 1000px;
-            opacity: 1;
           }
           .lgl-sidebar nav { padding: 16px 0 20px; }
           .lgl-sidebar__label { padding-left: 4px; }
           .lgl-content { padding-top: 0; }
-          .lgl-section { scroll-margin-top: 116px; }
+          .lgl-section { scroll-margin-top: 80px; }
         }
 
         @media (max-width: 480px) {
@@ -338,20 +300,9 @@ export default function LegalLayout({
         </div>
       </div>
 
-      {/* MOBILE TOGGLE */}
-      <button
-        className={`lgl-toggle${menuOpen ? ' open' : ''}`}
-        onClick={() => setMenuOpen(v => !v)}
-      >
-        <span>Съдържание</span>
-        <svg className="lgl-toggle__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </button>
-
       {/* BODY */}
       <div className="lgl-outer">
-        <aside className={`lgl-sidebar${menuOpen ? ' open' : ''}`}>
+        <aside className="lgl-sidebar">
           <div className="lgl-sidebar__label">Съдържание</div>
           <nav>
             {sections.map((s) => (
@@ -359,7 +310,6 @@ export default function LegalLayout({
                 key={s.id}
                 href={`#${s.id}`}
                 className={activeId === s.id ? 'active' : ''}
-                onClick={() => setMenuOpen(false)}
               >
                 {s.title}
               </a>
