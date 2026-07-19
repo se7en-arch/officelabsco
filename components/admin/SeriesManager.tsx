@@ -156,11 +156,16 @@ export default function SeriesManager({ initialSeries }: { initialSeries: Series
             <tbody>
               {series.map(s => (
                 <tr key={s.id}>
-                  <td>
-                    <div style={{ width: 18, height: 18, borderRadius: '50%', background: editingId === s.id ? (editData.color ?? s.color) : s.color }} />
-                  </td>
                   {editingId === s.id ? (
                     <>
+                      <td>
+                        <input
+                          type="color"
+                          value={editData.color ?? s.color ?? '#000000'}
+                          onChange={e => setEditData(d => ({ ...d, color: e.target.value }))}
+                          style={{ width: 32, height: 28, padding: 2, border: '1px solid var(--admin-border)', borderRadius: 4, cursor: 'pointer' }}
+                        />
+                      </td>
                       <td>
                         <input className="admin-table-input" value={editData.name ?? ''} onChange={e => setEditData(d => ({ ...d, name: e.target.value }))} style={{ width: '100%' }} />
                       </td>
@@ -182,6 +187,9 @@ export default function SeriesManager({ initialSeries }: { initialSeries: Series
                     </>
                   ) : (
                     <>
+                      <td>
+                        <div style={{ width: 18, height: 18, borderRadius: '50%', background: s.color }} />
+                      </td>
                       <td style={{ fontWeight: 600 }}>{s.name}</td>
                       <td style={{ color: 'var(--muted)', fontSize: 13 }}>{s.slug}</td>
                       <td style={{ color: 'var(--text-2)', fontSize: 13 }}>{s.tagline}</td>

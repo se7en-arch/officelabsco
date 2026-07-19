@@ -2,11 +2,15 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 
-export async function GET() {
+export async function GET(req: Request) {
   const authenticated = await isAdminAuthenticated();
   if (!authenticated) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const { searchParams } = new URL(req.url);
+  const status = searchParams.get('status') || undefined;
+
   const orders = await prisma.order.findMany({
+    where: status ? { status } : undefined,
     orderBy: { createdAt: 'desc' },
     include: { items: true },
   });

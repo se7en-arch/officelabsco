@@ -22,7 +22,8 @@ export default async function DashboardPage() {
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const [
-    allOrders,
+    chartOrders,
+    allTimeStats,
     recentOrders,
     activeProducts,
     archivedProducts,
@@ -38,10 +39,11 @@ export default async function DashboardPage() {
       select: { createdAt: true, total: true, status: true },
       orderBy: { createdAt: 'asc' },
     }),
+    prisma.order.aggregate({ _sum: { total: true }, _count: { _all: true } }),
     prisma.order.findMany({
       take: 8,
       orderBy: { createdAt: 'desc' },
-      include: { items: { take: 1 } },
+      include: { items: true },
     }),
     prisma.product.count({ where: { archived: false } }),
     prisma.product.count({ where: { archived: true } }),
@@ -56,10 +58,11 @@ export default async function DashboardPage() {
     }),
   ]);
 
-  const totalRevenue = allOrders.reduce((s, o) => s + o.total, 0);
-  const monthlyRevenue = allOrders.filter(o => o.createdAt >= startOfMonth).reduce((s, o) => s + o.total, 0);
-  const todayRevenue = allOrders.filter(o => o.createdAt >= startOfToday).reduce((s, o) => s + o.total, 0);
-  const totalOrderCount = allOrders.length;
+  const totalRevenue = allTimeStats._sum.total ?? 0;
+  const totalOrderCount = allTimeStats._count._all;
+  const monthlyRevenue = chartOrders.filter(o => o.createdAt >= startOfMonth).reduce((s, o) => s + o.total, 0);
+  const todayRevenue = chartOrders.filter(o => o.createdAt >= startOfToday).reduce((s, o) => s + o.total, 0);
+  const allOrders = chartOrders;
 
   const statusCounts: Record<string, number> = {};
   allOrders.forEach(o => { statusCounts[o.status] = (statusCounts[o.status] || 0) + 1; });

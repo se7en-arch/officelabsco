@@ -1,5 +1,12 @@
+'use client';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import LogoutButton from './LogoutButton';
+
+function isActive(href: string, pathname: string) {
+  if (href === '/') return false;
+  return pathname === href || pathname.startsWith(href + '/');
+}
 
 const navItems = [
   {
@@ -65,6 +72,7 @@ const navItems = [
 ];
 
 export default function AdminSidebar() {
+  const pathname = usePathname();
   return (
     <aside className="admin-sidebar">
       <div className="admin-sidebar__brand">
@@ -85,7 +93,7 @@ export default function AdminSidebar() {
           <div key={group.section}>
             <div className="admin-sidebar__section">{group.section}</div>
             {group.links.map((link) => (
-              <Link key={link.href} href={link.href} className="admin-nav-link">
+              <Link key={link.href} href={link.href} className={`admin-nav-link${isActive(link.href, pathname) ? ' active' : ''}`}>
                 {link.icon}
                 {link.label}
               </Link>

@@ -40,6 +40,7 @@ export default async function OrdersPage({
   const countMap: Record<string, number> = {};
   for (const c of counts) countMap[c.status] = c._count._all;
   const totalAll = Object.values(countMap).reduce((s, n) => s + n, 0);
+  const filteredCount = filterStatus ? (countMap[filterStatus] ?? 0) : totalAll;
 
   const totalOrderRevenue = totalRevenue._sum.total ?? 0;
 
@@ -62,7 +63,7 @@ export default async function OrdersPage({
             {totalAll} поръчки · €{totalOrderRevenue.toFixed(2)} общ приход
           </p>
         </div>
-        <a href="/api/admin/orders/export" className="admin-action-btn admin-action-btn--secondary">
+        <a href={`/api/admin/orders/export${filterStatus ? `?status=${filterStatus}` : ''}`} className="admin-action-btn admin-action-btn--secondary">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
             <polyline points="7 10 12 15 17 10"/>
@@ -178,7 +179,7 @@ export default async function OrdersPage({
         )}
 
         {/* Pagination */}
-        {totalAll > perPage && (
+        {filteredCount > perPage && (
           <div className="orders-pagination">
             {page > 1 && (
               <Link
@@ -191,9 +192,9 @@ export default async function OrdersPage({
               </Link>
             )}
             <span className="orders-pag-info">
-              Страница {page} от {Math.ceil(totalAll / perPage)}
+              Страница {page} от {Math.ceil(filteredCount / perPage)}
             </span>
-            {page < Math.ceil(totalAll / perPage) && (
+            {page < Math.ceil(filteredCount / perPage) && (
               <Link
                 href={filterStatus
                   ? `/adminpanel/orders?status=${filterStatus}&page=${page + 1}`

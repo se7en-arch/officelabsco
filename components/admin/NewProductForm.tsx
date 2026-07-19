@@ -112,7 +112,7 @@ export default function NewProductForm({ series, categories }: { series: Series[
 
     if (res.ok) {
       const data = await res.json();
-      router.push(`/shop/${data.slug}`);
+      router.push(`/adminpanel/products/${data.id}/edit`);
       router.refresh();
     } else {
       const data = await res.json();

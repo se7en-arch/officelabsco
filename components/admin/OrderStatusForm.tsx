@@ -13,15 +13,18 @@ export default function OrderStatusForm({
   const [status, setStatus] = useState(currentStatus);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState('');
 
   async function handleSave() {
     setSaving(true);
-    await fetch(`/api/admin/orders/${orderId}`, {
+    setError('');
+    const res = await fetch(`/api/admin/orders/${orderId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
     });
     setSaving(false);
+    if (!res.ok) { setError('Грешка при запазване'); return; }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
@@ -52,6 +55,7 @@ export default function OrderStatusForm({
           <polyline points="20 6 9 17 4 12"/>
         </svg>
       )}
+      {error && <span style={{ fontSize: 12, color: '#dc2626' }}>{error}</span>}
     </div>
   );
 }
