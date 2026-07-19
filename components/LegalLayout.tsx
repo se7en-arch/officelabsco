@@ -268,14 +268,7 @@ export default function LegalLayout({
             gap: 0;
             padding: 0 24px 64px;
           }
-          .lgl-sidebar {
-            position: static;
-            padding-top: 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 32px;
-          }
-          .lgl-sidebar nav { padding: 16px 0 20px; }
-          .lgl-sidebar__label { padding-left: 4px; }
+          .lgl-sidebar { display: none; }
           .lgl-content { padding-top: 0; }
           .lgl-section { scroll-margin-top: 80px; }
         }
