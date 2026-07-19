@@ -20,10 +20,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!authenticated) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
-  const { status } = await req.json() as { status: string };
+  const body = await req.json() as { status?: string; trackingNumber?: string };
   const order = await prisma.order.update({
     where: { id: parseInt(id) },
-    data: { status },
+    data: {
+      ...(body.status !== undefined ? { status: body.status } : {}),
+      ...(body.trackingNumber !== undefined ? { trackingNumber: body.trackingNumber } : {}),
+    },
   });
   return NextResponse.json(order);
 }

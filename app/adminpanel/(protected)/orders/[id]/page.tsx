@@ -143,7 +143,12 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <div className="admin-card" style={{ marginBottom: 16 }}>
             <div className="admin-card__header"><h2>Смени статус</h2></div>
             <div className="admin-card__body">
-              <OrderStatusForm orderId={order.id} currentStatus={order.status} statusLabels={STATUS_LABELS} />
+              <OrderStatusForm
+                orderId={order.id}
+                currentStatus={order.status}
+                currentTrackingNumber={order.trackingNumber}
+                statusLabels={STATUS_LABELS}
+              />
             </div>
           </div>
 
@@ -243,6 +248,12 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <DetailRow label="Адрес" value={order.address} />
               <DetailRow label="Пощ. код" value={order.postcode} />
               <DetailRow label="Плащане" value={order.payment === 'card' ? 'Карта' : 'Наложен платеж'} />
+              {order.trackingNumber && (
+                <>
+                  <div style={{ borderTop: '1px solid var(--line)', margin: '10px 0' }} />
+                  <DetailRow label="Проследяване" value={order.trackingNumber} />
+                </>
+              )}
             </div>
           </div>
         </div>

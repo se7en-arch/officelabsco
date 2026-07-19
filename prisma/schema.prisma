@@ -93,9 +93,10 @@ model Order {
   geoCountry  String?
   geoRegion   String?
   geoCity     String?
-  geoIsp      String?
-  items       OrderItem[]
-  createdAt   DateTime    @default(now())
+  geoIsp          String?
+  trackingNumber  String?
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@index([status])
