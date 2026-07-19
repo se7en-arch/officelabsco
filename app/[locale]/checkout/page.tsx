@@ -8,8 +8,6 @@ import BuyNowPayLater from '@/components/BuyNowPayLater';
 const CARRIERS = [
   { id: 'speedy', label: 'Speedy' },
   { id: 'econt',  label: 'Econt' },
-  { id: 'dpd',    label: 'DPD' },
-  { id: 'dhl',    label: 'DHL' },
 ];
 
 export default function CheckoutPage() {
