@@ -18,6 +18,11 @@ const ITEMS = [
     desc: 'Преди пускане: изтрий PREVIEW_SECRET от Vercel → Settings → Environment Variables. Изтрий app/under-construction/ и app/api/unlock/ от кода и направи нов deploy.',
   },
   {
+    icon: '💰',
+    title: 'Плащане на кредит (Buy Now Pay Later)',
+    desc: 'BuyNowPayLater компонентът е само визуален — без реална интеграция. Опции: Paytaka (paytaka.bg) или TBI Bank — и двете имат готови JS widget-и за онлайн магазини. Заявяваш партньорски достъп, те дават скрипт/iframe, интегрира се в product и checkout страниците.',
+  },
+  {
     icon: '📦',
     title: 'Econt Plugin — избор на офис',
     desc: 'Заяви API достъп: econt.com → Партньори → API (безплатно за онлайн магазини). Дават JS скрипт + callback функция. При избор на "До офис" в checkout зареждаш widget-а в модал — той връща обект с избрания офис и адрес.',
