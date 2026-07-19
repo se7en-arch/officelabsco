@@ -67,11 +67,11 @@ export default function CartPage() {
         <span style={{ color: 'var(--text)' }}>{t('breadCart')}</span>
       </nav>
 
+      <h1 className="cart-items__title">{t('title', { count: count() })}</h1>
+
       <div className="cart-page">
         {/* Items */}
         <div>
-          <h1 className="cart-items__title">{t('title', { count: count() })}</h1>
-
           {items.map((item) => (
             <div key={item.id} className="cart-item">
               <div className="cart-item__img">
@@ -86,37 +86,39 @@ export default function CartPage() {
 
               <div className="cart-item__info">
                 <div className="cart-item__series">{item.seriesName}</div>
-                <Link href={`/shop/${item.slug}`} className="cart-item__name">
-                  {item.name}
-                </Link>
-                <div className="cart-item__category">{item.categoryName}</div>
 
-                <div className="cart-item__actions">
-                  <div className="qty" style={{ height: 36 }}>
-                    <button
-                      className="qty__btn"
-                      style={{ height: 36, width: 36 }}
-                      onClick={() => updateQty(item.id, item.quantity - 1)}
-                    >
-                      −
-                    </button>
-                    <span className="qty__val" style={{ lineHeight: '36px' }}>{item.quantity}</span>
-                    <button
-                      className="qty__btn"
-                      style={{ height: 36, width: 36 }}
-                      onClick={() => updateQty(item.id, item.quantity + 1)}
-                    >
-                      +
+                <div className="cart-item__main-row">
+                  <Link href={`/shop/${item.slug}`} className="cart-item__name">
+                    {item.name}
+                  </Link>
+                  <div className="cart-item__actions">
+                    <div className="qty" style={{ height: 34 }}>
+                      <button
+                        className="qty__btn"
+                        style={{ height: 34, width: 34 }}
+                        onClick={() => updateQty(item.id, item.quantity - 1)}
+                      >
+                        −
+                      </button>
+                      <span className="qty__val" style={{ lineHeight: '34px' }}>{item.quantity}</span>
+                      <button
+                        className="qty__btn"
+                        style={{ height: 34, width: 34 }}
+                        onClick={() => updateQty(item.id, item.quantity + 1)}
+                      >
+                        +
+                      </button>
+                    </div>
+                    <button className="btn-remove" onClick={() => removeItem(item.id)}>
+                      {t('remove')}
                     </button>
                   </div>
-                  <button className="btn-remove" onClick={() => removeItem(item.id)}>
-                    {t('remove')}
-                  </button>
+                  <div className="cart-item__price">
+                    {item.price * item.quantity} €
+                  </div>
                 </div>
-              </div>
 
-              <div className="cart-item__price">
-                {item.price * item.quantity} €
+                <div className="cart-item__category">{item.categoryName}</div>
               </div>
             </div>
           ))}
