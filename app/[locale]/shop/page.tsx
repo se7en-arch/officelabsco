@@ -22,6 +22,7 @@ import ShopSidebar from '@/components/ShopSidebar';
 import SortSelect from '@/components/SortSelect';
 import AnimatedGrid from '@/components/AnimatedGrid';
 import CategoryDropdown from '@/components/CategoryDropdown';
+import ShopScrollReset from '@/components/ShopScrollReset';
 
 const PER_PAGE = 6;
 
@@ -147,7 +148,10 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
             />
           </Suspense>
 
-          <div>
+          <div id="shop-products">
+            <Suspense>
+              <ShopScrollReset />
+            </Suspense>
             <Suspense>
               <CategoryDropdown series={allSeries} categories={allCategories} />
             </Suspense>
