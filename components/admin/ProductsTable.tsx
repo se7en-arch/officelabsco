@@ -12,12 +12,21 @@ type Product = {
   slug: string;
   sku: string | null;
   image: string;
+  images: string | null;
   price: number;
   originalPrice: number | null;
   stock: number;
   badge: string | null;
   featured: boolean;
   archived: boolean;
+  description: string;
+  descriptionEn: string | null;
+  dimensions: string | null;
+  weight: string | null;
+  colors: string | null;
+  colorsEn: string | null;
+  material: string | null;
+  materialEn: string | null;
   series: SeriesItem;
   category: CategoryItem;
 };
@@ -161,7 +170,14 @@ export default function ProductsTable({
         name: `${p.name} Копие`,
         slug: `${p.slug}-kopie-${Date.now()}`,
         sku: null,
-        description: '',
+        description: p.description,
+        descriptionEn: p.descriptionEn,
+        dimensions: p.dimensions,
+        weight: p.weight,
+        colors: p.colors,
+        colorsEn: p.colorsEn,
+        material: p.material,
+        materialEn: p.materialEn,
         price: p.price,
         originalPrice: p.originalPrice,
         stock: p.stock,
@@ -169,7 +185,7 @@ export default function ProductsTable({
         featured: false,
         archived: false,
         image: p.image,
-        images: '[]',
+        images: p.images ?? '[]',
         seriesId: p.series.id,
         categoryId: p.category.id,
       }),
@@ -304,6 +320,7 @@ export default function ProductsTable({
 
                 <td>
                   <div className="admin-product-name">
+                    {p.featured && <span title="Препоръчан" style={{ color: '#f59e0b', marginRight: 4 }}>★</span>}
                     {p.name}
                     {p.archived && <span className="admin-archived-badge">Архивиран</span>}
                   </div>
@@ -389,6 +406,18 @@ export default function ProductsTable({
                       ? <span className="admin-saving-spinner" />
                       : <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                     }
+                  </button>
+
+                  {/* Featured toggle */}
+                  <button type="button"
+                    className="admin-row-btn"
+                    title={p.featured ? 'Премахни от препоръчани' : 'Добави в препоръчани'}
+                    disabled={savingId === p.id || p.archived}
+                    onClick={() => save(p.id, { featured: !p.featured })}
+                    style={{ color: p.featured ? '#f59e0b' : undefined }}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill={p.featured ? '#f59e0b' : 'none'} stroke={p.featured ? '#f59e0b' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
                   </button>
 
                   {/* Archive toggle */}
