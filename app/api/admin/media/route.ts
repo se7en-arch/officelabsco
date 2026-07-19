@@ -25,18 +25,20 @@ export async function GET() {
   const { blobs } = await list();
   const blobImages = blobs
     .filter(b => /\.(jpe?g|png|webp|gif|svg)$/i.test(b.pathname))
-    .map(b => ({ name: b.pathname, path: b.url, url: b.url }));
+    .map(b => ({ name: b.pathname, path: b.url, url: b.url, deleteUrl: b.url }));
 
-  return NextResponse.json([...blobImages, ...staticImages]);
+  const staticWithDelete = staticImages.map(f => ({ ...f, deleteUrl: null }));
+
+  return NextResponse.json([...blobImages, ...staticWithDelete]);
 }
 
 export async function DELETE(req: NextRequest) {
   const authenticated = await isAdminAuthenticated();
   if (!authenticated) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { name } = await req.json() as { name: string };
-  if (!name) return NextResponse.json({ error: 'Invalid' }, { status: 400 });
+  const { deleteUrl } = await req.json() as { deleteUrl: string };
+  if (!deleteUrl) return NextResponse.json({ error: 'Invalid' }, { status: 400 });
 
-  await del(name);
+  await del(deleteUrl);
   return NextResponse.json({ ok: true });
 }

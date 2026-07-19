@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 
-type MediaFile = { name: string; path: string; url: string };
+type MediaFile = { name: string; path: string; url: string; deleteUrl: string | null };
 
 export default function MediaLibrary() {
   const [files, setFiles] = useState<MediaFile[]>([]);
@@ -34,14 +34,14 @@ export default function MediaLibrary() {
     if (fileRef.current) fileRef.current.value = '';
   }
 
-  async function handleDelete(name: string) {
-    setDeletingName(name);
-    await fetch('/api/admin/media', {
+  async function handleDelete(file: MediaFile) {
+    setDeletingName(file.name);
+    const res = await fetch('/api/admin/media', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ deleteUrl: file.deleteUrl }),
     });
-    setFiles(prev => prev.filter(f => f.name !== name));
+    if (res.ok) setFiles(prev => prev.filter(f => f.name !== file.name));
     setDeletingName(null);
     setConfirmDelete(null);
   }
@@ -91,16 +91,16 @@ export default function MediaLibrary() {
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                     )}
                   </button>
-                  {confirmDelete === f.name ? (
+                  {f.deleteUrl && (confirmDelete === f.name ? (
                     <span className="admin-confirm-delete">
-                      <button className="admin-confirm-yes" disabled={deletingName === f.name} onClick={() => handleDelete(f.name)}>Да</button>
+                      <button className="admin-confirm-yes" disabled={deletingName === f.name} onClick={() => handleDelete(f)}>Да</button>
                       <button className="admin-confirm-no" onClick={() => setConfirmDelete(null)}>Не</button>
                     </span>
                   ) : (
                     <button className="admin-row-btn admin-row-btn--delete" title="Изтрий" onClick={() => setConfirmDelete(f.name)}>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
                     </button>
-                  )}
+                  ))}
                 </div>
               </div>
             ))}
