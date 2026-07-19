@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { sendOrderNotification } from '@/lib/mailer';
+import { sendOrderNotification, sendCustomerConfirmation } from '@/lib/mailer';
 
 const RATE_LIMIT = 5;
 const WINDOW_MS = 60_000;
@@ -177,6 +177,7 @@ export async function POST(req: NextRequest) {
     }
 
     await sendOrderNotification(order).catch(() => {});
+    await sendCustomerConfirmation(order).catch(() => {});
   });
 
   return NextResponse.json({ ok: true, orderId: order.id }, { status: 201 });
