@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
+import OrderSearchInput from '@/components/admin/OrderSearchInput';
 
 const STATUS_LABELS: Record<string, string> = {
   pending: 'Нова',
@@ -16,18 +18,37 @@ const STATUS_PILL: Record<string, { bg: string; color: string }> = {
   cancelled:  { bg: '#fee2e2', color: '#991b1b' },
 };
 
+function buildWhere(filterStatus?: string, q?: string) {
+  const statusClause = filterStatus ? { status: filterStatus } : undefined;
+  const searchClause = q?.trim() ? {
+    OR: [
+      { firstName: { contains: q } },
+      { lastName:  { contains: q } },
+      { email:     { contains: q } },
+      { phone:     { contains: q } },
+      { company:   { contains: q } },
+    ],
+  } : undefined;
+
+  if (statusClause && searchClause) return { AND: [statusClause, searchClause] };
+  return statusClause ?? searchClause ?? undefined;
+}
+
 export default async function OrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; page?: string; q?: string }>;
 }) {
-  const { status: filterStatus, page: pageParam } = await searchParams;
+  const { status: filterStatus, page: pageParam, q } = await searchParams;
   const page = Math.max(1, parseInt(pageParam ?? '1'));
   const perPage = 25;
+  const searchQuery = q?.trim() || undefined;
 
-  const [orders, counts, totalRevenue] = await Promise.all([
+  const where = buildWhere(filterStatus, searchQuery);
+
+  const [orders, counts, totalRevenue, filteredCount] = await Promise.all([
     prisma.order.findMany({
-      where: filterStatus ? { status: filterStatus } : undefined,
+      where,
       orderBy: { createdAt: 'desc' },
       take: perPage,
       skip: (page - 1) * perPage,
@@ -35,12 +56,12 @@ export default async function OrdersPage({
     }),
     prisma.order.groupBy({ by: ['status'], _count: { _all: true } }),
     prisma.order.aggregate({ _sum: { total: true } }),
+    prisma.order.count({ where }),
   ]);
 
   const countMap: Record<string, number> = {};
   for (const c of counts) countMap[c.status] = c._count._all;
   const totalAll = Object.values(countMap).reduce((s, n) => s + n, 0);
-  const filteredCount = filterStatus ? (countMap[filterStatus] ?? 0) : totalAll;
 
   const totalOrderRevenue = totalRevenue._sum.total ?? 0;
 
@@ -63,14 +84,19 @@ export default async function OrdersPage({
             {totalAll} поръчки · €{totalOrderRevenue.toFixed(2)} общ приход
           </p>
         </div>
-        <a href={`/api/admin/orders/export${filterStatus ? `?status=${filterStatus}` : ''}`} className="admin-action-btn admin-action-btn--secondary">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Изнеси CSV
-        </a>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <Suspense>
+            <OrderSearchInput defaultValue={searchQuery} />
+          </Suspense>
+          <a href={`/api/admin/orders/export${filterStatus ? `?status=${filterStatus}` : ''}`} className="admin-action-btn admin-action-btn--secondary">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Изнеси CSV
+          </a>
+        </div>
       </div>
 
       <div className="admin-card">
@@ -79,7 +105,10 @@ export default async function OrdersPage({
         <div className="orders-tabs">
           {tabs.map(tab => {
             const isActive = (filterStatus ?? '') === tab.key;
-            const href = tab.key ? `/adminpanel/orders?status=${tab.key}` : '/adminpanel/orders';
+            const params = new URLSearchParams();
+            if (tab.key) params.set('status', tab.key);
+            if (searchQuery) params.set('q', searchQuery);
+            const href = params.size ? `/adminpanel/orders?${params.toString()}` : '/adminpanel/orders';
             return (
               <Link
                 key={tab.key}
@@ -95,9 +124,18 @@ export default async function OrdersPage({
           })}
         </div>
 
+        {/* Search result hint */}
+        {searchQuery && (
+          <div style={{ padding: '10px 20px', fontSize: 13, color: 'var(--muted)', borderBottom: '1px solid var(--line)' }}>
+            {filteredCount === 0
+              ? `Няма резултати за „${searchQuery}"`
+              : `${filteredCount} резултата за „${searchQuery}"`}
+          </div>
+        )}
+
         {/* Table */}
         {orders.length === 0 ? (
-          <div className="admin-empty">Няма поръчки за избрания статус</div>
+          <div className="admin-empty">Няма поръчки</div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table className="admin-table">
@@ -183,9 +221,13 @@ export default async function OrdersPage({
           <div className="orders-pagination">
             {page > 1 && (
               <Link
-                href={filterStatus
-                  ? `/adminpanel/orders?status=${filterStatus}&page=${page - 1}`
-                  : `/adminpanel/orders?page=${page - 1}`}
+                href={(() => {
+                  const params = new URLSearchParams();
+                  if (filterStatus) params.set('status', filterStatus);
+                  if (searchQuery) params.set('q', searchQuery);
+                  params.set('page', String(page - 1));
+                  return `/adminpanel/orders?${params.toString()}`;
+                })()}
                 className="orders-pag-btn"
               >
                 ← Предишна
@@ -196,9 +238,13 @@ export default async function OrdersPage({
             </span>
             {page < Math.ceil(filteredCount / perPage) && (
               <Link
-                href={filterStatus
-                  ? `/adminpanel/orders?status=${filterStatus}&page=${page + 1}`
-                  : `/adminpanel/orders?page=${page + 1}`}
+                href={(() => {
+                  const params = new URLSearchParams();
+                  if (filterStatus) params.set('status', filterStatus);
+                  if (searchQuery) params.set('q', searchQuery);
+                  params.set('page', String(page + 1));
+                  return `/adminpanel/orders?${params.toString()}`;
+                })()}
                 className="orders-pag-btn"
               >
                 Следваща →
