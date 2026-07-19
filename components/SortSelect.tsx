@@ -19,6 +19,7 @@ export default function SortSelect({ currentSort }: { currentSort?: string }) {
       className="sort-select"
       value={currentSort ?? 'newest'}
       onChange={handleChange}
+      aria-label={t('sortLabel')}
     >
       <option value="newest">{t('sortNewest')}</option>
       <option value="price-asc">{t('sortPriceAsc')}</option>

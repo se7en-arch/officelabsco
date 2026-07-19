@@ -185,7 +185,8 @@
     "ctaEmail": "Your email",
     "ctaSend": "Send",
     "ctaRightTitle": ".office – Home furniture",
-    "ctaRightText": "We'll understand your needs, find the right approach and create the furniture solution made just for you."
+    "ctaRightText": "We'll understand your needs, find the right approach and create the furniture solution made just for you.",
+    "sortLabel": "Sort by"
   },
   "about": {
     "heroEyebrow": "OUR STORY",

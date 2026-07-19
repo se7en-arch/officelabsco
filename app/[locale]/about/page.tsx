@@ -25,7 +25,7 @@ export default async function AboutPage() {
   ];
 
   return (
-    <>
+    <main>
       {/* ── HERO ── */}
       <section className="about-hero">
         <div className="about-hero__bg-img" />
@@ -161,6 +161,6 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }

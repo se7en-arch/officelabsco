@@ -215,7 +215,7 @@ export default function ContactPage() {
         }
       `}</style>
 
-      <div className="co-page">
+      <main className="co-page">
         {/* HERO */}
         <div className="co-hero">
           <p className="co-hero__eye">OfficeLabs Co</p>
@@ -335,7 +335,7 @@ export default function ContactPage() {
             )}
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }

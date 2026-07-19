@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Link } from '@/i18n/navigation';
 import { getTranslations, getLocale } from 'next-intl/server';
+import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Магазин | OfficeLabs Co — Премиум офис мебели',
@@ -40,11 +43,17 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   const page = Math.max(1, parseInt(sp.page ?? '1', 10));
   const skip = (page - 1) * PER_PAGE;
 
-  const [allSeries, allCategories, totalCount] = await Promise.all([
-    prisma.series.findMany({ orderBy: { id: 'asc' } }),
-    prisma.category.findMany({ orderBy: { id: 'asc' } }),
-    prisma.product.count({ where: { archived: false } }),
-  ]);
+  const getStaticShopData = unstable_cache(
+    async () => Promise.all([
+      prisma.series.findMany({ orderBy: { id: 'asc' } }),
+      prisma.category.findMany({ orderBy: { id: 'asc' } }),
+      prisma.product.count({ where: { archived: false } }),
+    ]),
+    ['shop-static'],
+    { revalidate: 60 },
+  );
+
+  const [allSeries, allCategories, totalCount] = await getStaticShopData();
 
   const where: Record<string, unknown> = { archived: false };
   if (sp.series) where.series = { slug: sp.series };
@@ -96,15 +105,21 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     return pages;
   }
 
-  const recommended = await prisma.product.findMany({
-    where: { featured: true, archived: false },
-    take: 4,
-    include: {
-      series: { select: { name: true, slug: true } },
-      category: { select: { name: true, nameEn: true, slug: true } },
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+  const getFeatured = unstable_cache(
+    async () => prisma.product.findMany({
+      where: { featured: true, archived: false },
+      take: 4,
+      include: {
+        series: { select: { name: true, slug: true } },
+        category: { select: { name: true, nameEn: true, slug: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+    ['shop-featured'],
+    { revalidate: 60 },
+  );
+
+  const recommended = await getFeatured();
 
   return (
     <main style={{ background: '#F5F5F5' }}>

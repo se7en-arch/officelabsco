@@ -327,7 +327,7 @@ export default function FaqPage() {
         }
       `}</style>
 
-      <div className="faq-page">
+      <main className="faq-page">
         <div className="faq-hero">
           <p className="faq-hero__eye">Помощен център</p>
           <h1>Често задавани въпроси</h1>
@@ -386,7 +386,7 @@ export default function FaqPage() {
             </Link>
           </div>
         </div>
-      </div>
+      </main>
     </>
   );
 }

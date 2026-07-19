@@ -35,7 +35,7 @@ export default async function Footer() {
         </div>
 
         <div className="ftr__col">
-          <h4>{t('aboutUs')}</h4>
+          <p className="ftr__col-title">{t('aboutUs')}</p>
           <ul>
             <li><Link href="/about">{t('aboutUs')}</Link></li>
             <li><Link href="/contact">{t('contacts')}</Link></li>
@@ -43,7 +43,7 @@ export default async function Footer() {
         </div>
 
         <div className="ftr__col">
-          <h4>{t('support')}</h4>
+          <p className="ftr__col-title">{t('support')}</p>
           <ul>
             <li><Link href="/terms#delivery">{t('delivery')}</Link></li>
             <li><Link href="/terms#returns">{t('returns')}</Link></li>
@@ -52,7 +52,7 @@ export default async function Footer() {
         </div>
 
         <div className="ftr__social">
-          <h4>{t('social')}</h4>
+          <p className="ftr__col-title">{t('social')}</p>
           <div className="ftr__social-icons">
             <Link href="#" className="ftr__soc-btn" aria-label="Facebook"><IconFacebook /></Link>
             <Link href="#" className="ftr__soc-btn" aria-label="LinkedIn"><IconLinkedIn /></Link>
