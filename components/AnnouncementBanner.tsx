@@ -8,11 +8,13 @@ const ITEMS = [
 ];
 
 export default function AnnouncementBanner() {
-  const [visible, setVisible] = useState(false);
+  // Start visible (matches SSR) — hide after hydration if already dismissed.
+  // This avoids CLS: banner is in initial HTML, not injected after mount.
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const dismissed = sessionStorage.getItem('banner_dismissed');
-    if (!dismissed) setVisible(true);
+    if (dismissed) setVisible(false);
   }, []);
 
   function dismiss() {
@@ -43,7 +45,7 @@ export default function AnnouncementBanner() {
           fontWeight: 800,
           letterSpacing: '.1em',
           textTransform: 'uppercase',
-          color: 'rgba(255,200,200,.7)',
+          color: 'rgba(255,255,255,.9)',
           whiteSpace: 'nowrap',
           paddingTop: 1,
           flexShrink: 0,
@@ -58,7 +60,7 @@ export default function AnnouncementBanner() {
               alignItems: 'center',
               gap: 6,
               fontSize: 12.5,
-              color: 'rgba(255,220,220,.85)',
+              color: 'rgba(255,255,255,.88)',
               fontWeight: 500,
             }}>
               <span>{item.icon}</span>
@@ -79,14 +81,14 @@ export default function AnnouncementBanner() {
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          color: 'rgba(255,200,200,.5)',
+          color: 'rgba(255,255,255,.5)',
           padding: '6px',
           lineHeight: 1,
           fontSize: 18,
           transition: 'color .15s',
         }}
-        onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,200,200,.9)')}
-        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,200,200,.5)')}
+        onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,.9)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,.5)')}
       >
         ×
       </button>
