@@ -32,7 +32,7 @@ export async function GET() {
     .map(row => row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
     .join('\n');
 
-  return new NextResponse(csv, {
+  return new NextResponse('﻿' + csv, {
     headers: {
       'Content-Type': 'text/csv; charset=utf-8',
       'Content-Disposition': `attachment; filename="orders-${Date.now()}.csv"`,
