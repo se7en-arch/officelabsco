@@ -7,7 +7,7 @@ type ReviewItem = {
   rating: number;
   text: string;
   verified: boolean;
-  createdAt: string;
+  createdAt: Date | string;
   product: { id: number; name: string; slug: string };
 };
 
