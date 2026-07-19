@@ -5,43 +5,45 @@ import { useState } from 'react';
 import { useCart } from '@/lib/cart-store';
 import { useTranslations } from 'next-intl';
 
-const VALID_PROMOS: Record<string, number> = {
-  PROMO5: 5,
-  PROMO10: 10,
-};
-
-function parsePromo(code: string): number {
-  return VALID_PROMOS[code.trim().toUpperCase()] ?? 0;
-}
-
 export default function CartPage() {
   const t = useTranslations('cart');
   const { items, removeItem, updateQty, total, count } = useCart();
   const [promoInput, setPromoInput] = useState('');
   const [appliedPromo, setAppliedPromo] = useState('');
+  const [discount, setDiscount] = useState(0);
   const [promoError, setPromoError] = useState('');
+  const [promoLoading, setPromoLoading] = useState(false);
 
-  const discount = appliedPromo ? parsePromo(appliedPromo) : 0;
   const rawTotal = total();
   const discountAmount = parseFloat(((rawTotal * discount) / 100).toFixed(2));
   const finalTotal = parseFloat((rawTotal - discountAmount).toFixed(2));
 
-  function applyPromo() {
-    const pct = parsePromo(promoInput);
+  async function applyPromo() {
     if (!promoInput.trim()) {
       setPromoError(t('promoEnter'));
       return;
     }
-    if (pct === 0) {
+    setPromoLoading(true);
+    setPromoError('');
+    const res = await fetch('/api/validate-promo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: promoInput.trim() }),
+    });
+    setPromoLoading(false);
+    if (!res.ok) {
       setPromoError(t('promoInvalid'));
       return;
     }
+    const { discount: pct } = await res.json();
     setAppliedPromo(promoInput.trim().toUpperCase());
+    setDiscount(pct);
     setPromoError('');
   }
 
   function removePromo() {
     setAppliedPromo('');
+    setDiscount(0);
     setPromoInput('');
     setPromoError('');
   }
@@ -143,8 +145,11 @@ export default function CartPage() {
                   value={promoInput}
                   onChange={(e) => { setPromoInput(e.target.value); setPromoError(''); }}
                   onKeyDown={(e) => e.key === 'Enter' && applyPromo()}
+                  disabled={promoLoading}
                 />
-                <button className="promo-btn" onClick={applyPromo}>{t('promoApply')}</button>
+                <button className="promo-btn" onClick={applyPromo} disabled={promoLoading}>
+                  {promoLoading ? '...' : t('promoApply')}
+                </button>
               </div>
             )}
             {promoError && <p className="promo-error">{promoError}</p>}

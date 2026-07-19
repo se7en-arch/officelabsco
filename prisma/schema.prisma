@@ -119,6 +119,14 @@ model OrderItem {
   @@index([productId])
 }
 
+model PromoCode {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  discount  Int
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
 model SiteSettings {
   key   String @id
   value String
