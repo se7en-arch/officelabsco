@@ -1114,6 +1114,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 /* ── CHECKOUT ── */
 .co-steps {
   display: flex; align-items: center;
+  max-width: 640px; margin: 0 auto;
   padding: 28px 0 36px; gap: 0;
 }
 .co-step {
@@ -1139,11 +1140,12 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 }
 
 .co-layout {
-  max-width: 680px;
+  max-width: 640px;
+  margin: 0 auto;
   padding-bottom: 80px;
 }
 
-.co-section { background: var(--surface); border-radius: var(--r-lg); padding: 32px; border: 1px solid var(--line); margin-bottom: 16px; }
+.co-section { background: #fff; border-radius: var(--r-lg); padding: 36px; border: 1px solid var(--line); box-shadow: 0 2px 20px rgba(0,0,0,.06); margin-bottom: 16px; }
 .co-section__title { font-size: 17px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 24px; }
 
 .co-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
@@ -1267,7 +1269,8 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 .checkout-success__sub { font-size: 15px; color: var(--text-2); line-height: 1.7; }
 
 @media (max-width: 900px) {
-  .co-layout { max-width: 100%; }
+  .co-layout { max-width: 100%; margin: 0; }
+  .co-steps { max-width: 100%; margin: 0; }
 }
 @media (max-width: 600px) {
   .co-row { grid-template-columns: 1fr; gap: 0; }
