@@ -9,7 +9,7 @@ import ProductCard from '@/components/ProductCard';
 import ProductGallery from '@/components/ProductGallery';
 import ProductTabs from '@/components/ProductTabs';
 
-export const revalidate = 3600;
+export const revalidate = 120;
 
 export async function generateMetadata({
   params,
