@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
-import Image from 'next/image';
 import { useCart } from '@/lib/cart-store';
 import { useTranslations } from 'next-intl';
 import BuyNowPayLater from '@/components/BuyNowPayLater';
@@ -523,30 +522,6 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* ── ORDER SUMMARY ── */}
-        <div className="co-summary">
-          <div className="co-summary__title">{t('summaryTitle')}</div>
-          {items.map((item) => (
-            <div key={item.id} className="co-summary__item">
-              <div className="co-summary__img">
-                <Image src={item.image} alt={item.name} width={52} height={52} style={{ objectFit: 'contain', padding: 4 }} />
-              </div>
-              <div className="co-summary__info">
-                <span className="co-summary__name">{item.name}</span>
-                <span className="co-summary__qty">× {item.quantity}</span>
-              </div>
-              <span className="co-summary__price">{(item.price * item.quantity).toFixed(2)} €</span>
-            </div>
-          ))}
-          <div className="co-summary__divider" />
-          <div className="co-summary__row">
-            <span>{t('summaryDelivery')}</span><span>{t('summaryDeliveryFree')}</span>
-          </div>
-          <div className="co-summary__row co-summary__row--total">
-            <span>{t('summaryTotal')}</span><strong>{rawTotal.toFixed(2)} €</strong>
-          </div>
-          {step < 2 && <BuyNowPayLater key={step} price={rawTotal} />}
-        </div>
       </div>
     </div>
   );
