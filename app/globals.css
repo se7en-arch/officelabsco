@@ -29,7 +29,6 @@ img { display: block; max-width: 100%; }
   position: sticky; top: 0; z-index: 100;
   background: rgba(255,255,255,.97);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(0,0,0,.07);
 }
 .hdr__in {
@@ -1405,7 +1404,6 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 .about-belief {
   background: rgba(255,255,255,.06);
   backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255,255,255,.10);
   border-radius: var(--r-lg);
   padding: 40px 36px;
@@ -1569,7 +1567,6 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
   background: rgba(255,255,255,.72);
   border: 1px solid rgba(0,0,0,.09);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 .about-light .about-belief:hover {
   background: rgba(255,255,255,.92);
