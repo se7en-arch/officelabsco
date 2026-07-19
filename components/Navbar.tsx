@@ -170,9 +170,6 @@ export default function Navbar() {
             <Link href="/about" className={`mobile-menu__link${pathname === '/about' ? ' active' : ''}`}>{t('about')}</Link>
             <Link href="/shop" className={`mobile-menu__link${pathname.startsWith('/shop') ? ' active' : ''}`}>{t('shop')}</Link>
           </nav>
-          <button className="lang-btn lang-btn--mobile" onClick={switchLocale}>
-            {t('lang')}
-          </button>
         </div>
       )}
     </>
