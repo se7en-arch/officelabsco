@@ -50,6 +50,10 @@ model Product {
   featured      Boolean     @default(false)
   archived      Boolean     @default(false)
   stock         Int         @default(10)
+  costPrice     Float?
+  has3dModel    Boolean     @default(false)
+  hasDrawing    Boolean     @default(false)
+  hasVisualization Boolean  @default(false)
   seriesId      Int
   categoryId    Int
   series        Series      @relation(fields: [seriesId], references: [id])
