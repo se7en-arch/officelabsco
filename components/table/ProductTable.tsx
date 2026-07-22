@@ -76,7 +76,7 @@ export default function ProductTable({ products: initial }: { products: Product[
         p.category.toLowerCase().includes(q)
       );
     }
-    return list;
+    return [...list].sort((a, b) => a.category.localeCompare(b.category, 'bg'));
   }, [products, search, filterSeries]);
 
   async function patchProduct(id: number, field: string, value: unknown) {
@@ -323,8 +323,8 @@ export default function ProductTable({ products: initial }: { products: Product[
                 <th style={{ ...TH, width: 105 }}>Серия</th>
                 <th style={{ ...TH, width: 115 }}>Категория</th>
                 <th style={{ ...TH, width: 220 }}>Описание</th>
-                <th style={{ ...TH, width: 115 }}>Цена към мен</th>
-                <th style={{ ...TH, width: 115 }}>Клиент цена</th>
+                <th style={{ ...TH, width: 115 }}>Цена към мен (€)</th>
+                <th style={{ ...TH, width: 115 }}>Клиент цена (€)</th>
                 <th style={{ ...TH, width: 95 }}>Наличност</th>
                 <th style={{ ...TH, width: 52, textAlign: 'center' }}>3Д</th>
                 <th style={{ ...TH, width: 68, textAlign: 'center' }}>Чертеж</th>
@@ -397,7 +397,7 @@ export default function ProductTable({ products: initial }: { products: Product[
                     {/* Cost price */}
                     <td style={{ ...TD }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <span style={{ fontSize: 11, color: '#94a3b8', flexShrink: 0 }}>лв.</span>
+                        <span style={{ fontSize: 11, color: '#94a3b8', flexShrink: 0 }}>€</span>
                         {renderCell(p, 'costPrice', 'number', 75)}
                       </div>
                     </td>
@@ -405,7 +405,7 @@ export default function ProductTable({ products: initial }: { products: Product[
                     {/* Customer price */}
                     <td style={{ ...TD }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <span style={{ fontSize: 11, color: '#94a3b8', flexShrink: 0 }}>лв.</span>
+                        <span style={{ fontSize: 11, color: '#94a3b8', flexShrink: 0 }}>€</span>
                         {renderCell(p, 'price', 'number', 75)}
                       </div>
                     </td>
