@@ -308,7 +308,7 @@ export default function ProductTable({ products: initial }: { products: Product[
       {/* Table */}
       <div style={{ padding: '0 32px 48px', overflowX: 'auto' }}>
         <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,.06)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1150 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1150, tableLayout: 'fixed' }}>
             <thead>
               <tr>
                 <th style={{ ...TH, width: 44, padding: '10px 0 10px 16px' }}>
@@ -499,6 +499,7 @@ export default function ProductTable({ products: initial }: { products: Product[
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         *, *::before, *::after { box-sizing: border-box; }
+        html { scrollbar-gutter: stable; }
         input[type=number]::-webkit-inner-spin-button { opacity: .6; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
