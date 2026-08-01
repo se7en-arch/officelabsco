@@ -17,31 +17,6 @@ type Product = {
   category: string;
 };
 
-const SERIES_COLORS: Record<string, { bg: string; dot: string; text: string }> = {
-  ASTRA: { bg: '#eff6ff', dot: '#3b82f6', text: '#1d4ed8' },
-  TERRA: { bg: '#f0fdf4', dot: '#22c55e', text: '#15803d' },
-  NOVA:  { bg: '#fffbeb', dot: '#f59e0b', text: '#b45309' },
-  LOFT:  { bg: '#f8fafc', dot: '#64748b', text: '#334155' },
-};
-
-const CAT_COLORS: Record<string, { bg: string; text: string }> = {
-  'Бюра':        { bg: '#dbeafe', text: '#1e40af' },
-  'Маси':        { bg: '#dcfce7', text: '#166534' },
-  'Столове':     { bg: '#fef3c7', text: '#92400e' },
-  'Шкафове':     { bg: '#f3e8ff', text: '#6b21a8' },
-  'Контейнери':  { bg: '#fce7f3', text: '#9d174d' },
-  'Разделители': { bg: '#ecfdf5', text: '#065f46' },
-  'Библиотеки':  { bg: '#fff7ed', text: '#9a3412' },
-  'Тапицерия':   { bg: '#fef2f2', text: '#991b1b' },
-};
-
-function getSeriesStyle(series: string) {
-  return SERIES_COLORS[series] ?? { bg: '#f8fafc', dot: '#6b7280', text: '#334155' };
-}
-
-function getCatStyle(cat: string) {
-  return CAT_COLORS[cat] ?? { bg: '#f3f4f6', text: '#374151' };
-}
 
 function getStockBadge(stock: number) {
   if (stock > 5) return { bg: '#dcfce7', color: '#15803d', label: `${stock} бр.` };
@@ -247,18 +222,15 @@ export default function ProductTable({ products: initial }: { products: Product[
           <div style={{ display: 'flex', background: '#e2e8f0', borderRadius: 8, padding: 3, gap: 2 }}>
             {['all', ...allSeries].map(s => {
               const active = filterSeries === s;
-              const sc = s !== 'all' ? getSeriesStyle(s) : null;
               return (
                 <button key={s} onClick={() => setFilterSeries(s)} style={{
                   padding: '5px 14px', border: 'none', borderRadius: 6, fontSize: 12,
                   fontWeight: 600, cursor: 'pointer',
                   background: active ? '#fff' : 'transparent',
-                  color: active ? (sc?.text ?? '#0f172a') : '#64748b',
+                  color: active ? '#0f172a' : '#64748b',
                   boxShadow: active ? '0 1px 3px rgba(0,0,0,.1)' : 'none',
                   transition: 'all .12s',
-                  display: 'flex', alignItems: 'center', gap: 6,
                 }}>
-                  {sc && <span style={{ width: 7, height: 7, borderRadius: '50%', background: sc.dot }} />}
                   {s === 'all' ? 'Всички' : s}
                 </button>
               );
@@ -334,8 +306,6 @@ export default function ProductTable({ products: initial }: { products: Product[
             </thead>
             <tbody>
               {filtered.map((p, idx) => {
-                const ss = getSeriesStyle(p.series);
-                const cs = getCatStyle(p.category);
                 const sb = getStockBadge(p.stock);
                 const rs = rowState[p.id] ?? 'idle';
                 const isSel = selected.has(p.id);
@@ -369,26 +339,14 @@ export default function ProductTable({ products: initial }: { products: Product[
                     {/* Name */}
                     <td style={{ ...TD }}>{renderCell(p, 'name', 'text', 190)}</td>
 
-                    {/* Series badge */}
+                    {/* Series */}
                     <td style={{ ...TD }}>
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 6,
-                        background: ss.bg, padding: '3px 10px', borderRadius: 20,
-                        fontSize: 12, fontWeight: 600, color: ss.text, whiteSpace: 'nowrap',
-                      }}>
-                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: ss.dot }} />
-                        {p.series}
-                      </span>
+                      <span style={{ fontSize: 13, color: '#374151', fontWeight: 500 }}>{p.series}</span>
                     </td>
 
-                    {/* Category badge */}
+                    {/* Category */}
                     <td style={{ ...TD }}>
-                      <span style={{
-                        display: 'inline-block', background: cs.bg, color: cs.text,
-                        padding: '3px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap',
-                      }}>
-                        {p.category}
-                      </span>
+                      <span style={{ fontSize: 13, color: '#374151' }}>{p.category}</span>
                     </td>
 
                     {/* Description */}
