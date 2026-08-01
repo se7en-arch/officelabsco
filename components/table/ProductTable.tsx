@@ -281,18 +281,24 @@ export default function ProductTable({ products: initial }: { products: Product[
       {(() => {
         const total = products.length;
         const statsData = [
-          { label: 'Цена към мен',  accent: '#007AFF', count: products.filter(p => p.costPrice !== null && (p.costPrice as number) > 0).length },
-          { label: 'Клиент цена',   accent: '#5856D6', count: products.filter(p => p.price > 0).length },
-          { label: 'Наличност',     accent: '#34C759', count: products.filter(p => p.stock > 0).length },
-          { label: '3Д модел',      accent: '#AF52DE', count: products.filter(p => p.has3dModel).length },
-          { label: 'Чертеж',        accent: '#FF9500', count: products.filter(p => p.hasDrawing).length },
-          { label: 'Визуализация',  accent: '#FF2D55', count: products.filter(p => p.hasVisualization).length },
+          { label: 'Цена към мен',  count: products.filter(p => p.costPrice !== null && (p.costPrice as number) > 0).length },
+          { label: 'Клиент цена',   count: products.filter(p => p.price > 0).length },
+          { label: 'Наличност',     count: products.filter(p => p.stock > 0).length },
+          { label: '3Д модел',      count: products.filter(p => p.has3dModel).length },
+          { label: 'Чертеж',        count: products.filter(p => p.hasDrawing).length },
+          { label: 'Визуализация',  count: products.filter(p => p.hasVisualization).length },
         ];
+
+        function accentFromPct(pct: number) {
+          const hue = Math.round(pct * 120); // 0 = red, 120 = green
+          return `hsl(${hue}, 88%, 42%)`;
+        }
 
         return (
           <div style={{ padding: '0 32px 20px', display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
-            {statsData.map(({ label, accent, count }) => {
+            {statsData.map(({ label, count }) => {
               const pct = total > 0 ? count / total : 0;
+              const accent = accentFromPct(pct);
               const pctStr = `${Math.round(pct * 100)}%`;
 
               return (
