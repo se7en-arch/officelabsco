@@ -290,15 +290,18 @@ export default function ProductTable({ products: initial }: { products: Product[
         ];
 
         function accentFromPct(pct: number) {
-          const hue = Math.round(pct * 120); // 0 = red, 120 = green
-          return `hsl(${hue}, 88%, 42%)`;
+          const hue = Math.round(pct * 120);
+          return {
+            solid: `hsl(${hue}, 88%, 42%)`,
+            light:  `hsl(${hue}, 88%, 65%)`,
+          };
         }
 
         return (
           <div style={{ padding: '0 32px 20px', display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
             {statsData.map(({ label, count }) => {
               const pct = total > 0 ? count / total : 0;
-              const accent = accentFromPct(pct);
+              const { solid, light } = accentFromPct(pct);
               const pctStr = `${Math.round(pct * 100)}%`;
 
               return (
@@ -317,7 +320,7 @@ export default function ProductTable({ products: initial }: { products: Product[
                       {count}
                     </span>
                     <span style={{ fontSize: 13, color: '#8E8E93', fontWeight: 500 }}>/ {total}</span>
-                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: accent }}>
+                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: solid }}>
                       {pctStr}
                     </span>
                   </div>
@@ -327,7 +330,7 @@ export default function ProductTable({ products: initial }: { products: Product[
                     <div style={{
                       height: '100%', borderRadius: 999,
                       width: pctStr,
-                      background: `linear-gradient(90deg, ${accent}cc, ${accent})`,
+                      background: `linear-gradient(90deg, ${light}, ${solid})`,
                       transition: 'width .4s cubic-bezier(.4,0,.2,1)',
                     }} />
                   </div>
