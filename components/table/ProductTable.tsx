@@ -281,81 +281,49 @@ export default function ProductTable({ products: initial }: { products: Product[
       {(() => {
         const total = products.length;
         const statsData = [
-          { label: 'Цена към мен',  count: products.filter(p => p.costPrice !== null && (p.costPrice as number) > 0).length },
-          { label: 'Клиент цена',   count: products.filter(p => p.price > 0).length },
-          { label: 'Наличност',     count: products.filter(p => p.stock > 0).length },
-          { label: '3Д модел',      count: products.filter(p => p.has3dModel).length },
-          { label: 'Чертеж',        count: products.filter(p => p.hasDrawing).length },
-          { label: 'Визуализация',  count: products.filter(p => p.hasVisualization).length },
+          { label: 'Цена към мен',  accent: '#007AFF', count: products.filter(p => p.costPrice !== null && (p.costPrice as number) > 0).length },
+          { label: 'Клиент цена',   accent: '#5856D6', count: products.filter(p => p.price > 0).length },
+          { label: 'Наличност',     accent: '#34C759', count: products.filter(p => p.stock > 0).length },
+          { label: '3Д модел',      accent: '#AF52DE', count: products.filter(p => p.has3dModel).length },
+          { label: 'Чертеж',        accent: '#FF9500', count: products.filter(p => p.hasDrawing).length },
+          { label: 'Визуализация',  accent: '#FF2D55', count: products.filter(p => p.hasVisualization).length },
         ];
 
-        function barColors(pct: number) {
-          if (pct >= 0.75) return { solid: '#166534', hatched: '#22c55e', light: '#dcfce7', text: '#16a34a', label: 'добре' };
-          if (pct >= 0.4)  return { solid: '#92400e', hatched: '#f59e0b', light: '#fef3c7', text: '#d97706', label: 'частично' };
-          return              { solid: '#991b1b', hatched: '#ef4444', light: '#fee2e2', text: '#dc2626', label: 'непопълнено' };
-        }
-
         return (
-          <div style={{ padding: '0 32px 16px', display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
-            {statsData.map(({ label, count }) => {
+          <div style={{ padding: '0 32px 20px', display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
+            {statsData.map(({ label, accent, count }) => {
               const pct = total > 0 ? count / total : 0;
-              const pctPx = `${Math.round(pct * 100)}%`;
-              const c = barColors(pct);
-              const ahead = pct >= 0.5;
+              const pctStr = `${Math.round(pct * 100)}%`;
 
               return (
                 <div key={label} style={{
-                  background: '#fff', borderRadius: 10, padding: '14px 16px',
-                  border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,.05)',
+                  background: '#fff', borderRadius: 16, padding: '16px 18px 14px',
+                  boxShadow: '0 2px 12px rgba(0,0,0,.07)', border: '1px solid rgba(0,0,0,.05)',
                 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: 10 }}>
+                  {/* Label */}
+                  <div style={{ fontSize: 11, fontWeight: 600, color: '#8E8E93', letterSpacing: '.3px', marginBottom: 8 }}>
                     {label}
                   </div>
 
-                  {/* Bar */}
-                  <div style={{ position: 'relative', height: 13, borderRadius: 7, background: c.light, marginBottom: 10 }}>
-                    {/* Solid filled */}
-                    {pct > 0 && (
-                      <div style={{
-                        position: 'absolute', left: 0, top: 0, height: '100%',
-                        width: pctPx, borderRadius: 7,
-                        background: pct < 1
-                          ? `linear-gradient(to right, ${c.solid} 0%, ${c.solid} calc(100% - 18px), transparent calc(100% - 18px))`
-                          : c.solid,
-                      }} />
-                    )}
-                    {/* Hatched tail on solid */}
-                    {pct > 0 && pct < 1 && (
-                      <div style={{
-                        position: 'absolute', top: 0, height: '100%',
-                        width: 20,
-                        left: `calc(${pctPx} - 20px)`,
-                        borderRadius: '0 0 0 0',
-                        background: `repeating-linear-gradient(-45deg, ${c.hatched} 0px, ${c.hatched} 2px, transparent 2px, transparent 5px)`,
-                        opacity: 0.85,
-                      }} />
-                    )}
-                    {/* Circle marker */}
-                    {pct > 0 && pct < 1 && (
-                      <div style={{
-                        position: 'absolute', top: '50%', left: pctPx,
-                        transform: 'translate(-50%, -50%)',
-                        width: 15, height: 15, borderRadius: '50%',
-                        background: '#fff', border: `2.5px solid ${c.hatched}`,
-                        zIndex: 2, flexShrink: 0,
-                      }} />
-                    )}
+                  {/* Number */}
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 12 }}>
+                    <span style={{ fontSize: 30, fontWeight: 700, color: '#1C1C1E', lineHeight: 1, letterSpacing: '-.5px' }}>
+                      {count}
+                    </span>
+                    <span style={{ fontSize: 13, color: '#8E8E93', fontWeight: 500 }}>/ {total}</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: accent }}>
+                      {pctStr}
+                    </span>
                   </div>
 
-                  {/* Count text */}
-                  <div style={{ fontSize: 12, color: '#475569' }}>
-                    Ти си{' '}
-                    <span style={{ color: c.text, fontWeight: 700 }}>
-                      {ahead ? 'напред' : 'назад'}
-                    </span>{' '}
-                    и имаш{' '}
-                    <span style={{ fontWeight: 700 }}>{count} от {total}</span>{' '}
-                    {ahead ? 'попълнени' : 'попълнени'}
+                  {/* Progress bar */}
+                  <div style={{ height: 6, borderRadius: 999, background: '#F2F2F7', overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%', borderRadius: 999,
+                      width: pctStr,
+                      background: `linear-gradient(90deg, ${accent}cc, ${accent})`,
+                      transition: 'width .4s cubic-bezier(.4,0,.2,1)',
+                    }} />
                   </div>
                 </div>
               );
