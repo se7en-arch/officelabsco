@@ -323,12 +323,12 @@ export default function ProductTable({ products: initial }: { products: Product[
                 <th style={{ ...TH, width: 105 }}>Серия</th>
                 <th style={{ ...TH, width: 115 }}>Категория</th>
                 <th style={{ ...TH, width: 220 }}>Описание</th>
-                <th style={{ ...TH, width: 115 }}>Цена към мен (€)</th>
-                <th style={{ ...TH, width: 115 }}>Клиент цена (€)</th>
+                <th style={{ ...TH, width: 80 }}>Мен (€)</th>
+                <th style={{ ...TH, width: 80 }}>Клиент (€)</th>
                 <th style={{ ...TH, width: 95 }}>Наличност</th>
-                <th style={{ ...TH, width: 52, textAlign: 'center' }}>3Д</th>
-                <th style={{ ...TH, width: 68, textAlign: 'center' }}>Чертеж</th>
-                <th style={{ ...TH, width: 76, textAlign: 'center' }}>Визуал.</th>
+                <th style={{ ...TH, width: 48, textAlign: 'center' }}>3Д</th>
+                <th style={{ ...TH, width: 64, textAlign: 'center' }}>Чертеж</th>
+                <th style={{ ...TH, width: 68, textAlign: 'center' }}>Визуал.</th>
                 <th style={{ ...TH, width: 44 }}></th>
               </tr>
             </thead>
@@ -395,20 +395,10 @@ export default function ProductTable({ products: initial }: { products: Product[
                     <td style={{ ...TD }}>{renderCell(p, 'description', 'text', 210)}</td>
 
                     {/* Cost price */}
-                    <td style={{ ...TD }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <span style={{ fontSize: 11, color: '#94a3b8', flexShrink: 0 }}>€</span>
-                        {renderCell(p, 'costPrice', 'number', 75)}
-                      </div>
-                    </td>
+                    <td style={{ ...TD }}>{renderCell(p, 'costPrice', 'number', 68)}</td>
 
                     {/* Customer price */}
-                    <td style={{ ...TD }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                        <span style={{ fontSize: 11, color: '#94a3b8', flexShrink: 0 }}>€</span>
-                        {renderCell(p, 'price', 'number', 75)}
-                      </div>
-                    </td>
+                    <td style={{ ...TD }}>{renderCell(p, 'price', 'number', 68)}</td>
 
                     {/* Stock */}
                     <td style={{ ...TD }}>
@@ -446,47 +436,29 @@ export default function ProductTable({ products: initial }: { products: Product[
 
                     {/* 3D Model */}
                     <td style={{ ...TD, textAlign: 'center' }}>
-                      <button onClick={() => toggleCheck(p.id, 'has3dModel')}
-                        title={p.has3dModel ? 'Има 3Д модел — кликни за премахване' : 'Няма — кликни за добавяне'}
-                        style={{
-                          width: 28, height: 28, border: 'none', borderRadius: 6,
-                          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                          background: p.has3dModel ? '#dbeafe' : '#f1f5f9',
-                          color: p.has3dModel ? '#1d4ed8' : '#94a3b8',
-                          fontSize: 14, fontWeight: 800, transition: 'all .12s',
-                        }}>
-                        {p.has3dModel ? '✓' : '–'}
-                      </button>
+                      <input type="checkbox" checked={p.has3dModel}
+                        onChange={() => toggleCheck(p.id, 'has3dModel')}
+                        title={p.has3dModel ? 'Има 3Д модел' : 'Няма 3Д модел'}
+                        className="table-check"
+                      />
                     </td>
 
                     {/* Drawing */}
                     <td style={{ ...TD, textAlign: 'center' }}>
-                      <button onClick={() => toggleCheck(p.id, 'hasDrawing')}
+                      <input type="checkbox" checked={p.hasDrawing}
+                        onChange={() => toggleCheck(p.id, 'hasDrawing')}
                         title={p.hasDrawing ? 'Има чертеж' : 'Няма чертеж'}
-                        style={{
-                          width: 28, height: 28, border: 'none', borderRadius: 6,
-                          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                          background: p.hasDrawing ? '#dcfce7' : '#f1f5f9',
-                          color: p.hasDrawing ? '#15803d' : '#94a3b8',
-                          fontSize: 14, fontWeight: 800, transition: 'all .12s',
-                        }}>
-                        {p.hasDrawing ? '✓' : '–'}
-                      </button>
+                        className="table-check"
+                      />
                     </td>
 
                     {/* Visualization */}
                     <td style={{ ...TD, textAlign: 'center' }}>
-                      <button onClick={() => toggleCheck(p.id, 'hasVisualization')}
+                      <input type="checkbox" checked={p.hasVisualization}
+                        onChange={() => toggleCheck(p.id, 'hasVisualization')}
                         title={p.hasVisualization ? 'Има визуализация' : 'Няма визуализация'}
-                        style={{
-                          width: 28, height: 28, border: 'none', borderRadius: 6,
-                          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                          background: p.hasVisualization ? '#f3e8ff' : '#f1f5f9',
-                          color: p.hasVisualization ? '#7c3aed' : '#94a3b8',
-                          fontSize: 14, fontWeight: 800, transition: 'all .12s',
-                        }}>
-                        {p.hasVisualization ? '✓' : '–'}
-                      </button>
+                        className="table-check"
+                      />
                     </td>
 
                     {/* ID */}
@@ -532,6 +504,10 @@ export default function ProductTable({ products: initial }: { products: Product[
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .table-check {
+          width: 16px; height: 16px; cursor: pointer;
+          accent-color: #3b82f6; border-radius: 4px;
+        }
       `}</style>
     </div>
   );
