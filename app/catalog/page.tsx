@@ -12,11 +12,14 @@ export default async function CatalogPage() {
     return <TableLoginForm />;
   }
 
-  const products = await prisma.product.findMany({
-    where: { archived: false },
-    include: { series: true, category: true },
-    orderBy: [{ seriesId: 'asc' }, { name: 'asc' }],
-  });
+  const [products, seriesList] = await Promise.all([
+    prisma.product.findMany({
+      where: { archived: false },
+      include: { series: true, category: true },
+      orderBy: [{ seriesId: 'asc' }, { name: 'asc' }],
+    }),
+    prisma.series.findMany({ orderBy: { id: 'asc' } }),
+  ]);
 
   const serialized = products.map(p => ({
     id: p.id,
@@ -41,5 +44,13 @@ export default async function CatalogPage() {
     categoryEn: p.category.nameEn ?? null,
   }));
 
-  return <CatalogGenerator products={serialized} />;
+  const serializedSeries = seriesList.map(s => ({
+    name: s.name,
+    slug: s.slug,
+    tagline: s.tagline,
+    taglineEn: s.taglineEn ?? s.tagline,
+    color: s.color,
+  }));
+
+  return <CatalogGenerator products={serialized} seriesList={serializedSeries} />;
 }
