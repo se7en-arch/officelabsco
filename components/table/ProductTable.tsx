@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 
 type Product = {
   id: number;
@@ -38,6 +38,44 @@ export default function ProductTable({ products: initial }: { products: Product[
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   const allSeries = useMemo(() => Array.from(new Set(initial.map(p => p.series))), [initial]);
+
+  // Series data (name + color) for material blocks
+  const seriesData = useMemo(() => {
+    const map = new Map<string, string>();
+    initial.forEach(p => map.set(p.series, p.seriesColor));
+    return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([name, color]) => ({ name, color }));
+  }, [initial]);
+
+  // Materials per series — persisted in localStorage
+  const [materials, setMaterials] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('ol_series_materials');
+      if (saved) setMaterials(JSON.parse(saved));
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(materials).length === 0) return;
+    try { localStorage.setItem('ol_series_materials', JSON.stringify(materials)); } catch {}
+  }, [materials]);
+
+  function updateMaterial(series: string, idx: number, value: string) {
+    setMaterials(prev => {
+      const rows = [...(prev[series] ?? ['', '', '', '', ''])];
+      rows[idx] = value;
+      return { ...prev, [series]: rows };
+    });
+  }
+
+  function accentColor(hex: string) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.6 ? '#374151' : hex;
+  }
 
   const filtered = useMemo(() => {
     let list = products;
@@ -340,6 +378,60 @@ export default function ProductTable({ products: initial }: { products: Product[
           </div>
         );
       })()}
+
+      {/* ── Materials per series ── */}
+      <div style={{ padding: '0 32px 24px' }}>
+        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'baseline', gap: 10 }}>
+          <h2 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Материали по серии</h2>
+          <span style={{ fontSize: 12, color: '#94a3b8' }}>Запазва се автоматично</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+          {seriesData.map(({ name, color }) => {
+            const accent = accentColor(color);
+            const rows = materials[name] ?? ['', '', '', '', ''];
+            return (
+              <div key={name} style={{
+                background: '#fff', borderRadius: 12, overflow: 'hidden',
+                border: '1px solid #e2e8f0', borderTop: `3px solid ${accent}`,
+                boxShadow: '0 1px 4px rgba(0,0,0,.06)',
+              }}>
+                <div style={{ padding: '11px 14px 9px', borderBottom: '1px solid #f1f5f9' }}>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: '#0f172a', letterSpacing: '.05em' }}>{name}</div>
+                  <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, letterSpacing: '.1em', marginTop: 1 }}>МАТЕРИАЛИ</div>
+                </div>
+                <div style={{ padding: '10px 14px 14px', display: 'flex', flexDirection: 'column', gap: 7 }}>
+                  {rows.map((val, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{
+                        width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                        background: accent + '18', color: accent,
+                        fontSize: 9, fontWeight: 800,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        {i + 1}
+                      </span>
+                      <input
+                        value={val}
+                        onChange={e => updateMaterial(name, i, e.target.value)}
+                        placeholder="—"
+                        style={{
+                          flex: 1, minWidth: '30ch', padding: '5px 9px',
+                          border: '1px solid #e2e8f0', borderRadius: 6,
+                          fontSize: 13, outline: 'none', fontFamily: 'inherit',
+                          background: '#fafafa', color: '#111827',
+                          transition: 'border-color .15s, background .15s',
+                        }}
+                        onFocus={e => { e.currentTarget.style.borderColor = accent; e.currentTarget.style.background = '#fff'; }}
+                        onBlur={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#fafafa'; }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Table */}
       <div style={{ padding: '0 32px 48px', overflowX: 'auto' }}>
