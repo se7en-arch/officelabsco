@@ -84,6 +84,7 @@ export default function Navbar() {
           <nav className="nav-links">
             <Link href="/" className={`nav-link${pathname === '/' ? ' active' : ''}`}>{t('home')}</Link>
             <Link href="/about" className={`nav-link${pathname === '/about' ? ' active' : ''}`}>{t('about')}</Link>
+            <Link href="/about1" className={`nav-link${pathname === '/about1' ? ' active' : ''}`}>{t('about1')}</Link>
             <Link href="/shop" className={`nav-link${pathname.startsWith('/shop') ? ' active' : ''}`}>{t('shop')}</Link>
           </nav>
 
@@ -168,6 +169,7 @@ export default function Navbar() {
           <nav className="mobile-menu__nav">
             <Link href="/" className={`mobile-menu__link${pathname === '/' ? ' active' : ''}`}>{t('home')}</Link>
             <Link href="/about" className={`mobile-menu__link${pathname === '/about' ? ' active' : ''}`}>{t('about')}</Link>
+            <Link href="/about1" className={`mobile-menu__link${pathname === '/about1' ? ' active' : ''}`}>{t('about1')}</Link>
             <Link href="/shop" className={`mobile-menu__link${pathname.startsWith('/shop') ? ' active' : ''}`}>{t('shop')}</Link>
           </nav>
         </div>
