@@ -36,12 +36,12 @@ export interface SeriesInfo {
 /* ─── Series hero image URL ─── */
 function seriesHeroImage(slug: string): string {
   const nameMap: Record<string, string> = {
-    astra: '/images/hero%20ASTRA.webp',
-    terra: '/images/hero%20TERRA.webp',
-    nova: '/images/hero%20NOVA.webp',
-    loft: '/images/hero%20LOFT.webp',
+    astra: '/images/moodboard-astra.jpeg',
+    terra: '/images/moodboard-terra.jpeg',
+    nova:  '/images/moodboard-nova.jpeg',
+    loft:  '/images/moodboard-loft.jpeg',
   };
-  return nameMap[slug] ?? '/images/hero%20ASTRA.webp';
+  return nameMap[slug] ?? '/images/moodboard-astra.jpeg';
 }
 
 /* ─── Series Divider Page ───────────────────────────── */
