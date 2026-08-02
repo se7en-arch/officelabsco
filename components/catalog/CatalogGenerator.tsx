@@ -131,7 +131,7 @@ function CatalogPage({
   const colors      = isBg ? product.colors      : (product.colorsEn      ?? product.colors);
   const category    = isBg ? product.category    : (product.categoryEn    ?? product.category);
 
-  const extraImages = product.images.filter(img => img !== product.image).slice(0, 4);
+  const extraImages: string[] = [];
   const descParagraphs = parseDescription(description);
 
   const L = isBg
