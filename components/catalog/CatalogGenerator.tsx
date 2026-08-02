@@ -613,7 +613,7 @@ body { background: #D8D8D4; -webkit-print-color-adjust: exact; print-color-adjus
 
 /* Image column — wider, with 2×2 thumbnail grid */
 .cl-img-col { flex: 0 0 58%; display: flex; flex-direction: column; gap: 3mm; }
-.cl-img-main { flex: 1; background: #F6F6F4; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.cl-img-main { flex: 1; background: #fafafa; border-radius: 6mm; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .cl-img-main img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .cl-img-grid { display: grid; gap: 2.5mm; flex-shrink: 0; height: 48mm; }
 .cl-img-cell { background: #F6F6F4; overflow: hidden; display: flex; align-items: center; justify-content: center; }
