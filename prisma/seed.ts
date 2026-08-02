@@ -52,7 +52,7 @@ async function main() {
   // Categories
   const categoryData = [
     { name: 'Бюра', slug: 'byura' },
-    { name: 'Маси', slug: 'masi' },
+    { name: 'Ниски маси', slug: 'masi' },
     { name: 'Ниски шкафове', slug: 'niski-shkafove' },
     { name: 'Високи шкафове', slug: 'visoki-shkafove' },
     { name: 'Пана за стена', slug: 'pana-za-stena' },
