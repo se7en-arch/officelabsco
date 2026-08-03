@@ -7,7 +7,33 @@ import AddToCartButton from '@/components/AddToCartButton';
 import BuyNowPayLater from '@/components/BuyNowPayLater';
 import ProductCard from '@/components/ProductCard';
 import ProductGallery from '@/components/ProductGallery';
+import ProductColorGallery from '@/components/ProductColorGallery';
 import ProductTabs from '@/components/ProductTabs';
+
+const COLOR_VARIANTS: Record<string, { name: string; color: string; images: string[] }[]> = {
+  'astra-low-cabinet': [
+    {
+      name: 'Лате',
+      color: '#C8A882',
+      images: [
+        '/products/low-cab-1-latte-1.png',
+        '/products/low-cab-1-latte-2.png',
+        '/products/low-cab-1-latte-3.png',
+        '/products/low-cab-1-latte-4.png',
+      ],
+    },
+    {
+      name: 'Капучино',
+      color: '#6B4F3A',
+      images: [
+        '/products/low-cab-1-cappuccino-1.png',
+        '/products/low-cab-1-cappuccino-2.png',
+        '/products/low-cab-1-cappuccino-3.png',
+        '/products/low-cab-1-cappuccino-4.png',
+      ],
+    },
+  ],
+};
 
 export const revalidate = 120;
 
@@ -136,13 +162,20 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
       <div className="product-detail">
         {/* Gallery */}
         <div className="product-gallery">
-          <div className="product-gallery__main">
-            <ProductGallery
-            image={product.image}
-            images={(() => { try { return JSON.parse(product.images || '[]'); } catch { return []; } })()}
-            productName={displayName}
-          />
-          </div>
+          {COLOR_VARIANTS[product.slug] ? (
+            <ProductColorGallery
+              variants={COLOR_VARIANTS[product.slug]}
+              productName={displayName}
+            />
+          ) : (
+            <div className="product-gallery__main">
+              <ProductGallery
+                image={product.image}
+                images={(() => { try { return JSON.parse(product.images || '[]'); } catch { return []; } })()}
+                productName={displayName}
+              />
+            </div>
+          )}
         </div>
 
         {/* Info */}
