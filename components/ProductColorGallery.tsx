@@ -1,10 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductGallery from './ProductGallery';
 
 export type ColorVariant = {
   name: string;
-  color: string; // swatch hex
+  color: string;
   images: string[];
 };
 
@@ -16,39 +16,25 @@ export default function ProductColorGallery({
   productName: string;
 }) {
   const [activeIdx, setActiveIdx] = useState(0);
+
+  useEffect(() => {
+    function onVariantChange(e: Event) {
+      setActiveIdx((e as CustomEvent<number>).detail);
+    }
+    window.addEventListener('colorVariantChange', onVariantChange);
+    return () => window.removeEventListener('colorVariantChange', onVariantChange);
+  }, []);
+
   const active = variants[activeIdx];
 
   return (
-    <div>
-      <div className="product-gallery__main">
-        <ProductGallery
-          key={activeIdx}
-          image={active.images[0]}
-          images={active.images}
-          productName={productName}
-        />
-      </div>
-
-      {/* Color switcher */}
-      <div className="color-switcher">
-        <span className="color-switcher__label">Цвят:</span>
-        <div className="color-switcher__options">
-          {variants.map((v, i) => (
-            <button
-              key={v.name}
-              onClick={() => setActiveIdx(i)}
-              className={`color-switcher__btn${i === activeIdx ? ' color-switcher__btn--active' : ''}`}
-              title={v.name}
-            >
-              <span
-                className="color-switcher__swatch"
-                style={{ background: v.color }}
-              />
-              {v.name}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="product-gallery__main">
+      <ProductGallery
+        key={activeIdx}
+        image={active.images[0]}
+        images={active.images}
+        productName={productName}
+      />
     </div>
   );
 }

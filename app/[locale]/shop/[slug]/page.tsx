@@ -8,6 +8,7 @@ import BuyNowPayLater from '@/components/BuyNowPayLater';
 import ProductCard from '@/components/ProductCard';
 import ProductGallery from '@/components/ProductGallery';
 import ProductColorGallery from '@/components/ProductColorGallery';
+import ProductColorSwitcher from '@/components/ProductColorSwitcher';
 import ProductTabs from '@/components/ProductTabs';
 
 const COLOR_VARIANTS: Record<string, { name: string; color: string; images: string[] }[]> = {
@@ -178,6 +179,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
           )}
         </div>
 
+
         {/* Info */}
         <div className="product-info">
           <h1 className="product-info__name">{displayName}</h1>
@@ -198,6 +200,10 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
             }}
           />
           <BuyNowPayLater price={product.price} />
+
+          {COLOR_VARIANTS[product.slug] && (
+            <ProductColorSwitcher variants={COLOR_VARIANTS[product.slug]} />
+          )}
 
           <div className="product-specs">
             <div className="product-specs__title">{t('specs')}</div>
