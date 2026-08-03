@@ -19,6 +19,7 @@ export default async function TablePage() {
 
   const serialized = products.map(p => ({
     id: p.id,
+    slug: p.slug,
     name: p.name,
     sku: p.sku ?? '',
     price: p.price,

@@ -4,6 +4,7 @@ import { COLOR_VARIANTS } from '@/lib/color-variants';
 
 type Product = {
   id: number;
+  slug: string;
   name: string;
   sku: string;
   price: number;
