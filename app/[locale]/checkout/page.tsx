@@ -471,7 +471,7 @@ export default function CheckoutPage() {
                 </button>
               </div>
 
-              <BuyNowPayLater price={rawTotal} />
+              {/* <BuyNowPayLater price={rawTotal} /> */}
 
               {payment === 'card' && (
                 <div className="co-card-info">

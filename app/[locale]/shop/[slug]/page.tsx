@@ -219,7 +219,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
               categoryName: displayCategoryName,
             }}
           />
-          <BuyNowPayLater price={product.price} />
+          {/* <BuyNowPayLater price={product.price} /> */}
 
           {COLOR_VARIANTS[product.slug] && (
             <ProductColorSwitcher variants={COLOR_VARIANTS[product.slug]} />
