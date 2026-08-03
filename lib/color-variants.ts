@@ -47,4 +47,108 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
   ],
+
+  // ── Terra ────────────────────────────────────────────────────────────────
+  'terra-desk-oak': [
+    {
+      name: 'Карамел',
+      color: '#C4956A',
+      images: [
+        '/products/terra-desk-caramel-1.png',
+        '/products/terra-desk-caramel-2.png',
+        '/products/terra-desk-caramel-3.png',
+        '/products/terra-desk-caramel-4.png',
+      ],
+    },
+    {
+      name: 'Евкалипт',
+      color: '#7A9E87',
+      images: [
+        '/products/terra-desk-eucalypt-1.png',
+        '/products/terra-desk-eucalypt-2.png',
+        '/products/terra-desk-eucalypt-3.png',
+        '/products/terra-desk-eucalypt-4.png',
+      ],
+    },
+  ],
+  'terra-low-cabinet': [
+    {
+      name: 'Карамел',
+      color: '#C4956A',
+      images: [
+        '/products/terra-low-cab-caramel-1.png',
+        '/products/terra-low-cab-caramel-2.png',
+        '/products/terra-low-cab-caramel-3.png',
+      ],
+    },
+    {
+      name: 'Евкалипт',
+      color: '#7A9E87',
+      images: [
+        '/products/terra-low-cab-eucalypt-1.png',
+        '/products/terra-low-cab-eucalypt-2.png',
+        '/products/terra-low-cab-eucalypt-3.png',
+      ],
+    },
+  ],
+  'terra-high-cabinet': [
+    {
+      name: 'Карамел',
+      color: '#C4956A',
+      images: [
+        '/products/terra-high-cab-caramel-1.png',
+        '/products/terra-high-cab-caramel-2.png',
+        '/products/terra-high-cab-caramel-3.png',
+      ],
+    },
+    {
+      name: 'Евкалипт',
+      color: '#7A9E87',
+      images: [
+        '/products/terra-high-cab-eucalypt-1.png',
+        '/products/terra-high-cab-eucalypt-2.png',
+        '/products/terra-high-cab-eucalypt-3.png',
+      ],
+    },
+  ],
+  'terra-plant-stand': [
+    {
+      name: 'Карамел',
+      color: '#C4956A',
+      images: [
+        '/products/terra-plant-caramel-1.png',
+        '/products/terra-plant-caramel-2.png',
+        '/products/terra-plant-caramel-3.png',
+      ],
+    },
+    {
+      name: 'Евкалипт',
+      color: '#7A9E87',
+      images: [
+        '/products/terra-plant-eucalypt-1.png',
+        '/products/terra-plant-eucalypt-2.png',
+        '/products/terra-plant-eucalypt-3.png',
+      ],
+    },
+  ],
+  'terra-bookshelf-tall': [
+    {
+      name: 'Карамел',
+      color: '#C4956A',
+      images: [
+        '/products/terra-shelf-caramel-1.png',
+        '/products/terra-shelf-caramel-2.png',
+        '/products/terra-shelf-caramel-3.png',
+      ],
+    },
+    {
+      name: 'Евкалипт',
+      color: '#7A9E87',
+      images: [
+        '/products/terra-shelf-eucalypt-1.png',
+        '/products/terra-shelf-eucalypt-2.png',
+        '/products/terra-shelf-eucalypt-3.png',
+      ],
+    },
+  ],
 };
