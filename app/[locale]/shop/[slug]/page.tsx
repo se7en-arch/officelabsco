@@ -34,6 +34,26 @@ const COLOR_VARIANTS: Record<string, { name: string; color: string; images: stri
       ],
     },
   ],
+  'astra-high-cabinet': [
+    {
+      name: 'Лате',
+      color: '#C8A882',
+      images: [
+        '/products/high-cab-1-latte-1.png',
+        '/products/high-cab-1-latte-2.png',
+        '/products/high-cab-1-latte-3.png',
+      ],
+    },
+    {
+      name: 'Капучино',
+      color: '#6B4F3A',
+      images: [
+        '/products/high-cab-1-cappuccino-1.png',
+        '/products/high-cab-1-cappuccino-2.png',
+        '/products/high-cab-1-cappuccino-3.png',
+      ],
+    },
+  ],
 };
 
 export const revalidate = 120;
