@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { COLOR_VARIANTS } from '@/lib/color-variants';
 
 export interface CatalogProduct {
   id: number;
+  slug: string;
   name: string;
   nameEn: string | null;
   sku: string | null;
@@ -250,6 +252,28 @@ function CatalogPage({
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ── COLOR VARIANTS ── */}
+      {COLOR_VARIANTS[product.slug] && (
+        <div style={{ marginTop: '4mm', display: 'flex', alignItems: 'center', gap: '3mm', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '8pt', color: '#888', fontStyle: 'italic' }}>
+            {isBg ? 'Налични цветове:' : 'Available colours:'}
+          </span>
+          {COLOR_VARIANTS[product.slug].map(v => (
+            <span key={v.name} style={{
+              display: 'inline-flex', alignItems: 'center', gap: '2mm',
+              fontSize: '8pt', color: '#3D3D3D',
+              padding: '1px 5px 1px 3px',
+              border: '0.3mm solid #E0E0E0',
+              borderRadius: '99px',
+              background: '#fafafa',
+            }}>
+              <span style={{ width: '3mm', height: '3mm', borderRadius: '50%', background: v.color, border: '0.2mm solid rgba(0,0,0,.15)', display: 'inline-block', flexShrink: 0 }} />
+              {v.name}
+            </span>
+          ))}
         </div>
       )}
 

@@ -52,7 +52,7 @@ interface OrderBody {
   city: string;
   payment: string;
   total: number;
-  items: Array<{ id: number; name: string; slug: string; price: number; quantity: number; image: string }>;
+  items: Array<{ id: number; name: string; slug: string; price: number; quantity: number; image: string; color?: string | null }>;
   company?: string;
   eik?: string;
   vat?: string;
@@ -133,14 +133,15 @@ export async function POST(req: NextRequest) {
       items: {
         create: body.items.map((item: {
           id: number; name: string; slug: string;
-          price: number; quantity: number; image: string;
+          price: number; quantity: number; image: string; color?: string | null;
         }) => ({
-          productId: item.id   ?? null,
+          productId: item.id    ?? null,
           name:      item.name,
           slug:      item.slug,
           price:     item.price,
           quantity:  item.quantity,
           image:     item.image,
+          color:     item.color ?? null,
         })),
       },
     },

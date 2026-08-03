@@ -11,6 +11,7 @@ export type CartItem = {
   categoryName: string;
   quantity: number;
   slug: string;
+  selectedColor?: string;
 };
 
 type CartStore = {
@@ -30,11 +31,15 @@ export const useCart = create<CartStore>()(
 
       addItem: (item) =>
         set((state) => {
-          const existing = state.items.find((i) => i.id === item.id);
+          const existing = state.items.find(
+            (i) => i.id === item.id && i.selectedColor === item.selectedColor
+          );
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+                i.id === item.id && i.selectedColor === item.selectedColor
+                  ? { ...i, quantity: i.quantity + 1 }
+                  : i
               ),
             };
           }

@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useMemo, useEffect } from 'react';
+import { COLOR_VARIANTS } from '@/lib/color-variants';
 
 type Product = {
   id: number;
@@ -454,6 +455,7 @@ export default function ProductTable({ products: initial }: { products: Product[
                 <th style={{ ...TH, width: 80 }}>Мен (€)</th>
                 <th style={{ ...TH, width: 80 }}>Клиент (€)</th>
                 <th style={{ ...TH, width: 95 }}>Наличност</th>
+                <th style={{ ...TH, width: 110 }}>Варианти</th>
                 <th style={{ ...TH, width: 48, textAlign: 'center' }}>3Д</th>
                 <th style={{ ...TH, width: 64, textAlign: 'center' }}>Чертеж</th>
                 <th style={{ ...TH, width: 68, textAlign: 'center' }}>Визуал.</th>
@@ -548,6 +550,29 @@ export default function ProductTable({ products: initial }: { products: Product[
                       </span>
                     </td>
 
+                    {/* Color variants */}
+                    <td style={{ ...TD }}>
+                      {COLOR_VARIANTS[p.slug] ? (
+                        <div style={{ display: 'flex', gap: 5, alignItems: 'center', flexWrap: 'wrap' }}>
+                          {COLOR_VARIANTS[p.slug].map(v => (
+                            <span key={v.name} title={v.name} style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 4,
+                              fontSize: 11, fontWeight: 600, color: '#374151',
+                              padding: '2px 7px 2px 4px',
+                              borderRadius: 999,
+                              border: '1px solid #e5e7eb',
+                              background: '#f9fafb',
+                            }}>
+                              <span style={{ width: 10, height: 10, borderRadius: '50%', background: v.color, border: '1px solid rgba(0,0,0,.12)', flexShrink: 0 }} />
+                              {v.name}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 12, color: '#d1d5db' }}>—</span>
+                      )}
+                    </td>
+
                     {/* 3D Model */}
                     <td style={{ ...TD, textAlign: 'center' }}>
                       <input type="checkbox" checked={p.has3dModel}
@@ -587,7 +612,7 @@ export default function ProductTable({ products: initial }: { products: Product[
 
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={13} style={{ padding: 56, textAlign: 'center', color: '#94a3b8', fontSize: 14 }}>
+                  <td colSpan={14} style={{ padding: 56, textAlign: 'center', color: '#94a3b8', fontSize: 14 }}>
                     Няма намерени продукти
                   </td>
                 </tr>

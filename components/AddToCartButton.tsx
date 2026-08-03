@@ -1,25 +1,39 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart, CartItem } from '@/lib/cart-store';
 import { useTranslations } from 'next-intl';
 
 type Props = {
-  product: Omit<CartItem, 'quantity'>;
+  product: Omit<CartItem, 'quantity' | 'selectedColor'>;
   stock?: number;
+  variants?: { name: string; color: string }[];
 };
 
-export default function AddToCartButton({ product, stock = 99 }: Props) {
+export default function AddToCartButton({ product, stock = 99, variants }: Props) {
   const t = useTranslations('product');
   const addItem = useCart((s) => s.addItem);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(
+    variants?.[0]?.name
+  );
+
+  useEffect(() => {
+    if (!variants) return;
+    function onVariantChange(e: Event) {
+      const idx = (e as CustomEvent<number>).detail;
+      setSelectedColor(variants![idx]?.name);
+    }
+    window.addEventListener('colorVariantChange', onVariantChange);
+    return () => window.removeEventListener('colorVariantChange', onVariantChange);
+  }, [variants]);
 
   const outOfStock = stock === 0;
   const maxQty = Math.max(1, stock);
 
   function handleAdd() {
     if (outOfStock) return;
-    for (let i = 0; i < qty; i++) addItem(product);
+    for (let i = 0; i < qty; i++) addItem({ ...product, selectedColor });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   }

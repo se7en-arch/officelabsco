@@ -126,7 +126,25 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     <Image src={item.image} alt={item.name} width={44} height={44} style={{ objectFit: 'contain', padding: 4 }} />
                   </div>
                   <div className="admin-order-item__info">
-                    <div className="admin-order-item__name">{item.name}</div>
+                    <div className="admin-order-item__name">
+                      {item.name}
+                      {item.color && (
+                        <span style={{
+                          display: 'inline-block',
+                          marginLeft: 8,
+                          padding: '1px 8px',
+                          fontSize: 11,
+                          fontWeight: 600,
+                          borderRadius: 999,
+                          background: '#f3f4f6',
+                          color: '#374151',
+                          border: '1px solid #e5e7eb',
+                          verticalAlign: 'middle',
+                        }}>
+                          {item.color}
+                        </span>
+                      )}
+                    </div>
                     <div className="admin-order-item__meta">{item.price.toFixed(2)} € × {item.quantity}</div>
                   </div>
                   <div className="admin-order-item__total">{(item.price * item.quantity).toFixed(2)} €</div>

@@ -23,6 +23,7 @@ export interface OrderEmailData {
     slug:     string;
     price:    number;
     quantity: number;
+    color?:   string | null;
   }>;
 }
 
@@ -48,7 +49,9 @@ function buildAdminHtml(order: OrderEmailData): string {
 
   const itemRows = order.items.map((item, idx) => `
     <tr style="background:${idx % 2 === 0 ? '#fff' : '#f9f9f9'}">
-      <td style="padding:11px 14px;font-size:13px;color:#1a1a1a;border-bottom:1px solid #eee">${item.name}</td>
+      <td style="padding:11px 14px;font-size:13px;color:#1a1a1a;border-bottom:1px solid #eee">
+        ${item.name}${item.color ? `<span style="margin-left:6px;padding:1px 7px;font-size:11px;font-weight:600;border-radius:99px;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb">${item.color}</span>` : ''}
+      </td>
       <td style="padding:11px 14px;font-size:13px;color:#555;border-bottom:1px solid #eee;text-align:right">€ ${item.price.toFixed(2)}</td>
       <td style="padding:11px 14px;font-size:13px;color:#555;border-bottom:1px solid #eee;text-align:center">${item.quantity}</td>
       <td style="padding:11px 14px;font-size:13px;font-weight:700;color:#1a1a1a;border-bottom:1px solid #eee;text-align:right">€ ${(item.price * item.quantity).toFixed(2)}</td>
@@ -182,7 +185,9 @@ function buildCustomerHtml(order: OrderEmailData): string {
 
   const itemRows = order.items.map((item, idx) => `
     <tr style="background:${idx % 2 === 0 ? '#fff' : '#f9f9f9'}">
-      <td style="padding:11px 14px;font-size:13px;color:#1a1a1a;border-bottom:1px solid #eee">${item.name}</td>
+      <td style="padding:11px 14px;font-size:13px;color:#1a1a1a;border-bottom:1px solid #eee">
+        ${item.name}${item.color ? `<span style="margin-left:6px;padding:1px 7px;font-size:11px;font-weight:600;border-radius:99px;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb">${item.color}</span>` : ''}
+      </td>
       <td style="padding:11px 14px;font-size:13px;color:#555;border-bottom:1px solid #eee;text-align:center">${item.quantity}</td>
       <td style="padding:11px 14px;font-size:13px;font-weight:700;color:#1a1a1a;border-bottom:1px solid #eee;text-align:right">€ ${(item.price * item.quantity).toFixed(2)}</td>
     </tr>`).join('');

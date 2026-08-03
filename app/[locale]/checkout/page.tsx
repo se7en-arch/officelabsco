@@ -164,6 +164,7 @@ export default function CheckoutPage() {
           items: items.map(i => ({
             id: i.id, name: i.name, slug: i.slug,
             price: i.price, quantity: i.quantity, image: i.image,
+            color: i.selectedColor ?? null,
           })),
           timezone:    tz ?? null,
           utmSource:   ss?.getItem('utm_source')   ?? null,

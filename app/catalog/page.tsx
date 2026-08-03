@@ -23,6 +23,7 @@ export default async function CatalogPage() {
 
   const serialized = products.map(p => ({
     id: p.id,
+    slug: p.slug,
     name: p.name,
     nameEn: p.nameEn ?? null,
     sku: p.sku ?? null,
