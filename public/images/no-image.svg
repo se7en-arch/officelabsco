@@ -1,38 +1,38 @@
 <svg width="600" height="600" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
   <rect width="600" height="600" fill="#F8F8F8"/>
 
-  <text x="52"  y="110" font-size="18" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
-  <text x="516" y="94"  font-size="18" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
-  <text x="58"  y="504" font-size="18" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
-  <text x="510" y="492" font-size="18" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
+  <text x="36"  y="96"  font-size="18" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
+  <text x="530" y="80"  font-size="18" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
+  <text x="42"  y="530" font-size="18" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
+  <text x="524" y="518" font-size="18" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
 
-  <circle cx="258" cy="72"  r="3" fill="#D4D4D4"/>
-  <circle cx="444" cy="162" r="3" fill="#D4D4D4"/>
-  <circle cx="104" cy="310" r="3" fill="#D4D4D4"/>
-  <circle cx="528" cy="326" r="3" fill="#D4D4D4"/>
-  <circle cx="318" cy="548" r="3" fill="#D4D4D4"/>
+  <circle cx="270" cy="52"  r="3" fill="#D4D4D4"/>
+  <circle cx="468" cy="140" r="3" fill="#D4D4D4"/>
+  <circle cx="82"  cy="300" r="3" fill="#D4D4D4"/>
+  <circle cx="548" cy="318" r="3" fill="#D4D4D4"/>
+  <circle cx="310" cy="572" r="3" fill="#D4D4D4"/>
 
   <!-- Back card -->
-  <g transform="translate(300,252) rotate(-7) translate(-130,-165)">
-    <rect width="260" height="330" rx="22" fill="#E2E2E2"/>
+  <g transform="translate(300,248) rotate(-7) translate(-160,-200)">
+    <rect width="320" height="400" rx="26" fill="#E2E2E2"/>
   </g>
 
   <!-- Front card shadow -->
-  <rect x="165" y="72" width="270" height="336" rx="22" fill="rgba(0,0,0,0.07)" transform="translate(6,8)"/>
+  <rect x="132" y="40" width="336" height="416" rx="26" fill="rgba(0,0,0,0.07)" transform="translate(7,9)"/>
 
   <!-- Front card -->
-  <rect x="165" y="72" width="270" height="336" rx="22" fill="#FFFFFF"/>
+  <rect x="132" y="40" width="336" height="416" rx="26" fill="#FFFFFF"/>
 
-  <!-- Icon centred on front card (cx=300, cy=240) — 160×128 -->
-  <g transform="translate(220,176)">
-    <rect x="0" y="0" width="160" height="128" rx="12" fill="none" stroke="#C4C4C4" stroke-width="3"/>
-    <circle cx="44"  cy="36" r="16" fill="none" stroke="#C4C4C4" stroke-width="3"/>
-    <polyline points="10,112 56,54 88,86 120,60 150,112" fill="none" stroke="#C4C4C4" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Icon centred on front card (cx=300, cy=248) — 210×168 -->
+  <g transform="translate(195,164)">
+    <rect x="0" y="0" width="210" height="168" rx="14" fill="none" stroke="#C4C4C4" stroke-width="3.5"/>
+    <circle cx="56"  cy="46" r="21" fill="none" stroke="#C4C4C4" stroke-width="3.5"/>
+    <polyline points="12,148 72,68 114,110 156,76 198,148" fill="none" stroke="#C4C4C4" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
   </g>
 
   <!-- Shadow under card -->
-  <ellipse cx="300" cy="428" rx="96" ry="9" fill="rgba(0,0,0,0.06)"/>
+  <ellipse cx="300" cy="478" rx="118" ry="10" fill="rgba(0,0,0,0.06)"/>
 
-  <text x="300" y="472" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="22" font-weight="700" fill="#555555">Няма снимки</text>
-  <text x="300" y="502" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="16" fill="#AAAAAA">Очаквайте галерията скоро</text>
+  <text x="300" y="524" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="#555555">Няма снимки</text>
+  <text x="300" y="558" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="18" fill="#AAAAAA">Очаквайте галерията скоро</text>
 </svg>
