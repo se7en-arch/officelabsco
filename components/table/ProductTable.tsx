@@ -37,6 +37,7 @@ export default function ProductTable({ products: initial }: { products: Product[
   const [search, setSearch]       = useState('');
   const [filterSeries, setFilterSeries] = useState('all');
   const [selected, setSelected]   = useState<Set<number>>(new Set());
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   const allSeries = useMemo(() => Array.from(new Set(initial.map(p => p.series))), [initial]);
@@ -182,6 +183,14 @@ export default function ProductTable({ products: initial }: { products: Product[
     );
   }
 
+  function toggleExpand(id: number) {
+    setExpandedRows(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
   // Called as a regular function (not JSX component) to avoid remount on state change
   function renderCell(
     p: Product,
@@ -258,11 +267,17 @@ export default function ProductTable({ products: initial }: { products: Product[
     color: '#111827', borderBottom: '1px solid #f3f4f6', verticalAlign: 'middle',
   };
 
+  const DETAIL_LABEL: React.CSSProperties = {
+    fontSize: 10, fontWeight: 700, color: '#64748b',
+    minWidth: 120, flexShrink: 0, paddingTop: 3,
+    letterSpacing: '.3px', textTransform: 'uppercase',
+  };
+
   return (
     <div style={{ minHeight: '100vh', background: '#f1f5f9', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
 
       {/* Breadcrumb bar */}
-      <div style={{
+      <div className="pt-breadcrumb" style={{
         background: '#fff', borderBottom: '1px solid #e5e7eb',
         padding: '0 32px', display: 'flex', alignItems: 'center', gap: 8, height: 44,
       }}>
@@ -277,7 +292,7 @@ export default function ProductTable({ products: initial }: { products: Product[
         </div>
       </div>
 
-      <div style={{ padding: '28px 32px 0' }}>
+      <div className="pt-header-section" style={{ padding: '28px 32px 0' }}>
         {/* Title */}
         <div style={{ marginBottom: 20 }}>
           <h1 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-.4px' }}>
@@ -289,7 +304,7 @@ export default function ProductTable({ products: initial }: { products: Product[
         </div>
 
         {/* Toolbar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
+        <div className="pt-toolbar" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 12 }}>
           {/* Series filter tabs */}
           <div style={{ display: 'flex', background: '#e2e8f0', borderRadius: 8, padding: 3, gap: 2 }}>
             {['all', ...allSeries].map(s => {
@@ -338,7 +353,7 @@ export default function ProductTable({ products: initial }: { products: Product[
           )}
 
           {/* Legend */}
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 12, fontSize: 11, color: '#94a3b8', alignItems: 'center' }}>
+          <div className="pt-legend" style={{ marginLeft: 'auto', display: 'flex', gap: 12, fontSize: 11, color: '#94a3b8', alignItems: 'center' }}>
             {([['#dcfce7', '#86efac', '> 5 бр.'], ['#fef3c7', '#fcd34d', '1-5 бр.'], ['#fee2e2', '#fca5a5', '0 бр.']] as const).map(([bg, b, lbl]) => (
               <span key={lbl} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ width: 9, height: 9, borderRadius: 3, background: bg, border: `1px solid ${b}` }} />
@@ -370,7 +385,7 @@ export default function ProductTable({ products: initial }: { products: Product[
         }
 
         return (
-          <div style={{ padding: '0 32px 20px', display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
+          <div className="pt-stats-grid" style={{ padding: '0 32px 20px', display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 10 }}>
             {statsData.map(({ label, count }) => {
               const pct = total > 0 ? count / total : 0;
               const { solid, light } = accentFromPct(pct);
@@ -414,12 +429,12 @@ export default function ProductTable({ products: initial }: { products: Product[
       })()}
 
       {/* ── Materials per series ── */}
-      <div style={{ padding: '0 32px 24px' }}>
+      <div className="pt-materials-section" style={{ padding: '0 32px 24px' }}>
         <div style={{ marginBottom: 12, display: 'flex', alignItems: 'baseline', gap: 10 }}>
           <h2 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Материали по серии</h2>
           <span style={{ fontSize: 12, color: '#94a3b8' }}>Запазва се автоматично</span>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        <div className="pt-materials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
           {seriesData.map(({ name, color }) => {
             const accent = accentColor(color);
             const rows = materials[name] ?? ['', '', '', '', ''];
@@ -467,8 +482,8 @@ export default function ProductTable({ products: initial }: { products: Product[
         </div>
       </div>
 
-      {/* Table */}
-      <div style={{ padding: '0 32px 48px', overflowX: 'auto' }}>
+      {/* ── Desktop Table (hidden on mobile) ── */}
+      <div className="pt-desktop-table" style={{ padding: '0 32px 48px', overflowX: 'auto' }}>
         <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,.06)' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1150, tableLayout: 'fixed' }}>
             <thead>
@@ -668,6 +683,203 @@ export default function ProductTable({ products: initial }: { products: Product[
         </div>
       </div>
 
+      {/* ── Mobile Accordion (hidden on desktop) ── */}
+      <div className="pt-mobile-accordion" style={{ padding: '0 16px 48px' }}>
+        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,.06)' }}>
+          {filtered.map((p, idx) => {
+            const sb = getStockBadge(p.stock);
+            const rs = rowState[p.id] ?? 'idle';
+            const isExpanded = expandedRows.has(p.id);
+            const isSel = selected.has(p.id);
+            const variants = COLOR_VARIANTS[p.slug];
+
+            return (
+              <div key={p.id} style={{ borderBottom: idx < filtered.length - 1 ? '1px solid #f3f4f6' : 'none' }}>
+
+                {/* Accordion header row */}
+                <div
+                  onClick={() => toggleExpand(p.id)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 10,
+                    padding: '13px 14px',
+                    background: isSel ? '#eff6ff' : '#fff',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                  }}
+                >
+                  {/* Checkbox */}
+                  <input
+                    type="checkbox"
+                    checked={isSel}
+                    onChange={e => { e.stopPropagation(); toggleSelect(p.id); }}
+                    onClick={e => e.stopPropagation()}
+                    style={{ cursor: 'pointer', accentColor: '#3b82f6', flexShrink: 0, width: 16, height: 16 }}
+                  />
+
+                  {/* Save state indicator */}
+                  {rs === 'saving' && (
+                    <svg style={{ animation: 'spin 1s linear infinite', flexShrink: 0 }}
+                      width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="3">
+                      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                    </svg>
+                  )}
+                  {rs === 'saved' && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" style={{ flexShrink: 0 }}><polyline points="20 6 9 17 4 12"/></svg>}
+                  {rs === 'error' && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="3" style={{ flexShrink: 0 }}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>}
+
+                  {/* Name + SKU */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {p.name}
+                    </div>
+                    <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>{p.sku}</div>
+                  </div>
+
+                  {/* Stock badge */}
+                  <span style={{
+                    background: sb.bg, color: sb.color,
+                    padding: '2px 8px', borderRadius: 20,
+                    fontSize: 11, fontWeight: 700, flexShrink: 0, whiteSpace: 'nowrap',
+                  }}>
+                    {sb.label}
+                  </span>
+
+                  {/* Chevron */}
+                  <svg
+                    width="15" height="15" viewBox="0 0 24 24" fill="none"
+                    stroke="#94a3b8" strokeWidth="2.5"
+                    style={{
+                      flexShrink: 0,
+                      transition: 'transform .2s',
+                      transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                    }}
+                  >
+                    <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+
+                {/* Expanded details */}
+                {isExpanded && (
+                  <div style={{ background: '#f8faff', borderTop: '1px solid #e2e8f0', padding: '4px 14px 16px' }}>
+
+                    {/* Series + Category tags */}
+                    <div style={{ display: 'flex', gap: 6, paddingTop: 12, paddingBottom: 10 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: '#fff', background: '#334155', padding: '2px 9px', borderRadius: 999 }}>
+                        {p.series}
+                      </span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', background: '#e2e8f0', padding: '2px 9px', borderRadius: 999 }}>
+                        {p.category}
+                      </span>
+                    </div>
+
+                    {/* Detail rows */}
+                    {[
+                      { label: 'SKU', content: renderCell(p, 'sku') },
+                      { label: 'Описание', content: renderCell(p, 'description', 'text', 320) },
+                      { label: 'Цена към мен (€)', content: renderCell(p, 'costPrice', 'number') },
+                      { label: 'Цена клиент (€)', content: renderCell(p, 'price', 'number') },
+                    ].map(({ label, content }) => (
+                      <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderBottom: '1px solid #eaeff5' }}>
+                        <span style={{ ...DETAIL_LABEL }}>{label}</span>
+                        <div style={{ flex: 1 }}>{content}</div>
+                      </div>
+                    ))}
+
+                    {/* Stock editable */}
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderBottom: '1px solid #eaeff5' }}>
+                      <span style={{ ...DETAIL_LABEL }}>Наличност</span>
+                      <span
+                        onClick={e => { e.stopPropagation(); startEdit(p.id, 'stock', p.stock); }}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center',
+                          background: sb.bg, color: sb.color,
+                          padding: '3px 10px', borderRadius: 20,
+                          fontSize: 12, fontWeight: 700, cursor: 'text',
+                        }}
+                      >
+                        {editing?.id === p.id && editing?.field === 'stock' ? (
+                          <input
+                            ref={inputRef as React.RefObject<HTMLInputElement>}
+                            type="number"
+                            value={editValue}
+                            onChange={e => setEditValue(e.target.value)}
+                            onBlur={() => commitEdit(p.id, 'stock', p)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') commitEdit(p.id, 'stock', p);
+                              if (e.key === 'Escape') cancelEdit();
+                            }}
+                            onClick={e => e.stopPropagation()}
+                            style={{ width: 52, padding: '1px 4px', border: '2px solid #3b82f6', borderRadius: 4, fontSize: 12, outline: 'none', fontWeight: 700, color: sb.color, background: '#fff' }}
+                          />
+                        ) : sb.label}
+                      </span>
+                    </div>
+
+                    {/* Color variants */}
+                    {variants && (
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderBottom: '1px solid #eaeff5' }}>
+                        <span style={{ ...DETAIL_LABEL }}>Варианти</span>
+                        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+                          {variants.map(v => (
+                            <span key={v.name} style={{
+                              display: 'inline-flex', alignItems: 'center', gap: 4,
+                              fontSize: 11, fontWeight: 600, color: '#374151',
+                              padding: '2px 7px 2px 4px',
+                              borderRadius: 999, border: '1px solid #e5e7eb', background: '#f9fafb',
+                            }}>
+                              <span style={{ width: 10, height: 10, borderRadius: '50%', background: v.color, border: '1px solid rgba(0,0,0,.12)', flexShrink: 0 }} />
+                              {v.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Checkboxes */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 20, paddingTop: 12 }}>
+                      {([
+                        { field: 'has3dModel' as const, label: '3Д модел' },
+                        { field: 'hasDrawing' as const, label: 'Чертеж' },
+                        { field: 'hasVisualization' as const, label: 'Визуализация' },
+                      ] as const).map(({ field, label }) => (
+                        <label key={field} onClick={e => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 12, color: '#374151', fontWeight: 500 }}>
+                          <input
+                            type="checkbox"
+                            checked={p[field]}
+                            onChange={() => toggleCheck(p.id, field)}
+                            className="table-check"
+                          />
+                          {label}
+                        </label>
+                      ))}
+                    </div>
+
+                    <div style={{ marginTop: 10, fontSize: 10, color: '#cbd5e1' }}>#{p.id}</div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {filtered.length === 0 && (
+            <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8', fontSize: 14 }}>
+              Няма намерени продукти
+            </div>
+          )}
+        </div>
+
+        {/* Mobile footer */}
+        <div style={{ marginTop: 14, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', fontSize: 12, color: '#94a3b8' }}>
+          <a href="/adminpanel/dashboard"
+            style={{ color: '#64748b', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 5 }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            Admin Panel
+          </a>
+        </div>
+      </div>
+
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         *, *::before, *::after { box-sizing: border-box; }
@@ -680,6 +892,26 @@ export default function ProductTable({ products: initial }: { products: Product[
         .table-check {
           width: 16px; height: 16px; cursor: pointer;
           accent-color: #3b82f6; border-radius: 4px;
+        }
+
+        /* ── Mobile / Tablet responsive ── */
+        .pt-mobile-accordion { display: none; }
+
+        @media (max-width: 900px) {
+          .pt-breadcrumb { padding: 0 16px !important; }
+          .pt-header-section { padding: 16px 16px 0 !important; }
+          .pt-stats-grid { padding: 0 16px 16px !important; grid-template-columns: repeat(3, 1fr) !important; }
+          .pt-materials-section { padding: 0 16px 20px !important; }
+          .pt-materials-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .pt-legend { display: none !important; }
+        }
+
+        @media (max-width: 600px) {
+          .pt-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .pt-materials-grid { grid-template-columns: repeat(1, 1fr) !important; }
+          .pt-toolbar { gap: 8px !important; }
+          .pt-desktop-table { display: none !important; }
+          .pt-mobile-accordion { display: block !important; }
         }
       `}</style>
     </div>
