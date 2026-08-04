@@ -917,14 +917,14 @@ export default function ProductTable({ products: initial }: { products: Product[
           .pt-materials-section { padding: 0 16px 20px !important; }
           .pt-materials-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .pt-legend { display: none !important; }
+          .pt-desktop-table { display: none !important; }
+          .pt-mobile-accordion { display: block !important; }
         }
 
         @media (max-width: 600px) {
           .pt-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .pt-materials-grid { grid-template-columns: repeat(1, 1fr) !important; }
           .pt-toolbar { gap: 8px !important; }
-          .pt-desktop-table { display: none !important; }
-          .pt-mobile-accordion { display: block !important; }
         }
       `}</style>
     </div>
