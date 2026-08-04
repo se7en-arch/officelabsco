@@ -48,26 +48,45 @@ export default function ProductTable({ products: initial }: { products: Product[
     return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0])).map(([name, color]) => ({ name, color }));
   }, [initial]);
 
-  // Materials per series — persisted in localStorage
+  // Materials per series — persisted in DB, localStorage as instant cache
   const [materials, setMaterials] = useState<Record<string, string[]>>({});
+  const saveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
+    // Load from localStorage immediately (no flicker), then sync from DB
     try {
-      const saved = localStorage.getItem('ol_series_materials');
-      if (saved) setMaterials(JSON.parse(saved));
+      const cached = localStorage.getItem('ol_series_materials');
+      if (cached) setMaterials(JSON.parse(cached));
     } catch {}
-  }, []);
 
-  useEffect(() => {
-    if (Object.keys(materials).length === 0) return;
-    try { localStorage.setItem('ol_series_materials', JSON.stringify(materials)); } catch {}
-  }, [materials]);
+    fetch('/api/table/series-materials')
+      .then(r => r.ok ? r.json() : null)
+      .then((data: Record<string, string[]> | null) => {
+        if (data && Object.keys(data).length > 0) {
+          setMaterials(data);
+          try { localStorage.setItem('ol_series_materials', JSON.stringify(data)); } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   function updateMaterial(series: string, idx: number, value: string) {
     setMaterials(prev => {
       const rows = [...(prev[series] ?? ['', '', '', '', ''])];
       rows[idx] = value;
-      return { ...prev, [series]: rows };
+      const next = { ...prev, [series]: rows };
+      // Update localStorage immediately
+      try { localStorage.setItem('ol_series_materials', JSON.stringify(next)); } catch {}
+      // Debounce save to DB — 800ms after last keystroke
+      clearTimeout(saveTimers.current[series]);
+      saveTimers.current[series] = setTimeout(() => {
+        fetch('/api/table/series-materials', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ series, materials: next[series] }),
+        }).catch(() => {});
+      }, 800);
+      return next;
     });
   }
 

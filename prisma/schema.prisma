@@ -17,6 +17,7 @@ model Series {
   descriptionEn String?
   color         String
   image         String?
+  materials     String?
   products      Product[]
 }
 
