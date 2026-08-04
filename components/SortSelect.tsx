@@ -24,6 +24,7 @@ export default function SortSelect({ currentSort }: { currentSort?: string }) {
       <option value="newest">{t('sortNewest')}</option>
       <option value="price-asc">{t('sortPriceAsc')}</option>
       <option value="price-desc">{t('sortPriceDesc')}</option>
+      <option value="in-stock">{t('sortInStock')}</option>
     </select>
   );
 }

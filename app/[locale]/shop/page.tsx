@@ -67,8 +67,9 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   }
 
   const orderBy =
-    sp.sort === 'price-asc' ? { price: 'asc' as const } :
-    sp.sort === 'price-desc' ? { price: 'desc' as const } :
+    sp.sort === 'price-asc'   ? { price: 'asc' as const } :
+    sp.sort === 'price-desc'  ? { price: 'desc' as const } :
+    sp.sort === 'in-stock'    ? { stock: 'desc' as const } :
     { createdAt: 'desc' as const };
 
   const [products, filteredCount] = await Promise.all([
