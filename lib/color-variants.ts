@@ -57,7 +57,6 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
         '/products/terra-desk-caramel-1.png',
         '/products/terra-desk-caramel-2.png',
         '/products/terra-desk-caramel-3.png',
-        '/products/terra-desk-caramel-4.png',
       ],
     },
     {
@@ -67,7 +66,6 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
         '/products/terra-desk-eucalypt-1.png',
         '/products/terra-desk-eucalypt-2.png',
         '/products/terra-desk-eucalypt-3.png',
-        '/products/terra-desk-eucalypt-4.png',
       ],
     },
   ],
