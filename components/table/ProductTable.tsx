@@ -910,7 +910,7 @@ export default function ProductTable({ products: initial }: { products: Product[
         /* ── Mobile / Tablet responsive ── */
         .pt-mobile-accordion { display: none; }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1199px) {
           .pt-breadcrumb { padding: 0 16px !important; }
           .pt-header-section { padding: 16px 16px 0 !important; }
           .pt-stats-grid { padding: 0 16px 16px !important; grid-template-columns: repeat(3, 1fr) !important; }
