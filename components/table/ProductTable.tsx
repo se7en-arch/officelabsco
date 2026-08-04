@@ -774,13 +774,26 @@ export default function ProductTable({ products: initial }: { products: Product[
                     {/* Detail rows */}
                     {[
                       { label: 'SKU', content: renderCell(p, 'sku') },
-                      { label: 'Описание', content: renderCell(p, 'description', 'text', 320) },
+                      {
+                        label: 'Описание',
+                        content: editing?.id === p.id && editing?.field === 'description'
+                          ? renderCell(p, 'description', 'text', 320)
+                          : (
+                            <span
+                              onClick={() => startEdit(p.id, 'description', p.description)}
+                              title={p.description || undefined}
+                              style={{ cursor: 'text', display: 'block', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minHeight: 22, lineHeight: '1.4', color: p.description ? '#111827' : '#9ca3af', fontSize: 13 }}
+                            >
+                              {p.description || '—'}
+                            </span>
+                          ),
+                      },
                       { label: 'Цена към мен (€)', content: renderCell(p, 'costPrice', 'number') },
                       { label: 'Цена клиент (€)', content: renderCell(p, 'price', 'number') },
                     ].map(({ label, content }) => (
                       <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 0', borderBottom: '1px solid #eaeff5' }}>
                         <span style={{ ...DETAIL_LABEL }}>{label}</span>
-                        <div style={{ flex: 1 }}>{content}</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>{content}</div>
                       </div>
                     ))}
 
