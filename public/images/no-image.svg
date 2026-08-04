@@ -1,46 +1,43 @@
-<svg width="400" height="500" viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
   <!-- Background -->
-  <rect width="400" height="500" fill="#F8F8F8"/>
-  <rect x="0.5" y="0.5" width="399" height="499" fill="none" stroke="#E0E0E0" stroke-width="1"/>
+  <rect width="500" height="500" fill="#F8F8F8"/>
 
   <!-- Scattered plus signs -->
-  <text x="52" y="102" font-size="13" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
-  <text x="330" y="88"  font-size="13" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
-  <text x="68"  y="330" font-size="13" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
-  <text x="318" y="318" font-size="13" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
+  <text x="52"  y="108" font-size="16" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
+  <text x="418" y="90"  font-size="16" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
+  <text x="62"  y="400" font-size="16" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
+  <text x="406" y="390" font-size="16" fill="#D0D0D0" font-family="sans-serif" font-weight="300">+</text>
 
   <!-- Scattered dots -->
-  <circle cx="178" cy="76"  r="2.2" fill="#D4D4D4"/>
-  <circle cx="296" cy="148" r="2.2" fill="#D4D4D4"/>
-  <circle cx="98"  cy="224" r="2.2" fill="#D4D4D4"/>
-  <circle cx="352" cy="238" r="2.2" fill="#D4D4D4"/>
-  <circle cx="212" cy="378" r="2.2" fill="#D4D4D4"/>
+  <circle cx="210" cy="72"  r="2.8" fill="#D4D4D4"/>
+  <circle cx="368" cy="154" r="2.8" fill="#D4D4D4"/>
+  <circle cx="96"  cy="268" r="2.8" fill="#D4D4D4"/>
+  <circle cx="436" cy="280" r="2.8" fill="#D4D4D4"/>
+  <circle cx="262" cy="440" r="2.8" fill="#D4D4D4"/>
 
   <!-- Back card — rotated gray -->
-  <g transform="translate(200,210) rotate(-7) translate(-80,-100)">
-    <rect width="160" height="200" rx="14" fill="#E2E2E2"/>
+  <g transform="translate(250,215) rotate(-7) translate(-100,-130)">
+    <rect width="200" height="260" rx="18" fill="#E2E2E2"/>
   </g>
 
   <!-- Front card shadow -->
-  <rect x="123" y="118" width="160" height="200" rx="14" fill="rgba(0,0,0,0.07)" transform="translate(4,6)"/>
+  <rect x="148" y="88" width="204" height="258" rx="18" fill="rgba(0,0,0,0.07)" transform="translate(5,7)"/>
 
   <!-- Front card -->
-  <rect x="123" y="118" width="160" height="200" rx="14" fill="#FFFFFF"/>
+  <rect x="148" y="88" width="204" height="258" rx="18" fill="#FFFFFF"/>
 
-  <!-- Image placeholder icon (centered in front card: cx=203, cy=218) -->
-  <g transform="translate(153,158)">
-    <!-- outer rect -->
-    <rect x="4" y="4" width="92" height="76" rx="7" fill="none" stroke="#C8C8C8" stroke-width="2"/>
-    <!-- sun/circle -->
-    <circle cx="26" cy="24" r="9" fill="none" stroke="#C8C8C8" stroke-width="2"/>
-    <!-- mountains -->
-    <polyline points="8,68 34,36 52,54 68,40 88,68" fill="none" stroke="#C8C8C8" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Image placeholder icon — centred in front card -->
+  <!-- card centre: x=250, y=217  icon: 120×96 -->
+  <g transform="translate(190,162)">
+    <rect x="0" y="0" width="120" height="96" rx="9" fill="none" stroke="#C8C8C8" stroke-width="2.5"/>
+    <circle cx="34"  cy="28" r="12" fill="none" stroke="#C8C8C8" stroke-width="2.5"/>
+    <polyline points="8,84 44,42 68,66 90,46 112,84" fill="none" stroke="#C8C8C8" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
   </g>
 
-  <!-- Shadow line under front card -->
-  <ellipse cx="203" cy="336" rx="64" ry="6" fill="rgba(0,0,0,0.06)"/>
+  <!-- Shadow under front card -->
+  <ellipse cx="250" cy="360" rx="76" ry="7" fill="rgba(0,0,0,0.06)"/>
 
   <!-- Text -->
-  <text x="200" y="372" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="15" font-weight="700" fill="#555555">Няма снимки</text>
-  <text x="200" y="394" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12.5" fill="#AAAAAA">Очаквайте галерията скоро</text>
+  <text x="250" y="400" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="17" font-weight="700" fill="#555555">Няма снимки</text>
+  <text x="250" y="426" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13.5" fill="#AAAAAA">Очаквайте галерията скоро</text>
 </svg>
