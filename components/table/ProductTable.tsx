@@ -53,18 +53,31 @@ export default function ProductTable({ products: initial }: { products: Product[
   const saveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
-    // Load from localStorage immediately (no flicker), then sync from DB
+    let localData: Record<string, string[]> = {};
     try {
       const cached = localStorage.getItem('ol_series_materials');
-      if (cached) setMaterials(JSON.parse(cached));
+      if (cached) {
+        localData = JSON.parse(cached);
+        setMaterials(localData);
+      }
     } catch {}
 
     fetch('/api/table/series-materials')
       .then(r => r.ok ? r.json() : null)
-      .then((data: Record<string, string[]> | null) => {
-        if (data && Object.keys(data).length > 0) {
-          setMaterials(data);
-          try { localStorage.setItem('ol_series_materials', JSON.stringify(data)); } catch {}
+      .then((dbData: Record<string, string[]> | null) => {
+        if (dbData && Object.keys(dbData).length > 0) {
+          // DB has data — it's the source of truth
+          setMaterials(dbData);
+          try { localStorage.setItem('ol_series_materials', JSON.stringify(dbData)); } catch {}
+        } else if (Object.keys(localData).length > 0) {
+          // DB is empty but localStorage has data → push everything to DB
+          for (const [series, mats] of Object.entries(localData)) {
+            fetch('/api/table/series-materials', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ series, materials: mats }),
+            }).catch(() => {});
+          }
         }
       })
       .catch(() => {});
