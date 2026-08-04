@@ -51,7 +51,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   // ── Terra ────────────────────────────────────────────────────────────────
   'terra-desk-oak': [
     {
-      name: 'Карамел',
+      name: 'Корал',
       color: '#C4956A',
       images: [
         '/products/terra-desk-caramel-1.png',
@@ -71,7 +71,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'terra-low-cabinet': [
     {
-      name: 'Карамел',
+      name: 'Корал',
       color: '#C4956A',
       images: [
         '/products/terra-low-cab-caramel-1.png',
@@ -91,7 +91,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'terra-high-cabinet': [
     {
-      name: 'Карамел',
+      name: 'Корал',
       color: '#C4956A',
       images: [
         '/products/terra-high-cab-caramel-1.png',
@@ -111,7 +111,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'terra-plant-stand': [
     {
-      name: 'Карамел',
+      name: 'Корал',
       color: '#C4956A',
       images: [
         '/products/terra-plant-caramel-1.png',
@@ -131,7 +131,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'terra-bookshelf-tall': [
     {
-      name: 'Карамел',
+      name: 'Корал',
       color: '#C4956A',
       images: [
         '/products/terra-shelf-caramel-1.png',
