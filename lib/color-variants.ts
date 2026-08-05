@@ -149,4 +149,106 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
   ],
+
+  // ── Nova ─────────────────────────────────────────────────────────────────
+  'nova-walnut-desk': [
+    {
+      name: 'Крем',
+      color: '#EDE8DF',
+      images: [
+        '/products/nova-desk-cream-1.png',
+        '/products/nova-desk-cream-2.png',
+        '/products/nova-desk-cream-3.png',
+      ],
+    },
+    {
+      name: 'Диамант',
+      color: '#B5C8D4',
+      images: [
+        '/products/nova-desk-diamond-1.png',
+        '/products/nova-desk-diamond-2.png',
+        '/products/nova-desk-diamond-3.png',
+      ],
+    },
+  ],
+  'nova-low-cabinet': [
+    {
+      name: 'Крем',
+      color: '#EDE8DF',
+      images: [
+        '/products/nova-low-cab-cream-1.png',
+        '/products/nova-low-cab-cream-2.png',
+        '/products/nova-low-cab-cream-3.png',
+      ],
+    },
+    {
+      name: 'Диамант',
+      color: '#B5C8D4',
+      images: [
+        '/products/nova-low-cab-diamond-1.png',
+        '/products/nova-low-cab-diamond-2.png',
+        '/products/nova-low-cab-diamond-3.png',
+      ],
+    },
+  ],
+  'nova-tall-wardrobe': [
+    {
+      name: 'Крем',
+      color: '#EDE8DF',
+      images: [
+        '/products/nova-high-cab-cream-1.png',
+        '/products/nova-high-cab-cream-2.png',
+        '/products/nova-high-cab-cream-3.png',
+      ],
+    },
+    {
+      name: 'Диамант',
+      color: '#B5C8D4',
+      images: [
+        '/products/nova-high-cab-diamond-1.png',
+        '/products/nova-high-cab-diamond-2.png',
+        '/products/nova-high-cab-diamond-3.png',
+      ],
+    },
+  ],
+  'nova-plant-stand': [
+    {
+      name: 'Крем',
+      color: '#EDE8DF',
+      images: [
+        '/products/nova-plant-cream-1.png',
+        '/products/nova-plant-cream-2.png',
+        '/products/nova-plant-cream-3.png',
+      ],
+    },
+    {
+      name: 'Диамант',
+      color: '#B5C8D4',
+      images: [
+        '/products/nova-plant-diamond-1.png',
+        '/products/nova-plant-diamond-2.png',
+        '/products/nova-plant-diamond-3.png',
+      ],
+    },
+  ],
+  'nova-open-shelf': [
+    {
+      name: 'Крем',
+      color: '#EDE8DF',
+      images: [
+        '/products/nova-shelf-cream-1.png',
+        '/products/nova-shelf-cream-2.png',
+        '/products/nova-shelf-cream-3.png',
+      ],
+    },
+    {
+      name: 'Диамант',
+      color: '#B5C8D4',
+      images: [
+        '/products/nova-shelf-diamond-1.png',
+        '/products/nova-shelf-diamond-2.png',
+        '/products/nova-shelf-diamond-3.png',
+      ],
+    },
+  ],
 };
