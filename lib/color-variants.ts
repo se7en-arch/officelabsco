@@ -150,6 +150,48 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     },
   ],
 
+  // ── Loft ─────────────────────────────────────────────────────────────────
+  'loft-high-cabinet': [
+    {
+      name: 'Черен',
+      color: '#2B2B2B',
+      images: [
+        '/products/loft-high-cab-black-1.png',
+        '/products/loft-high-cab-black-2.png',
+        '/products/loft-high-cab-black-3.png',
+      ],
+    },
+    {
+      name: 'Тъмно зелен',
+      color: '#2D5A45',
+      images: [
+        '/products/loft-high-cab-deep-green-1.png',
+        '/products/loft-high-cab-deep-green-2.png',
+        '/products/loft-high-cab-deep-green-3.png',
+      ],
+    },
+  ],
+  'loft-wall-shelf': [
+    {
+      name: 'Черен',
+      color: '#2B2B2B',
+      images: [
+        '/products/loft-shelf-black-1.png',
+        '/products/loft-shelf-black-2.png',
+        '/products/loft-shelf-black-3.png',
+      ],
+    },
+    {
+      name: 'Тъмно зелен',
+      color: '#2D5A45',
+      images: [
+        '/products/loft-shelf-deep-green-1.png',
+        '/products/loft-shelf-deep-green-2.png',
+        '/products/loft-shelf-deep-green-3.png',
+      ],
+    },
+  ],
+
   // ── Nova ─────────────────────────────────────────────────────────────────
   'nova-walnut-desk': [
     {
