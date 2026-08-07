@@ -122,20 +122,18 @@ export default function DealerDashboard({
                 <div className="dl-product-card__img">
                   {displayImage && displayImage !== '/images/no-image.svg'
                     ? <img src={displayImage} alt={p.name} />
-                    : <div style={{ color: '#D1D5DB', fontSize: 12 }}>Без снимка</div>
+                    : <div className="dl-product-card__no-img">Без снимка</div>
                   }
                 </div>
                 <div className="dl-product-card__body">
-                  <div style={{ fontSize: 10, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 4 }}>{p.series}</div>
+                  <div className="dl-product-card__series">{p.series}</div>
                   <div className="dl-product-card__name">{p.name}</div>
-                  {p.sku && <div className="dl-product-card__sku">Код: {p.sku}</div>}
+                  {p.sku && <div className="dl-product-card__sku">{p.sku}</div>}
 
                   <div className="dl-product-card__prices">
-                    <div>
-                      <div className="dl-product-card__retail">{fmt(p.price)} лв.</div>
-                      <div className="dl-product-card__dealer">{fmt(dp)} лв.</div>
-                    </div>
-                    <div className="dl-product-card__discount">-{discount}%</div>
+                    <div className="dl-product-card__dealer">{fmt(dp)} лв.</div>
+                    <div className="dl-product-card__retail">{fmt(p.price)} лв.</div>
+                    <div className="dl-product-card__discount">−{discount}%</div>
                   </div>
 
                   {p.colorVariants && p.colorVariants.length > 1 && (
@@ -149,23 +147,26 @@ export default function DealerDashboard({
                           onClick={() => setSelectedColors(s => ({ ...s, [p.id]: idx }))}
                         />
                       ))}
-                      <span style={{ fontSize: 11, color: '#6B7280', alignSelf: 'center' }}>{variant?.name}</span>
+                      <span className="dl-product-card__color-name">{variant?.name}</span>
                     </div>
                   )}
 
-                  <div className="dl-product-card__qty">
-                    <button className="dl-product-card__qty-btn" onClick={() => changeQty(qKey, -1)}>−</button>
-                    <input
-                      className="dl-product-card__qty-input"
-                      type="number" min={1} value={qty}
-                      onChange={e => setQtys(s => ({ ...s, [qKey]: Math.max(1, parseInt(e.target.value) || 1) }))}
-                    />
-                    <button className="dl-product-card__qty-btn" onClick={() => changeQty(qKey, 1)}>+</button>
-                  </div>
+                  <div className="dl-product-card__spacer" />
 
-                  <button className="dl-product-card__add" onClick={() => addToCart(p)}>
-                    + Добави в количка
-                  </button>
+                  <div className="dl-product-card__footer">
+                    <div className="dl-product-card__qty">
+                      <button className="dl-product-card__qty-btn" onClick={() => changeQty(qKey, -1)}>−</button>
+                      <input
+                        className="dl-product-card__qty-input"
+                        type="number" min={1} value={qty}
+                        onChange={e => setQtys(s => ({ ...s, [qKey]: Math.max(1, parseInt(e.target.value) || 1) }))}
+                      />
+                      <button className="dl-product-card__qty-btn" onClick={() => changeQty(qKey, 1)}>+</button>
+                    </div>
+                    <button className="dl-product-card__add" onClick={() => addToCart(p)}>
+                      Добави в количка
+                    </button>
+                  </div>
                 </div>
               </div>
             );
