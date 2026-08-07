@@ -13,16 +13,19 @@ const navItems = [
     section: 'Главно',
     links: [
       {
+        key: 'dashboard',
         href: '/adminpanel/dashboard',
         label: 'Dashboard',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
       },
       {
+        key: 'orders',
         href: '/adminpanel/orders',
         label: 'Поръчки',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
       },
       {
+        key: 'dealers',
         href: '/adminpanel/dealers',
         label: 'Дилъри',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
@@ -33,31 +36,37 @@ const navItems = [
     section: 'Каталог',
     links: [
       {
+        key: 'products',
         href: '/adminpanel/products',
         label: 'Продукти',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>,
       },
       {
+        key: 'products-new',
         href: '/adminpanel/products/new',
         label: 'Нов продукт',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
       },
       {
+        key: 'series',
         href: '/adminpanel/series',
         label: 'Серии',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>,
       },
       {
+        key: 'categories',
         href: '/adminpanel/categories',
         label: 'Категории',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>,
       },
       {
+        key: 'reviews',
         href: '/adminpanel/reviews',
         label: 'Рецензии',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
       },
       {
+        key: 'promos',
         href: '/adminpanel/promos',
         label: 'Промо кодове',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>,
@@ -68,16 +77,19 @@ const navItems = [
     section: 'Медия и сайт',
     links: [
       {
+        key: 'media',
         href: '/adminpanel/media',
         label: 'Медии',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>,
       },
       {
+        key: 'settings',
         href: '/adminpanel/settings',
         label: 'Настройки',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
       },
       {
+        key: 'site',
         href: '/',
         label: 'Към сайта',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
@@ -86,7 +98,7 @@ const navItems = [
   },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ newOrders = 0, pendingDealers = 0 }: { newOrders?: number; pendingDealers?: number }) {
   const pathname = usePathname();
   return (
     <aside className="admin-sidebar">
@@ -107,12 +119,33 @@ export default function AdminSidebar() {
         {navItems.map((group) => (
           <div key={group.section}>
             <div className="admin-sidebar__section">{group.section}</div>
-            {group.links.map((link) => (
-              <Link key={link.href} href={link.href} className={`admin-nav-link${isActive(link.href, pathname) ? ' active' : ''}`}>
-                {link.icon}
-                {link.label}
-              </Link>
-            ))}
+            {group.links.map((link) => {
+              const badge =
+                link.key === 'orders'  ? newOrders :
+                link.key === 'dealers' ? pendingDealers : 0;
+              return (
+                <Link key={link.href} href={link.href} className={`admin-nav-link${isActive(link.href, pathname) ? ' active' : ''}`}>
+                  {link.icon}
+                  {link.label}
+                  {badge > 0 && (
+                    <span style={{
+                      marginLeft: 'auto',
+                      background: '#EF4444',
+                      color: '#fff',
+                      fontSize: 10,
+                      fontWeight: 800,
+                      padding: '2px 6px',
+                      borderRadius: 20,
+                      lineHeight: 1.4,
+                      minWidth: 18,
+                      textAlign: 'center',
+                    }}>
+                      {badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
         ))}
       </nav>
