@@ -87,115 +87,126 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
 
         .dl-product-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-          gap: 16px;
+          grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+          gap: 14px;
         }
+
+        /* ── Card shell ── */
         .dl-product-card {
           background: #fff;
-          border-radius: 18px;
+          border-radius: 20px;
           border: 1px solid rgba(0,0,0,.07);
+          box-shadow: 0 2px 8px rgba(0,0,0,.04);
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          transition: box-shadow .2s, transform .2s;
-          box-shadow: 0 1px 4px rgba(0,0,0,.05);
+          transition: box-shadow .2s;
         }
-        .dl-product-card:hover {
-          box-shadow: 0 8px 32px rgba(0,0,0,.1);
-          transform: translateY(-2px);
+        .dl-product-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.09); }
+
+        /* ── Top: image + info ── */
+        .dl-product-card__top {
+          display: flex; align-items: center; gap: 16px; padding: 18px 20px 14px;
         }
         .dl-product-card__img {
-          height: 220px;
-          background: #F5F5F7;
-          display: flex; align-items: center; justify-content: center;
-          overflow: hidden; flex-shrink: 0;
+          width: 96px; height: 96px; flex-shrink: 0;
+          background: #F5F5F7; border-radius: 14px;
+          display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
         .dl-product-card__img img {
-          width: 100%; height: 100%; object-fit: contain; padding: 24px;
+          width: 100%; height: 100%; object-fit: contain; padding: 10px;
           transition: transform .3s;
         }
-        .dl-product-card:hover .dl-product-card__img img { transform: scale(1.03); }
+        .dl-product-card:hover .dl-product-card__img img { transform: scale(1.05); }
         .dl-product-card__no-img {
-          display: flex; align-items: center; justify-content: center;
-          width: 100%; height: 100%; color: #C7C7CC; font-size: 12px; letter-spacing: .04em;
+          width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+          color: #C7C7CC; font-size: 11px;
         }
-        .dl-product-card__body {
-          padding: 18px 20px 20px;
-          display: flex; flex-direction: column; flex: 1;
-        }
+
+        .dl-product-card__info { flex: 1; min-width: 0; }
         .dl-product-card__series {
           font-size: 10px; font-weight: 600; color: #8E8E93;
-          text-transform: uppercase; letter-spacing: .1em; margin-bottom: 5px;
+          text-transform: uppercase; letter-spacing: .1em; margin-bottom: 3px;
         }
         .dl-product-card__name {
-          font-size: 15px; font-weight: 600; line-height: 1.3;
-          color: #1C1C1E; margin-bottom: 3px;
-          letter-spacing: -.01em;
-        }
-        .dl-product-card__sku { font-size: 11px; color: #AEAEB2; margin-bottom: 14px; }
-        .dl-product-card__prices {
-          display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
-          flex-wrap: wrap;
-        }
-        .dl-product-card__dealer {
-          font-size: 19px; font-weight: 700; color: #1C1C1E;
-          letter-spacing: -.02em; line-height: 1;
-        }
-        .dl-product-card__retail {
-          font-size: 12px; color: #AEAEB2; text-decoration: line-through;
-        }
-        .dl-product-card__discount {
-          margin-left: auto;
-          font-size: 11px; font-weight: 700; background: #FF9F0A; color: #fff;
-          padding: 3px 8px; border-radius: 20px; letter-spacing: .02em;
+          font-size: 17px; font-weight: 700; color: #1C1C1E;
+          letter-spacing: -.02em; line-height: 1.2; margin-bottom: 6px;
         }
         .dl-product-card__colors {
-          display: flex; align-items: center; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;
+          display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
         }
         .dl-product-card__color-btn {
-          width: 20px; height: 20px; border-radius: 50%; cursor: pointer; padding: 0;
-          border: 2px solid transparent;
-          box-shadow: 0 0 0 1px rgba(0,0,0,.12);
-          transition: box-shadow .15s;
-          outline: none;
+          width: 18px; height: 18px; border-radius: 50%; cursor: pointer; padding: 0; border: none;
+          box-shadow: 0 0 0 1.5px rgba(0,0,0,.15);
+          transition: box-shadow .15s; outline: none; flex-shrink: 0;
         }
         .dl-product-card__color-btn.active {
           box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1C1C1E;
         }
-        .dl-product-card__color-name {
-          font-size: 11px; color: #8E8E93; margin-left: 2px;
+        .dl-product-card__color-name { font-size: 11px; color: #8E8E93; }
+
+        /* ── Divider ── */
+        .dl-product-card__divider {
+          height: 1px; background: #F2F2F2; margin: 0 20px;
         }
-        .dl-product-card__spacer { flex: 1; }
-        .dl-product-card__footer { margin-top: 14px; }
+
+        /* ── Bottom: prices + actions ── */
+        .dl-product-card__bottom {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 14px 20px 18px; gap: 12px;
+        }
+        .dl-product-card__prices { display: flex; flex-direction: column; gap: 2px; }
+        .dl-product-card__price-label {
+          font-size: 10px; color: #AEAEB2; font-weight: 500; letter-spacing: .04em; text-transform: uppercase;
+        }
+        .dl-product-card__dealer {
+          font-size: 22px; font-weight: 800; color: #1C1C1E; letter-spacing: -.03em; line-height: 1;
+        }
+        .dl-product-card__retail {
+          font-size: 12px; color: #AEAEB2; text-decoration: line-through; margin-top: 1px;
+        }
+
+        .dl-product-card__actions { display: flex; align-items: center; gap: 8px; }
         .dl-product-card__qty {
-          display: flex; align-items: center; gap: 0;
-          background: #F2F2F7; border-radius: 10px;
-          overflow: hidden; margin-bottom: 10px; width: fit-content;
+          display: flex; align-items: center;
+          background: #F2F2F7; border-radius: 50px; overflow: hidden;
         }
         .dl-product-card__qty-btn {
-          width: 36px; height: 36px; border: none; border-radius: 0;
-          background: transparent; cursor: pointer; font-size: 18px; font-weight: 300;
+          width: 34px; height: 34px; border: none; background: transparent;
+          cursor: pointer; font-size: 18px; font-weight: 300; color: #1C1C1E;
           display: flex; align-items: center; justify-content: center;
-          color: #1C1C1E; transition: background .15s;
+          transition: background .15s; flex-shrink: 0;
         }
         .dl-product-card__qty-btn:hover { background: #E5E5EA; }
         .dl-product-card__qty-input {
-          width: 40px; text-align: center; border: none; border-left: 1px solid #E5E5EA; border-right: 1px solid #E5E5EA;
-          background: transparent; padding: 0; font-size: 14px; font-weight: 600;
-          font-family: inherit; height: 36px; color: #1C1C1E;
-          -moz-appearance: textfield;
+          width: 32px; text-align: center; border: none; background: transparent;
+          font-size: 14px; font-weight: 700; font-family: inherit; color: #1C1C1E;
+          -moz-appearance: textfield; padding: 0; height: 34px;
         }
         .dl-product-card__qty-input::-webkit-outer-spin-button,
         .dl-product-card__qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
         .dl-product-card__add {
-          width: 100%; padding: 11px; background: #1C1C1E; color: #fff; border: none;
-          border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
-          font-family: inherit; letter-spacing: .01em;
-          transition: background .15s, opacity .15s;
+          padding: 0 20px; height: 44px; background: #1C1C1E; color: #fff; border: none;
+          border-radius: 50px; font-size: 14px; font-weight: 600; cursor: pointer;
+          font-family: inherit; white-space: nowrap;
+          transition: background .15s;
         }
         .dl-product-card__add:hover { background: #3A3A3C; }
         .dl-product-card__added { background: #34C759; }
         .dl-product-card__added:hover { background: #28A745; }
+
+        .dl-product-card__discount-btn {
+          width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #E5E5EA;
+          background: #fff; cursor: default; display: flex; align-items: center; justify-content: center;
+          flex-direction: column; flex-shrink: 0;
+        }
+        .dl-product-card__discount-pct {
+          font-size: 11px; font-weight: 800; color: #FF9F0A; line-height: 1; letter-spacing: -.01em;
+        }
+        .dl-product-card__discount-sym {
+          font-size: 9px; color: #AEAEB2; font-weight: 600; margin-top: 1px;
+        }
 
         .dl-cart-bar {
           position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
