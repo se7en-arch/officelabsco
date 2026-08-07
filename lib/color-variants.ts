@@ -171,7 +171,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
   ],
-  'loft-wall-shelf': [
+  'loft-pipe-bookshelf': [
     {
       name: 'Черен',
       color: '#2B2B2B',
