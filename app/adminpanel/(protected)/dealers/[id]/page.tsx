@@ -1,26 +1,64 @@
 'use client';
 import { useEffect, useState, useTransition } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 
-interface DealerOrder { id: string; createdAt: string; status: string; total: number; items: { quantity: number }[]; }
+interface DealerOrder {
+  id: string;
+  createdAt: string;
+  status: string;
+  total: number;
+  items: { quantity: number }[];
+}
+
 interface DealerDetail {
-  id: string; companyName: string; contactName: string; email: string; phone: string;
-  address: string; city: string; eik: string; vatRegistered: boolean; vatNumber: string | null;
-  discountPercent: number; status: string; notes: string | null; createdAt: string;
+  id: string;
+  companyName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  eik: string;
+  vatRegistered: boolean;
+  vatNumber: string | null;
+  discountPercent: number;
+  status: string;
+  notes: string | null;
+  createdAt: string;
   orders: DealerOrder[];
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  new: 'Нова', processing: 'В обработка', shipped: 'Изпратена', completed: 'Завършена', cancelled: 'Отменена',
+const ORDER_STATUS: Record<string, string> = {
+  new: 'Нова', processing: 'В обработка', shipped: 'Изпратена',
+  completed: 'Завършена', cancelled: 'Отменена',
 };
 
-function fmt(n: number) { return n.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+const ORDER_PILL: Record<string, { bg: string; color: string }> = {
+  new:        { bg: '#EFF6FF', color: '#1E40AF' },
+  processing: { bg: '#FEF9C3', color: '#854d0e' },
+  shipped:    { bg: '#F5F3FF', color: '#5B21B6' },
+  completed:  { bg: '#DCFCE7', color: '#166534' },
+  cancelled:  { bg: '#F3F4F6', color: '#6B7280' },
+};
+
+const DEALER_PILL: Record<string, { bg: string; color: string }> = {
+  PENDING:  { bg: '#FEF9C3', color: '#854d0e' },
+  APPROVED: { bg: '#DCFCE7', color: '#166534' },
+  REJECTED: { bg: '#FEE2E2', color: '#991b1b' },
+};
+
+const DEALER_STATUS_LABEL: Record<string, string> = {
+  PENDING: 'Чака одобрение', APPROVED: 'Одобрен', REJECTED: 'Отказан',
+};
+
+function fmt(n: number) {
+  return n.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
 export default function AdminDealerDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
-  const [dealer, setDealer] = useState<DealerDetail & { orders: DealerOrder[] } | null>(null);
+  const [dealer, setDealer] = useState<DealerDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, startSave] = useTransition();
   const [discount, setDiscount] = useState(0);
@@ -29,15 +67,18 @@ export default function AdminDealerDetailPage() {
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/admin/dealers/${id}`).then(r => r.json()).then(d => {
-      setDealer(d);
-      setDiscount(d.discountPercent);
-      setNotes(d.notes ?? '');
-      setStatus(d.status);
-    }).finally(() => setLoading(false));
+    fetch(`/api/admin/dealers/${id}`)
+      .then(r => r.json())
+      .then(d => {
+        setDealer(d);
+        setDiscount(d.discountPercent);
+        setNotes(d.notes ?? '');
+        setStatus(d.status);
+      })
+      .finally(() => setLoading(false));
   }, [id]);
 
-  async function save() {
+  function save() {
     startSave(async () => {
       const res = await fetch(`/api/admin/dealers/${id}`, {
         method: 'PATCH',
@@ -48,128 +89,224 @@ export default function AdminDealerDetailPage() {
         const updated = await res.json();
         setDealer(d => d ? { ...d, ...updated } : d);
         setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        setTimeout(() => setSaved(false), 2500);
       }
     });
   }
 
-  if (loading) return <div className="admin-page-header"><h1>Зареждане...</h1></div>;
-  if (!dealer) return <div className="admin-page-header"><h1>Не е намерен</h1></div>;
+  if (loading) {
+    return (
+      <div className="admin-page-header">
+        <h1>Зареждане...</h1>
+      </div>
+    );
+  }
 
-  const STATUS_PILL: Record<string, { bg: string; color: string }> = {
-    PENDING:  { bg: '#fef9c3', color: '#854d0e' },
-    APPROVED: { bg: '#dcfce7', color: '#166534' },
-    REJECTED: { bg: '#fee2e2', color: '#991b1b' },
-  };
-  const pill = STATUS_PILL[dealer.status] ?? { bg: '#f3f4f6', color: '#374151' };
+  if (!dealer) {
+    return (
+      <div className="admin-page-header">
+        <h1>Дилърът не е намерен</h1>
+      </div>
+    );
+  }
+
+  const pill = DEALER_PILL[dealer.status] ?? { bg: '#F3F4F6', color: '#374151' };
+  const totalRevenue = dealer.orders.reduce((s, o) => s + o.total, 0);
+  const totalItems = dealer.orders.reduce((s, o) => s + o.items.reduce((si, i) => si + i.quantity, 0), 0);
 
   return (
     <>
+      {/* ── Header ── */}
       <div className="admin-page-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Link href="/adminpanel/dealers" className="admin-action-btn admin-action-btn--secondary">← Дилъри</Link>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+          <Link href="/adminpanel/dealers" className="admin-action-btn admin-action-btn--secondary" style={{ marginTop: 2, flexShrink: 0 }}>
+            ← Дилъри
+          </Link>
           <div>
-            <h1>{dealer.companyName}</h1>
-            <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>
-              {dealer.contactName} · {dealer.email} · Регистриран {new Date(dealer.createdAt).toLocaleDateString('bg-BG')}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <h1>{dealer.companyName}</h1>
+              <span className="admin-order-status-pill" style={{ background: pill.bg, color: pill.color }}>
+                {DEALER_STATUS_LABEL[dealer.status] ?? dealer.status}
+              </span>
+            </div>
+            <p>
+              {dealer.contactName} · {dealer.email} · {dealer.phone} · Регистриран {new Date(dealer.createdAt).toLocaleDateString('bg-BG')}
             </p>
           </div>
-          <span className="admin-order-status-pill" style={{ background: pill.bg, color: pill.color }}>
-            {{ PENDING: 'Чака', APPROVED: 'Одобрен', REJECTED: 'Отказан' }[dealer.status] ?? dealer.status}
-          </span>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 20, alignItems: 'start' }}>
-        {/* Left: orders */}
-        <div className="admin-card">
-          <h2 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em' }}>
-            Поръчки ({dealer.orders.length})
-          </h2>
-          {dealer.orders.length === 0 ? (
-            <div className="admin-empty">Няма поръчки</div>
-          ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Дата</th>
-                  <th style={{ textAlign: 'right' }}>Артикули</th>
-                  <th style={{ textAlign: 'right' }}>Сума</th>
-                  <th>Статус</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dealer.orders.map(o => (
-                  <tr key={o.id}>
-                    <td style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700 }}>{o.id.slice(-8).toUpperCase()}</td>
-                    <td style={{ fontSize: 12, color: 'var(--muted)' }}>{new Date(o.createdAt).toLocaleDateString('bg-BG')}</td>
-                    <td style={{ textAlign: 'right' }}>{o.items.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0)} бр.</td>
-                    <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(o.total)} лв.</td>
-                    <td style={{ fontSize: 12 }}>{STATUS_LABELS[o.status] ?? o.status}</td>
+      {/* ── KPI row ── */}
+      <div className="admin-stats" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginBottom: 24 }}>
+        <div className="admin-stat-card">
+          <div className="admin-stat-card__icon admin-stat-card__icon--blue">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+            </svg>
+          </div>
+          <div className="admin-stat-card__value">{dealer.orders.length}</div>
+          <div className="admin-stat-card__label">Поръчки</div>
+        </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-card__icon admin-stat-card__icon--success">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div className="admin-stat-card__value" style={{ fontSize: 22 }}>{fmt(totalRevenue)}</div>
+          <div className="admin-stat-card__label">Общ оборот (лв.)</div>
+        </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-card__icon admin-stat-card__icon--orange">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/>
+            </svg>
+          </div>
+          <div className="admin-stat-card__value">{totalItems}</div>
+          <div className="admin-stat-card__label">Артикули общо</div>
+        </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-card__icon admin-stat-card__icon--accent">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+              <line x1="7" y1="7" x2="7.01" y2="7"/>
+            </svg>
+          </div>
+          <div className="admin-stat-card__value" style={{ color: 'var(--accent)' }}>{dealer.discountPercent}%</div>
+          <div className="admin-stat-card__label">Текуща отстъпка</div>
+        </div>
+      </div>
+
+      {/* ── Main grid ── */}
+      <div className="admin-order-detail-grid">
+
+        {/* Left — orders */}
+        <div>
+          <div className="admin-card">
+            <div className="admin-card__header">
+              <h2>Поръчки</h2>
+              <span style={{ fontSize: 12, color: 'var(--muted)' }}>{dealer.orders.length} общо</span>
+            </div>
+            {dealer.orders.length === 0 ? (
+              <div className="admin-empty">Дилърът все още няма поръчки</div>
+            ) : (
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>№</th>
+                    <th>Дата</th>
+                    <th style={{ textAlign: 'right' }}>Арт.</th>
+                    <th style={{ textAlign: 'right' }}>Сума</th>
+                    <th>Статус</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody>
+                  {dealer.orders.map(o => {
+                    const op = ORDER_PILL[o.status] ?? { bg: '#F3F4F6', color: '#374151' };
+                    const qty = o.items.reduce((s, i) => s + i.quantity, 0);
+                    return (
+                      <tr key={o.id}>
+                        <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>
+                          {o.id.slice(-8).toUpperCase()}
+                        </td>
+                        <td style={{ color: 'var(--muted)' }}>
+                          {new Date(o.createdAt).toLocaleDateString('bg-BG')}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>{qty} бр.</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(o.total)} лв.</td>
+                        <td>
+                          <span className="admin-order-status-pill" style={{ background: op.bg, color: op.color }}>
+                            {ORDER_STATUS[o.status] ?? o.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/* Company data */}
+          <div className="admin-card">
+            <div className="admin-card__header"><h2>Фирмени данни</h2></div>
+            <div className="admin-card__body">
+              {[
+                ['ЕИК', dealer.eik],
+                ['ДДС регистрация', dealer.vatRegistered ? (dealer.vatNumber || 'Да, без номер') : 'Не'],
+                ['Адрес', dealer.address],
+                ['Град', dealer.city],
+                ['Имейл', dealer.email],
+                ['Телефон', dealer.phone],
+              ].map(([label, value]) => (
+                <div key={label} className="admin-detail-row">
+                  <span className="admin-detail-row__label">{label}</span>
+                  <span className="admin-detail-row__value">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Right: management */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Profile info */}
+        {/* Right — management */}
+        <div className="admin-order-detail-right">
           <div className="admin-card">
-            <h2 style={{ fontSize: 13, fontWeight: 700, marginBottom: 14, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em' }}>Данни</h2>
-            {[
-              ['ЕИК', dealer.eik],
-              ['ДДС', dealer.vatRegistered ? (dealer.vatNumber || 'Да') : 'Не'],
-              ['Телефон', dealer.phone],
-              ['Адрес', `${dealer.address}, ${dealer.city}`],
-            ].map(([label, value]) => (
-              <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '6px 0', borderBottom: '1px solid var(--line)' }}>
-                <span style={{ color: 'var(--muted)' }}>{label}</span>
-                <span style={{ fontWeight: 600 }}>{value}</span>
+            <div className="admin-card__header"><h2>Управление</h2></div>
+            <div className="admin-card__body">
+
+              <div className="admin-form-group">
+                <label className="admin-form-label">Статус</label>
+                <select
+                  className="admin-form-select"
+                  value={status}
+                  onChange={e => setStatus(e.target.value)}
+                >
+                  <option value="PENDING">Чака одобрение</option>
+                  <option value="APPROVED">Одобрен</option>
+                  <option value="REJECTED">Отказан</option>
+                </select>
               </div>
-            ))}
-          </div>
 
-          {/* Management */}
-          <div className="admin-card">
-            <h2 style={{ fontSize: 13, fontWeight: 700, marginBottom: 16, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em' }}>Управление</h2>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Отстъпка (%)</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  className="admin-form-input"
+                  value={discount}
+                  onChange={e => setDiscount(Math.max(0, Math.min(100, parseInt(e.target.value) || 0)))}
+                />
+              </div>
 
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>Статус</label>
-              <select value={status} onChange={e => setStatus(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--line)', borderRadius: 6, fontSize: 13, background: 'var(--surface)' }}>
-                <option value="PENDING">Чака одобрение</option>
-                <option value="APPROVED">Одобрен</option>
-                <option value="REJECTED">Отказан</option>
-              </select>
+              <div className="admin-form-group">
+                <label className="admin-form-label">Бележки</label>
+                <textarea
+                  rows={4}
+                  className="admin-form-textarea"
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  placeholder="Вътрешни бележки за дилъра..."
+                />
+              </div>
+
+              <button
+                className="admin-action-btn"
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  background: saved ? 'var(--success)' : undefined,
+                  opacity: saving ? 0.7 : 1,
+                }}
+                onClick={save}
+                disabled={saving}
+              >
+                {saved ? '✓ Запазено' : saving ? 'Запазване...' : 'Запази промените'}
+              </button>
             </div>
-
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>Отстъпка (%)</label>
-              <input
-                type="number" min={0} max={100} value={discount}
-                onChange={e => setDiscount(Math.max(0, Math.min(100, parseInt(e.target.value) || 0)))}
-                style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--line)', borderRadius: 6, fontSize: 13, background: 'var(--surface)' }}
-              />
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, display: 'block', marginBottom: 6 }}>Бележки</label>
-              <textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)}
-                style={{ width: '100%', padding: '8px 10px', border: '1px solid var(--line)', borderRadius: 6, fontSize: 13, fontFamily: 'inherit', resize: 'vertical', background: 'var(--surface)' }} />
-            </div>
-
-            <button
-              onClick={save} disabled={saving}
-              className="admin-action-btn"
-              style={{ width: '100%', justifyContent: 'center', background: saved ? '#16a34a' : undefined }}
-            >
-              {saved ? '✓ Запазено' : saving ? 'Запазване...' : 'Запази промените'}
-            </button>
           </div>
         </div>
+
       </div>
     </>
   );
