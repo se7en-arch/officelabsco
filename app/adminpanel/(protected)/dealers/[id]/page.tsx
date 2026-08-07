@@ -198,6 +198,7 @@ export default function AdminDealerDetailPage() {
                     <th style={{ textAlign: 'right' }}>Арт.</th>
                     <th style={{ textAlign: 'right' }}>Сума</th>
                     <th>Статус</th>
+                    <th style={{ width: 40 }} />
                   </tr>
                 </thead>
                 <tbody>
@@ -205,7 +206,7 @@ export default function AdminDealerDetailPage() {
                     const op = ORDER_PILL[o.status] ?? { bg: '#F3F4F6', color: '#374151' };
                     const qty = o.items.reduce((s, i) => s + i.quantity, 0);
                     return (
-                      <tr key={o.id}>
+                      <tr key={o.id} style={{ cursor: 'pointer' }} onClick={() => window.location.href = `/adminpanel/dealers/orders/${o.id}`}>
                         <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>
                           {o.id.slice(-8).toUpperCase()}
                         </td>
@@ -217,6 +218,13 @@ export default function AdminDealerDetailPage() {
                         <td>
                           <span className="admin-order-status-pill" style={{ background: op.bg, color: op.color }}>
                             {ORDER_STATUS[o.status] ?? o.status}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="admin-row-btn admin-row-btn--view">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
                           </span>
                         </td>
                       </tr>
