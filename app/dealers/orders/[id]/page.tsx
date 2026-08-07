@@ -13,7 +13,8 @@ function fmt(n: number) {
   return n.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-export default async function DealerOrderDetailPage({ params }: { params: { id: string } }) {
+export default async function DealerOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getDealerSession();
   if (!session) redirect('/dealers');
   if (session.status !== 'APPROVED') redirect('/dealers/pending');
@@ -21,7 +22,7 @@ export default async function DealerOrderDetailPage({ params }: { params: { id: 
   const [dealer, order] = await Promise.all([
     prisma.dealer.findUnique({ where: { id: session.id }, select: { companyName: true, discountPercent: true } }),
     prisma.dealerOrder.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: { items: true },
     }),
   ]);
