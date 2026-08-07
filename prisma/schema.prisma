@@ -150,3 +150,56 @@ model Review {
 
   @@index([productId])
 }
+
+model Dealer {
+  id              String        @id @default(cuid())
+  email           String        @unique
+  passwordHash    String
+  companyName     String
+  contactName     String
+  phone           String
+  address         String
+  city            String
+  eik             String
+  vatRegistered   Boolean       @default(false)
+  vatNumber       String?
+  status          String        @default("PENDING")
+  discountPercent Int           @default(0)
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  orders          DealerOrder[]
+
+  @@index([status])
+}
+
+model DealerOrder {
+  id        String            @id @default(cuid())
+  dealerId  String
+  dealer    Dealer            @relation(fields: [dealerId], references: [id])
+  status    String            @default("new")
+  total     Float
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  items     DealerOrderItem[]
+
+  @@index([dealerId])
+  @@index([status])
+}
+
+model DealerOrderItem {
+  id          String      @id @default(cuid())
+  orderId     String
+  order       DealerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   Int?
+  productName String
+  productSlug String
+  quantity    Int
+  unitPrice   Float
+  retailPrice Float
+  color       String?
+  image       String?
+
+  @@index([orderId])
+}
