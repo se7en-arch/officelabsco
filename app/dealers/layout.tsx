@@ -168,28 +168,28 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
           display: flex; flex-direction: column; gap: 2px;
         }
         .dl-product-card__price-block--retail {
-          background: #F5F5F7;
+          background: #FEF2F2;
         }
         .dl-product-card__price-block--dealer {
-          background: #1C1C1E;
+          background: #052E16;
         }
         .dl-product-card__price-head {
           font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
         }
-        .dl-product-card__price-block--retail .dl-product-card__price-head { color: #8E8E93; }
-        .dl-product-card__price-block--dealer .dl-product-card__price-head { color: rgba(255,255,255,.45); }
+        .dl-product-card__price-block--retail .dl-product-card__price-head { color: #F87171; }
+        .dl-product-card__price-block--dealer .dl-product-card__price-head { color: rgba(134,239,172,.6); }
 
         .dl-product-card__price-main {
           font-size: 17px; font-weight: 800; letter-spacing: -.03em; line-height: 1;
         }
-        .dl-product-card__price-block--retail .dl-product-card__price-main { color: #6B7280; }
-        .dl-product-card__price-block--dealer .dl-product-card__price-main { color: #fff; }
+        .dl-product-card__price-block--retail .dl-product-card__price-main { color: #DC2626; }
+        .dl-product-card__price-block--dealer .dl-product-card__price-main { color: #86EFAC; }
 
         .dl-product-card__price-vat {
           font-size: 11px; font-weight: 500; margin-top: 1px;
         }
-        .dl-product-card__price-block--retail .dl-product-card__price-vat { color: #9CA3AF; }
-        .dl-product-card__price-block--dealer .dl-product-card__price-vat { color: rgba(255,255,255,.4); }
+        .dl-product-card__price-block--retail .dl-product-card__price-vat { color: #FCA5A5; }
+        .dl-product-card__price-block--dealer .dl-product-card__price-vat { color: rgba(134,239,172,.4); }
 
         /* ── Actions row ── */
         .dl-product-card__actions {
