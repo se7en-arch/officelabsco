@@ -8,7 +8,18 @@ const BYPASS_COOKIE = 'ol_preview';
 const PREVIEW_SECRET = process.env.PREVIEW_SECRET ?? '';
 
 export default function middleware(req: NextRequest) {
+  const hostname = req.headers.get('host') ?? '';
   const { pathname } = req.nextUrl;
+
+  // Dealers subdomain → rewrite to /dealers/*
+  if (hostname.startsWith('dealers.')) {
+    if (!pathname.startsWith('/dealers') && !pathname.startsWith('/_next') && !pathname.startsWith('/api')) {
+      const url = req.nextUrl.clone();
+      url.pathname = `/dealers${pathname === '/' ? '' : pathname}`;
+      return NextResponse.rewrite(url);
+    }
+    return NextResponse.next();
+  }
 
   // Always allow the under-construction page and the unlock API
   if (pathname === '/under-construction' || pathname.startsWith('/api/unlock')) {
