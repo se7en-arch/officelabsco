@@ -145,8 +145,8 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
           text-transform: uppercase; letter-spacing: .1em;
         }
         .dl-product-card__name {
-          font-size: 16px; font-weight: 700; color: #1C1C1E;
-          letter-spacing: -.02em; line-height: 1.2; margin-top: -4px;
+          font-size: 18px; font-weight: 800; color: #1C1C1E;
+          letter-spacing: -.03em; line-height: 1.2; margin-top: -2px;
         }
         .dl-product-card__colors {
           display: flex; align-items: center; gap: 5px; flex-wrap: wrap;
@@ -159,29 +159,37 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
         .dl-product-card__color-btn.active { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1C1C1E; }
         .dl-product-card__color-name { font-size: 11px; color: #8E8E93; }
 
-        /* ── Price table ── */
+        /* ── Price blocks ── */
         .dl-product-card__prices {
-          display: grid;
-          grid-template-columns: auto 1fr 1fr;
-          gap: 3px 14px;
-          align-items: center;
+          display: flex; gap: 8px;
+        }
+        .dl-product-card__price-block {
+          flex: 1; border-radius: 10px; padding: 10px 12px;
+          display: flex; flex-direction: column; gap: 2px;
+        }
+        .dl-product-card__price-block--retail {
+          background: #F5F5F7;
+        }
+        .dl-product-card__price-block--dealer {
+          background: #1C1C1E;
         }
         .dl-product-card__price-head {
-          font-size: 10px; font-weight: 700; color: #8E8E93;
-          text-transform: uppercase; letter-spacing: .07em;
-          padding-bottom: 2px;
+          font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
         }
-        .dl-product-card__price-row-label {
-          font-size: 11px; color: #AEAEB2; font-weight: 500; white-space: nowrap;
+        .dl-product-card__price-block--retail .dl-product-card__price-head { color: #8E8E93; }
+        .dl-product-card__price-block--dealer .dl-product-card__price-head { color: rgba(255,255,255,.45); }
+
+        .dl-product-card__price-main {
+          font-size: 17px; font-weight: 800; letter-spacing: -.03em; line-height: 1;
         }
-        .dl-product-card__price-retail {
-          font-size: 14px; font-weight: 600; color: #8E8E93;
-          text-decoration: line-through;
+        .dl-product-card__price-block--retail .dl-product-card__price-main { color: #6B7280; }
+        .dl-product-card__price-block--dealer .dl-product-card__price-main { color: #fff; }
+
+        .dl-product-card__price-vat {
+          font-size: 11px; font-weight: 500; margin-top: 1px;
         }
-        .dl-product-card__price-dealer {
-          font-size: 16px; font-weight: 800; color: #1C1C1E; letter-spacing: -.02em;
-        }
-        .dl-product-card__price-dealer--vat { color: #374151; }
+        .dl-product-card__price-block--retail .dl-product-card__price-vat { color: #9CA3AF; }
+        .dl-product-card__price-block--dealer .dl-product-card__price-vat { color: rgba(255,255,255,.4); }
 
         /* ── Actions row ── */
         .dl-product-card__actions {

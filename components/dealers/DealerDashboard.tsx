@@ -154,20 +154,18 @@ export default function DealerDashboard({
                     </div>
                   )}
 
-                  {/* Price table */}
+                  {/* Price blocks */}
                   <div className="dl-product-card__prices">
-                    {/* Headers */}
-                    <div />
-                    <div className="dl-product-card__price-head">Клиентска</div>
-                    <div className="dl-product-card__price-head">Дилърска</div>
-                    {/* без ДДС row */}
-                    <div className="dl-product-card__price-row-label">без ДДС</div>
-                    <div className="dl-product-card__price-retail">{fmt(p.price)} лв.</div>
-                    <div className="dl-product-card__price-dealer">{fmt(dp)} лв.</div>
-                    {/* с ДДС row */}
-                    <div className="dl-product-card__price-row-label">с ДДС</div>
-                    <div className="dl-product-card__price-retail">{fmt(retailVat)} лв.</div>
-                    <div className="dl-product-card__price-dealer dl-product-card__price-dealer--vat">{fmt(dpVat)} лв.</div>
+                    <div className="dl-product-card__price-block dl-product-card__price-block--retail">
+                      <div className="dl-product-card__price-head">Клиентска</div>
+                      <div className="dl-product-card__price-main">{fmt(p.price)} лв.</div>
+                      <div className="dl-product-card__price-vat">{fmt(retailVat)} с ДДС</div>
+                    </div>
+                    <div className="dl-product-card__price-block dl-product-card__price-block--dealer">
+                      <div className="dl-product-card__price-head">Дилърска</div>
+                      <div className="dl-product-card__price-main">{fmt(dp)} лв.</div>
+                      <div className="dl-product-card__price-vat">{fmt(dpVat)} с ДДС</div>
+                    </div>
                   </div>
 
                   {/* Actions */}
