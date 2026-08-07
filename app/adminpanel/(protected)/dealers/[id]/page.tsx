@@ -8,7 +8,7 @@ interface DealerDetail {
   id: string; companyName: string; contactName: string; email: string; phone: string;
   address: string; city: string; eik: string; vatRegistered: boolean; vatNumber: string | null;
   discountPercent: number; status: string; notes: string | null; createdAt: string;
-  orders: DealerDetail['orders'] extends never ? DealerOrder[] : DealerOrder[];
+  orders: DealerOrder[];
 }
 
 const STATUS_LABELS: Record<string, string> = {
