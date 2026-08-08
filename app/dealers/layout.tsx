@@ -349,54 +349,120 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
         .dl-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         .dl-table-wrap .dl-order-table { min-width: 560px; }
 
-        /* ── Tablet (≤ 900px) ── */
+        /* ── Burger button (hidden on desktop) ── */
+        .dl-burger {
+          display: none;
+          align-items: center; justify-content: center;
+          width: 38px; height: 38px;
+          background: rgba(0,0,0,.05);
+          border: 1px solid rgba(0,0,0,.1);
+          border-radius: 9px; cursor: pointer; color: #1C1C1C; flex-shrink: 0;
+          transition: background .15s;
+        }
+        .dl-burger:hover { background: rgba(0,0,0,.09); }
+
+        /* ── Backdrop overlay ── */
+        .dl-menu-overlay {
+          position: fixed; inset: 0; z-index: 98;
+          background: rgba(0,0,0,.25);
+          backdrop-filter: blur(2px);
+          -webkit-backdrop-filter: blur(2px);
+        }
+
+        /* ── Mobile drawer (hidden by default) ── */
+        .dl-mobile-menu {
+          display: none;
+          position: fixed; top: 58px; left: 0; right: 0; z-index: 99;
+          background: rgba(255,255,255,.94);
+          backdrop-filter: blur(24px) saturate(1.8);
+          -webkit-backdrop-filter: blur(24px) saturate(1.8);
+          border-bottom: 1px solid rgba(0,0,0,.08);
+          box-shadow: 0 8px 32px rgba(0,0,0,.12);
+          transform: translateY(-6px);
+          opacity: 0; pointer-events: none;
+          transition: transform .22s ease, opacity .22s ease;
+        }
+        .dl-mobile-menu.open {
+          transform: translateY(0);
+          opacity: 1; pointer-events: auto;
+        }
+        .dl-mobile-menu__company {
+          padding: 16px 20px 14px;
+          border-bottom: 1px solid rgba(0,0,0,.06);
+        }
+        .dl-mobile-menu__company-name {
+          font-size: 16px; font-weight: 800; letter-spacing: -.03em; color: #1C1C1C;
+        }
+        .dl-mobile-menu__company-discount {
+          font-size: 12px; color: #B45309; font-weight: 600; margin-top: 3px;
+        }
+        .dl-mobile-menu__nav {
+          padding: 8px 12px; display: flex; flex-direction: column; gap: 2px;
+        }
+        .dl-mobile-menu__link {
+          display: block; padding: 13px 14px; border-radius: 10px;
+          font-size: 15px; font-weight: 600; color: rgba(0,0,0,.65);
+          text-decoration: none; transition: background .15s, color .15s;
+        }
+        .dl-mobile-menu__link:hover { background: rgba(0,0,0,.05); color: #1C1C1C; }
+        .dl-mobile-menu__link.active {
+          background: rgba(245,158,11,.1); color: #B45309;
+        }
+        .dl-mobile-menu__footer {
+          padding: 10px 20px 18px;
+          border-top: 1px solid rgba(0,0,0,.06);
+        }
+        .dl-mobile-menu__logout {
+          width: 100%; padding: 12px;
+          background: rgba(0,0,0,.05); border: 1px solid rgba(0,0,0,.1);
+          border-radius: 10px; font-size: 14px; font-weight: 600;
+          color: rgba(0,0,0,.6); cursor: pointer; font-family: inherit;
+          transition: background .15s;
+        }
+        .dl-mobile-menu__logout:hover { background: rgba(0,0,0,.09); color: #1C1C1C; }
+
+        /* ── Tablet + Mobile (≤ 1024px): show burger, hide desktop nav ── */
+        @media (max-width: 1024px) {
+          .dl-burger { display: flex; }
+          .dl-mobile-menu { display: block; }
+          .dl-topbar__nav { display: none; }
+          .dl-topbar__company { display: none; }
+          .dl-topbar__sep { display: none; }
+          .dl-topbar__label { display: none; }
+          .dl-desktop-only { display: none; }
+        }
+
+        /* ── Product grid breakpoint ── */
         @media (max-width: 900px) {
           .dl-product-grid { grid-template-columns: 1fr; }
         }
 
         /* ── Mobile (≤ 768px) ── */
         @media (max-width: 768px) {
-          /* Topbar */
-          .dl-topbar { padding: 0 14px; gap: 8px; height: 52px; }
-          .dl-topbar__label { display: none; }
-          .dl-topbar__sep  { display: none; }
-          .dl-topbar__company { display: none; }
-          .dl-topbar__link { padding: 5px 9px; font-size: 12px; }
-          .dl-topbar__logout { padding: 5px 10px; font-size: 12px; }
+          .dl-topbar { height: 52px; padding: 0 14px; gap: 8px; }
+          .dl-mobile-menu { top: 52px; }
 
-          /* Page */
           .dl-page { padding: 20px 14px 100px; }
-
-          /* Card */
           .dl-card { padding: 18px; border-radius: 14px; }
-
-          /* Form */
           .dl-form-row { grid-template-columns: 1fr; }
           .dl-search-input { min-width: unset; width: 100%; }
 
-          /* Product card → vertical */
           .dl-product-card { flex-direction: column; min-height: auto; }
           .dl-product-card__img {
             width: 100%; height: 200px; min-height: unset;
-            border-right: none;
-            border-bottom: 1px solid rgba(0,0,0,.06);
+            border-right: none; border-bottom: 1px solid rgba(0,0,0,.06);
           }
           .dl-product-card__body { padding: 14px 16px; gap: 9px; }
           .dl-product-card__name { font-size: 16px; }
           .dl-product-card__badge { border-radius: 0 14px 0 10px; }
 
-          /* Cart bar */
           .dl-cart-bar { padding: 10px 14px; gap: 8px; flex-wrap: wrap; }
           .dl-cart-bar__info { flex: 1 1 100%; display: flex; align-items: center; justify-content: space-between; }
 
-          /* Stat row */
           .dl-stat-row { flex-direction: column; gap: 10px; }
 
-          /* Typography */
           .dl-title { font-size: 20px; }
           .dl-subtitle { font-size: 13px; margin-bottom: 16px; }
-
-          /* Buttons */
           .dl-btn { padding: 10px 18px; font-size: 13px; }
           .dl-btn--sm { padding: 7px 12px; font-size: 12px; }
         }
@@ -404,7 +470,6 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
         /* ── Small mobile (≤ 480px) ── */
         @media (max-width: 480px) {
           .dl-topbar__logo { font-size: 13px; }
-          .dl-topbar__nav { gap: 0; }
           .dl-product-card__prices { gap: 6px; }
           .dl-product-card__price-main { font-size: 15px; }
           .dl-product-card__add { font-size: 13px; }
