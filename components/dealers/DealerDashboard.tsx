@@ -100,8 +100,7 @@ export default function DealerDashboard({
             <p className="dl-subtitle">{products.length} продукта · Вашата отстъпка: <strong style={{ color: '#F59E0B' }}>{discount}%</strong></p>
           </div>
           <input
-            className="dl-form-group"
-            style={{ margin: 0, padding: '10px 14px', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 14, minWidth: 240, outline: 'none' }}
+            className="dl-search-input"
             placeholder="Търси по продукт, серия или код..."
             value={search}
             onChange={e => setSearch(e.target.value)}
@@ -206,11 +205,24 @@ export default function DealerDashboard({
 
       {/* Cart modal */}
       {showCart && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.5)', zIndex: 300, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-          <div style={{ background: '#fff', borderRadius: '16px 16px 0 0', width: '100%', maxWidth: 680, maxHeight: '90vh', overflow: 'auto', padding: 32 }}>
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 300,
+          background: 'rgba(0,0,0,.65)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+        }}>
+          <div style={{
+            background: 'rgba(18,18,18,.92)',
+            backdropFilter: 'blur(24px) saturate(1.5)',
+            WebkitBackdropFilter: 'blur(24px) saturate(1.5)',
+            border: '1px solid rgba(255,255,255,.12)',
+            borderRadius: '24px 24px 0 0',
+            width: '100%', maxWidth: 680, maxHeight: '90vh', overflow: 'auto', padding: 32,
+            boxShadow: '0 -8px 40px rgba(0,0,0,.5)',
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 800 }}>Вашата поръчка</h2>
-              <button style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#6B7280' }} onClick={() => setShowCart(false)}>✕</button>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>Вашата поръчка</h2>
+              <button style={{ background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 8, width: 32, height: 32, fontSize: 16, cursor: 'pointer', color: 'rgba(255,255,255,.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowCart(false)}>✕</button>
             </div>
 
             <table className="dl-order-table" style={{ marginBottom: 20 }}>
@@ -227,13 +239,13 @@ export default function DealerDashboard({
               <tbody>
                 {cart.map(item => (
                   <tr key={`${item.productId}-${item.color}`}>
-                    <td style={{ fontWeight: 600 }}>{item.productName}</td>
-                    <td style={{ color: '#6B7280' }}>{item.color ?? '—'}</td>
-                    <td style={{ textAlign: 'right' }}>{fmt(item.unitPrice)} лв.</td>
+                    <td style={{ fontWeight: 600, color: '#fff' }}>{item.productName}</td>
+                    <td style={{ color: 'rgba(255,255,255,.4)' }}>{item.color ?? '—'}</td>
+                    <td style={{ textAlign: 'right', color: '#F59E0B', fontWeight: 700 }}>{fmt(item.unitPrice)} лв.</td>
                     <td style={{ textAlign: 'center' }}>{item.quantity}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(item.unitPrice * item.quantity)} лв.</td>
+                    <td style={{ textAlign: 'right', fontWeight: 800 }}>{fmt(item.unitPrice * item.quantity)} лв.</td>
                     <td>
-                      <button style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: 14 }}
+                      <button style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,.7)', cursor: 'pointer', fontSize: 14 }}
                         onClick={() => removeFromCart(item.productId, item.color)}>✕</button>
                     </td>
                   </tr>
@@ -241,20 +253,19 @@ export default function DealerDashboard({
               </tbody>
             </table>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 18, fontWeight: 800, marginBottom: 20 }}>
-              Общо: {fmt(cartTotal)} лв.
+            <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 18, fontWeight: 800, marginBottom: 20, color: '#fff', paddingTop: 8, borderTop: '1px solid rgba(255,255,255,.08)' }}>
+              Общо: <span style={{ color: '#F59E0B', marginLeft: 8 }}>{fmt(cartTotal)} лв.</span>
             </div>
 
             <div className="dl-form-group">
               <label>Бележки към поръчката</label>
               <textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)}
-                placeholder="Допълнителни изисквания, срокове, адрес за доставка..."
-                style={{ padding: '10px 12px', border: '1px solid #D1D5DB', borderRadius: 8, fontSize: 14, fontFamily: 'inherit', resize: 'vertical' }} />
+                placeholder="Допълнителни изисквания, срокове, адрес за доставка..." />
             </div>
 
-            <button className="dl-btn dl-btn--primary dl-btn--full" style={{ background: '#F59E0B' }}
+            <button className="dl-btn dl-btn--primary dl-btn--full"
               onClick={placeOrder} disabled={checkingOut}>
-              {checkingOut ? 'Изпращане...' : 'Потвърди поръчката'}
+              {checkingOut ? 'Изпращане...' : 'Потвърди поръчката →'}
             </button>
           </div>
         </div>
