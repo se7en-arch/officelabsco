@@ -121,7 +121,7 @@ export default function DealerLoginPage() {
           border: none; border-radius: 12px; cursor: pointer;
           font-size: 15px; font-weight: 800; font-family: inherit;
           background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-          color: #1C1C1C; letter-spacing: -.01em;
+          color: #fff; letter-spacing: -.01em;
           box-shadow: 0 4px 24px rgba(245,158,11,.4), inset 0 1px 0 rgba(255,255,255,.3);
           transition: opacity .15s, transform .12s, box-shadow .15s;
           margin-top: 10px;
