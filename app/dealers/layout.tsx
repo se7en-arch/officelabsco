@@ -248,20 +248,20 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
           flex: 1; border-radius: 10px; padding: 10px 12px;
           display: flex; flex-direction: column; gap: 2px;
         }
-        .dl-product-card__price-block--retail { background: #FEF2F2; border: 1px solid #FECACA; }
-        .dl-product-card__price-block--dealer  { background: #052E16; border: 1px solid rgba(34,197,94,.2); }
+        .dl-product-card__price-block--retail { background: rgba(0,0,0,.04); border: 1px solid rgba(0,0,0,.07); }
+        .dl-product-card__price-block--dealer  { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.22); }
 
         .dl-product-card__price-head {
           font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
         }
-        .dl-product-card__price-block--retail .dl-product-card__price-head { color: #F87171; }
-        .dl-product-card__price-block--dealer  .dl-product-card__price-head { color: rgba(134,239,172,.6); }
+        .dl-product-card__price-block--retail .dl-product-card__price-head { color: #9CA3AF; }
+        .dl-product-card__price-block--dealer  .dl-product-card__price-head { color: rgba(180,83,9,.65); }
         .dl-product-card__price-main { font-size: 17px; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
-        .dl-product-card__price-block--retail .dl-product-card__price-main { color: #DC2626; }
-        .dl-product-card__price-block--dealer  .dl-product-card__price-main { color: #86EFAC; }
+        .dl-product-card__price-block--retail .dl-product-card__price-main { color: #374151; }
+        .dl-product-card__price-block--dealer  .dl-product-card__price-main { color: #B45309; }
         .dl-product-card__price-vat { font-size: 11px; font-weight: 500; margin-top: 1px; }
-        .dl-product-card__price-block--retail .dl-product-card__price-vat { color: #FCA5A5; }
-        .dl-product-card__price-block--dealer  .dl-product-card__price-vat { color: rgba(134,239,172,.4); }
+        .dl-product-card__price-block--retail .dl-product-card__price-vat { color: #9CA3AF; }
+        .dl-product-card__price-block--dealer  .dl-product-card__price-vat { color: rgba(180,83,9,.5); }
 
         /* Quantity + add */
         .dl-product-card__actions { display: flex; gap: 8px; align-items: center; margin-top: auto; }
