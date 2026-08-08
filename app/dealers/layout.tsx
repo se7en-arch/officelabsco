@@ -51,6 +51,7 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
           color: #B45309;
           border: 1px solid rgba(245,158,11,.28);
         }
+        .dl-topbar__company { font-size: 13px; color: rgba(0,0,0,.55); white-space: nowrap; }
         .dl-topbar__logout {
           padding: 6px 14px;
           background: rgba(0,0,0,.05);
@@ -204,7 +205,7 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
         }
 
         .dl-product-card__img {
-          width: 160px; min-height: 160px; flex-shrink: 0;
+          width: 250px; min-height: 160px; flex-shrink: 0;
           background: #F8F7F4;
           border-right: 1px solid rgba(0,0,0,.06);
           display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -344,11 +345,69 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
         .dl-stat__value { font-size: 22px; font-weight: 800; letter-spacing: -.03em; color: #1C1C1C; }
         .dl-stat__value--accent { color: #F59E0B; }
 
-        @media (max-width: 600px) {
-          .dl-form-row { grid-template-columns: 1fr; }
-          .dl-page { padding: 20px 16px 80px; }
-          .dl-card { padding: 20px; }
+        /* ── Scrollable table wrapper ── */
+        .dl-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .dl-table-wrap .dl-order-table { min-width: 560px; }
+
+        /* ── Tablet (≤ 900px) ── */
+        @media (max-width: 900px) {
           .dl-product-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ── Mobile (≤ 768px) ── */
+        @media (max-width: 768px) {
+          /* Topbar */
+          .dl-topbar { padding: 0 14px; gap: 8px; height: 52px; }
+          .dl-topbar__label { display: none; }
+          .dl-topbar__sep  { display: none; }
+          .dl-topbar__company { display: none; }
+          .dl-topbar__link { padding: 5px 9px; font-size: 12px; }
+          .dl-topbar__logout { padding: 5px 10px; font-size: 12px; }
+
+          /* Page */
+          .dl-page { padding: 20px 14px 100px; }
+
+          /* Card */
+          .dl-card { padding: 18px; border-radius: 14px; }
+
+          /* Form */
+          .dl-form-row { grid-template-columns: 1fr; }
+          .dl-search-input { min-width: unset; width: 100%; }
+
+          /* Product card → vertical */
+          .dl-product-card { flex-direction: column; min-height: auto; }
+          .dl-product-card__img {
+            width: 100%; height: 200px; min-height: unset;
+            border-right: none;
+            border-bottom: 1px solid rgba(0,0,0,.06);
+          }
+          .dl-product-card__body { padding: 14px 16px; gap: 9px; }
+          .dl-product-card__name { font-size: 16px; }
+          .dl-product-card__badge { border-radius: 0 14px 0 10px; }
+
+          /* Cart bar */
+          .dl-cart-bar { padding: 10px 14px; gap: 8px; flex-wrap: wrap; }
+          .dl-cart-bar__info { flex: 1 1 100%; display: flex; align-items: center; justify-content: space-between; }
+
+          /* Stat row */
+          .dl-stat-row { flex-direction: column; gap: 10px; }
+
+          /* Typography */
+          .dl-title { font-size: 20px; }
+          .dl-subtitle { font-size: 13px; margin-bottom: 16px; }
+
+          /* Buttons */
+          .dl-btn { padding: 10px 18px; font-size: 13px; }
+          .dl-btn--sm { padding: 7px 12px; font-size: 12px; }
+        }
+
+        /* ── Small mobile (≤ 480px) ── */
+        @media (max-width: 480px) {
+          .dl-topbar__logo { font-size: 13px; }
+          .dl-topbar__nav { gap: 0; }
+          .dl-product-card__prices { gap: 6px; }
+          .dl-product-card__price-main { font-size: 15px; }
+          .dl-product-card__add { font-size: 13px; }
         }
       `}</style>
       {children}

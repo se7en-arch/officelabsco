@@ -36,7 +36,7 @@ export default function DealerNav({ companyName, discount, active }: Props) {
         ))}
       </nav>
       <div className="dl-topbar__sep" />
-      <span style={{ fontSize: 13, color: 'rgba(255,255,255,.6)' }}>
+      <span className="dl-topbar__company">
         {companyName} · <span style={{ color: '#F59E0B', fontWeight: 700 }}>{discount}% отстъпка</span>
       </span>
       <div className="dl-topbar__sep" />

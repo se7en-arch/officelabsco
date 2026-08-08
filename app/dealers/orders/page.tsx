@@ -46,34 +46,36 @@ export default async function DealerOrdersPage() {
           </div>
         ) : (
           <div className="dl-card" style={{ padding: 0, overflow: 'hidden' }}>
-            <table className="dl-order-table">
-              <thead>
-                <tr>
-                  <th>№ поръчка</th>
-                  <th>Дата</th>
-                  <th>Артикули</th>
-                  <th style={{ textAlign: 'right' }}>Сума</th>
-                  <th>Статус</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map(o => (
-                  <tr key={o.id}>
-                    <td style={{ fontWeight: 700, fontFamily: 'monospace' }}>{o.id.slice(-8).toUpperCase()}</td>
-                    <td style={{ color: '#6B7280' }}>{new Date(o.createdAt).toLocaleDateString('bg-BG')}</td>
-                    <td>{o.items.reduce((s, i) => s + i.quantity, 0)} бр.</td>
-                    <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(o.total)} лв.</td>
-                    <td><span className={`dl-badge dl-badge--${o.status}`}>{STATUS_LABELS[o.status] ?? o.status}</span></td>
-                    <td>
-                      <Link href={`/dealers/orders/${o.id}`} className="dl-btn dl-btn--outline dl-btn--sm">
-                        Детайли
-                      </Link>
-                    </td>
+            <div className="dl-table-wrap">
+              <table className="dl-order-table">
+                <thead>
+                  <tr>
+                    <th>№ поръчка</th>
+                    <th>Дата</th>
+                    <th>Артикули</th>
+                    <th style={{ textAlign: 'right' }}>Сума</th>
+                    <th>Статус</th>
+                    <th />
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {orders.map(o => (
+                    <tr key={o.id}>
+                      <td style={{ fontWeight: 700, fontFamily: 'monospace' }}>{o.id.slice(-8).toUpperCase()}</td>
+                      <td style={{ color: '#6B7280' }}>{new Date(o.createdAt).toLocaleDateString('bg-BG')}</td>
+                      <td>{o.items.reduce((s, i) => s + i.quantity, 0)} бр.</td>
+                      <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(o.total)} лв.</td>
+                      <td><span className={`dl-badge dl-badge--${o.status}`}>{STATUS_LABELS[o.status] ?? o.status}</span></td>
+                      <td>
+                        <Link href={`/dealers/orders/${o.id}`} className="dl-btn dl-btn--outline dl-btn--sm">
+                          Детайли
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
