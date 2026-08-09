@@ -3,75 +3,128 @@ import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import OrderSearchInput from '@/components/admin/OrderSearchInput';
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Нова',
-  processing: 'В обработка',
-  shipped: 'Изпратена',
-  delivered: 'Доставена',
-  cancelled: 'Отказана',
+// Normalise raw DB statuses to unified tab keys
+const C_STATUS: Record<string, string> = {
+  pending: 'new', processing: 'processing', shipped: 'shipped',
+  delivered: 'done', cancelled: 'cancelled',
+};
+const D_STATUS: Record<string, string> = {
+  new: 'new', processing: 'processing', shipped: 'shipped',
+  completed: 'done', cancelled: 'cancelled',
+};
+const STATUS_LABEL: Record<string, string> = {
+  new: 'Нова', processing: 'В обработка', shipped: 'Изпратена',
+  done: 'Завършена', cancelled: 'Отказана',
 };
 const STATUS_PILL: Record<string, { bg: string; color: string }> = {
-  pending:    { bg: '#fef9c3', color: '#854d0e' },
+  new:        { bg: '#fef9c3', color: '#854d0e' },
   processing: { bg: '#dbeafe', color: '#1e40af' },
   shipped:    { bg: '#ede9fe', color: '#5b21b6' },
-  delivered:  { bg: '#dcfce7', color: '#166534' },
+  done:       { bg: '#dcfce7', color: '#166534' },
   cancelled:  { bg: '#fee2e2', color: '#991b1b' },
 };
 
-function buildWhere(filterStatus?: string, q?: string) {
-  const statusClause = filterStatus ? { status: filterStatus } : undefined;
-  const searchClause = q?.trim() ? {
-    OR: [
-      { firstName: { contains: q } },
-      { lastName:  { contains: q } },
-      { email:     { contains: q } },
-      { phone:     { contains: q } },
-      { company:   { contains: q } },
-    ],
-  } : undefined;
-
-  if (statusClause && searchClause) return { AND: [statusClause, searchClause] };
-  return statusClause ?? searchClause ?? undefined;
-}
+type UnifiedOrder = {
+  type: 'customer' | 'dealer';
+  id: string;
+  orderNumber: number;
+  displayName: string;
+  email: string;
+  phone: string;
+  itemCount: number;
+  total: number;
+  statusKey: string;
+  rawStatus: string;
+  createdAt: Date;
+  href: string;
+};
 
 export default async function OrdersPage({
   searchParams,
-}: {
-  searchParams: Promise<{ status?: string; page?: string; q?: string }>;
-}) {
+}: { searchParams: Promise<{ status?: string; page?: string; q?: string }> }) {
   const { status: filterStatus, page: pageParam, q } = await searchParams;
-  const page = Math.max(1, parseInt(pageParam ?? '1'));
+  const page    = Math.max(1, parseInt(pageParam ?? '1'));
   const perPage = 25;
-  const searchQuery = q?.trim() || undefined;
+  const sq      = q?.trim().toLowerCase() || undefined;
 
-  const where = buildWhere(filterStatus, searchQuery);
-
-  const [orders, counts, totalRevenue, filteredCount] = await Promise.all([
+  // Fetch both order types
+  const [customerOrders, dealerOrders] = await Promise.all([
     prisma.order.findMany({
-      where,
       orderBy: { createdAt: 'desc' },
-      take: perPage,
-      skip: (page - 1) * perPage,
-      include: { items: true },
+      take: 2000,
+      include: { items: { select: { id: true } } },
     }),
-    prisma.order.groupBy({ by: ['status'], _count: { _all: true } }),
-    prisma.order.aggregate({ _sum: { total: true } }),
-    prisma.order.count({ where }),
+    prisma.dealerOrder.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 2000,
+      include: {
+        items: { select: { id: true, quantity: true } },
+        dealer: { select: { companyName: true, contactName: true, email: true, phone: true } },
+      },
+    }),
   ]);
 
-  const countMap: Record<string, number> = {};
-  for (const c of counts) countMap[c.status] = c._count._all;
-  const totalAll = Object.values(countMap).reduce((s, n) => s + n, 0);
+  // Normalise
+  const unified: UnifiedOrder[] = [
+    ...customerOrders.map(o => ({
+      type:        'customer' as const,
+      id:          String(o.id),
+      orderNumber: o.orderNumber ?? o.id,
+      displayName: `${o.firstName} ${o.lastName}`,
+      email:       o.email,
+      phone:       o.phone,
+      itemCount:   o.items.length,
+      total:       o.total,
+      statusKey:   C_STATUS[o.status] ?? o.status,
+      rawStatus:   o.status,
+      createdAt:   o.createdAt,
+      href:        `/adminpanel/orders/${o.id}`,
+    })),
+    ...dealerOrders.map(o => ({
+      type:        'dealer' as const,
+      id:          o.id,
+      orderNumber: o.orderNumber ?? 0,
+      displayName: o.dealer.companyName,
+      email:       o.dealer.email,
+      phone:       o.dealer.phone,
+      itemCount:   o.items.reduce((s, i) => s + i.quantity, 0),
+      total:       o.total,
+      statusKey:   D_STATUS[o.status] ?? o.status,
+      rawStatus:   o.status,
+      createdAt:   o.createdAt,
+      href:        `/adminpanel/dealers/orders/${o.id}`,
+    })),
+  ];
 
-  const totalOrderRevenue = totalRevenue._sum.total ?? 0;
+  // Sort by newest first
+  unified.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+  // Search filter
+  const searched = sq
+    ? unified.filter(o =>
+        o.displayName.toLowerCase().includes(sq) ||
+        o.email.toLowerCase().includes(sq) ||
+        o.phone.includes(sq)
+      )
+    : unified;
+
+  // Status filter
+  const filtered = filterStatus ? searched.filter(o => o.statusKey === filterStatus) : searched;
+
+  // Paginate
+  const paginated    = filtered.slice((page - 1) * perPage, page * perPage);
+  const totalRevenue = unified.reduce((s, o) => s + o.total, 0);
+
+  const countsByStatus: Record<string, number> = {};
+  for (const o of searched) countsByStatus[o.statusKey] = (countsByStatus[o.statusKey] ?? 0) + 1;
 
   const tabs = [
-    { key: '', label: 'Всички', count: totalAll },
-    { key: 'pending',    label: 'Нова',          count: countMap['pending']    ?? 0 },
-    { key: 'processing', label: 'В обработка',   count: countMap['processing'] ?? 0 },
-    { key: 'shipped',    label: 'Изпратена',     count: countMap['shipped']    ?? 0 },
-    { key: 'delivered',  label: 'Доставена',     count: countMap['delivered']  ?? 0 },
-    { key: 'cancelled',  label: 'Отказана',      count: countMap['cancelled']  ?? 0 },
+    { key: '',           label: 'Всички',       count: searched.length },
+    { key: 'new',        label: 'Нова',         count: countsByStatus['new']        ?? 0 },
+    { key: 'processing', label: 'В обработка',  count: countsByStatus['processing'] ?? 0 },
+    { key: 'shipped',    label: 'Изпратена',    count: countsByStatus['shipped']    ?? 0 },
+    { key: 'done',       label: 'Завършена',    count: countsByStatus['done']       ?? 0 },
+    { key: 'cancelled',  label: 'Отказана',     count: countsByStatus['cancelled']  ?? 0 },
   ];
 
   return (
@@ -81,14 +134,17 @@ export default async function OrdersPage({
         <div>
           <h1>Поръчки</h1>
           <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>
-            {totalAll} поръчки · €{totalOrderRevenue.toFixed(2)} общ приход
+            {unified.length} поръчки · €{totalRevenue.toFixed(2)} общ приход
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <Suspense>
-            <OrderSearchInput defaultValue={searchQuery} />
+            <OrderSearchInput defaultValue={q} />
           </Suspense>
-          <a href={`/api/admin/orders/export${filterStatus ? `?status=${filterStatus}` : ''}`} className="admin-action-btn admin-action-btn--secondary">
+          <a
+            href={`/api/admin/orders/export${filterStatus ? `?status=${filterStatus}` : ''}`}
+            className="admin-action-btn admin-action-btn--secondary"
+          >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/>
@@ -107,7 +163,7 @@ export default async function OrdersPage({
             const isActive = (filterStatus ?? '') === tab.key;
             const params = new URLSearchParams();
             if (tab.key) params.set('status', tab.key);
-            if (searchQuery) params.set('q', searchQuery);
+            if (sq) params.set('q', q!);
             const href = params.size ? `/adminpanel/orders?${params.toString()}` : '/adminpanel/orders';
             return (
               <Link
@@ -124,17 +180,17 @@ export default async function OrdersPage({
           })}
         </div>
 
-        {/* Search result hint */}
-        {searchQuery && (
+        {/* Search hint */}
+        {sq && (
           <div style={{ padding: '10px 20px', fontSize: 13, color: 'var(--muted)', borderBottom: '1px solid var(--line)' }}>
-            {filteredCount === 0
-              ? `Няма резултати за „${searchQuery}"`
-              : `${filteredCount} резултата за „${searchQuery}"`}
+            {filtered.length === 0
+              ? `Няма резултати за „${q}"`
+              : `${filtered.length} резултата за „${q}"`}
           </div>
         )}
 
         {/* Table */}
-        {orders.length === 0 ? (
+        {paginated.length === 0 ? (
           <div className="admin-empty">Няма поръчки</div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
@@ -142,47 +198,33 @@ export default async function OrdersPage({
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Клиент</th>
+                  <th>Клиент / Дилър</th>
                   <th>Телефон</th>
                   <th>Продукти</th>
-                  <th>Доставка</th>
-                  <th>Плащане</th>
                   <th>Сума</th>
                   <th>Дата</th>
+                  <th>Тип</th>
                   <th>Статус</th>
-                  <th style={{ width: 40 }}></th>
+                  <th style={{ width: 40 }} />
                 </tr>
               </thead>
               <tbody>
-                {orders.map((o) => {
-                  const pill = STATUS_PILL[o.status] ?? { bg: '#f3f4f6', color: '#374151' };
+                {paginated.map(o => {
+                  const pill      = STATUS_PILL[o.statusKey] ?? { bg: '#f3f4f6', color: '#374151' };
+                  const isDealer  = o.type === 'dealer';
                   return (
-                    <tr key={o.id}>
+                    <tr key={`${o.type}-${o.id}`}>
                       <td style={{ fontWeight: 700, color: 'var(--muted)', fontSize: 12, whiteSpace: 'nowrap' }}>
-                        #Order{String(o.orderNumber ?? o.id).padStart(5, '0')}
+                        #Order{String(o.orderNumber).padStart(5, '0')}
                       </td>
                       <td>
                         <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap' }}>
-                          {o.firstName} {o.lastName}
+                          {o.displayName}
                         </div>
                         <div style={{ fontSize: 11, color: 'var(--muted)' }}>{o.email}</div>
-                        {o.company && (
-                          <div style={{ fontSize: 11, color: 'var(--muted)' }}>{o.company}</div>
-                        )}
                       </td>
                       <td style={{ fontSize: 13, whiteSpace: 'nowrap' }}>{o.phone}</td>
-                      <td style={{ fontSize: 13, color: 'var(--muted)' }}>
-                        {o.items.length} бр.
-                      </td>
-                      <td style={{ fontSize: 12, color: 'var(--muted)', whiteSpace: 'nowrap' }}>
-                        {o.carrier}
-                        <div style={{ fontSize: 11 }}>
-                          {o.delivType === 'address' ? 'До адрес' : 'До офис'}
-                        </div>
-                      </td>
-                      <td style={{ fontSize: 12, color: 'var(--muted)' }}>
-                        {o.payment === 'card' ? 'Карта' : 'Наложен платеж'}
-                      </td>
+                      <td style={{ fontSize: 13, color: 'var(--muted)' }}>{o.itemCount} бр.</td>
                       <td style={{ fontWeight: 700, fontSize: 14, whiteSpace: 'nowrap' }}>
                         €{o.total.toFixed(2)}
                       </td>
@@ -193,16 +235,24 @@ export default async function OrdersPage({
                         </div>
                       </td>
                       <td>
-                        <span className="admin-order-status-pill" style={{ background: pill.bg, color: pill.color }}>
-                          {STATUS_LABELS[o.status] ?? o.status}
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+                          letterSpacing: '.05em', padding: '2px 8px', borderRadius: 20,
+                          background: isDealer ? '#FEF3C7' : '#EFF6FF',
+                          color:      isDealer ? '#92400E' : '#1E40AF',
+                          border:     `1px solid ${isDealer ? '#FDE68A' : '#BFDBFE'}`,
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {isDealer ? 'Дилър' : 'Клиент'}
                         </span>
                       </td>
                       <td>
-                        <Link
-                          href={`/adminpanel/orders/${o.id}`}
-                          className="admin-row-btn admin-row-btn--view"
-                          title="Виж поръчката"
-                        >
+                        <span className="admin-order-status-pill" style={{ background: pill.bg, color: pill.color }}>
+                          {STATUS_LABEL[o.statusKey] ?? o.rawStatus}
+                        </span>
+                      </td>
+                      <td>
+                        <Link href={o.href} className="admin-row-btn admin-row-btn--view" title="Виж поръчката">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                           </svg>
@@ -217,16 +267,16 @@ export default async function OrdersPage({
         )}
 
         {/* Pagination */}
-        {filteredCount > perPage && (
+        {filtered.length > perPage && (
           <div className="orders-pagination">
             {page > 1 && (
               <Link
                 href={(() => {
-                  const params = new URLSearchParams();
-                  if (filterStatus) params.set('status', filterStatus);
-                  if (searchQuery) params.set('q', searchQuery);
-                  params.set('page', String(page - 1));
-                  return `/adminpanel/orders?${params.toString()}`;
+                  const p = new URLSearchParams();
+                  if (filterStatus) p.set('status', filterStatus);
+                  if (sq) p.set('q', q!);
+                  p.set('page', String(page - 1));
+                  return `/adminpanel/orders?${p.toString()}`;
                 })()}
                 className="orders-pag-btn"
               >
@@ -234,16 +284,16 @@ export default async function OrdersPage({
               </Link>
             )}
             <span className="orders-pag-info">
-              Страница {page} от {Math.ceil(filteredCount / perPage)}
+              Страница {page} от {Math.ceil(filtered.length / perPage)}
             </span>
-            {page < Math.ceil(filteredCount / perPage) && (
+            {page < Math.ceil(filtered.length / perPage) && (
               <Link
                 href={(() => {
-                  const params = new URLSearchParams();
-                  if (filterStatus) params.set('status', filterStatus);
-                  if (searchQuery) params.set('q', searchQuery);
-                  params.set('page', String(page + 1));
-                  return `/adminpanel/orders?${params.toString()}`;
+                  const p = new URLSearchParams();
+                  if (filterStatus) p.set('status', filterStatus);
+                  if (sq) p.set('q', q!);
+                  p.set('page', String(page + 1));
+                  return `/adminpanel/orders?${p.toString()}`;
                 })()}
                 className="orders-pag-btn"
               >

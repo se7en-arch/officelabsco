@@ -47,8 +47,13 @@ export default function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Pass all other API and admin panel routes through unmodified
-  if (pathname.startsWith('/api') || pathname.startsWith('/adminpanel')) {
+  // Pass API, admin panel, and internal tools through unmodified (own auth, not locale-based)
+  if (
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/adminpanel') ||
+    pathname.startsWith('/table') ||
+    pathname.startsWith('/catalog')
+  ) {
     return NextResponse.next();
   }
 
