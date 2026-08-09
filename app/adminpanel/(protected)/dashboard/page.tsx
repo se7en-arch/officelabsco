@@ -74,7 +74,7 @@ export default async function DashboardPage() {
       take: 8,
       orderBy: { createdAt: 'desc' },
       select: {
-        id: true, orderNumber: true, firstName: true, lastName: true,
+        id: true, orderNumber: true, orderCode: true, firstName: true, lastName: true,
         email: true, total: true, status: true, createdAt: true,
         items: { select: { id: true } },
       },
