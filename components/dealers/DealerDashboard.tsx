@@ -130,48 +130,49 @@ export default function DealerDashboard({
         }
         .dl-addr-option {
           display: flex; align-items: center; gap: 10px; padding: 12px 14px;
-          border: 1px solid rgba(255,255,255,.12); border-radius: 10px; cursor: pointer;
-          background: rgba(255,255,255,.04); transition: border-color .15s, background .15s;
+          border: 1px solid rgba(0,0,0,.1); border-radius: 10px; cursor: pointer;
+          background: rgba(255,255,255,.5); transition: border-color .15s, background .15s;
         }
         .dl-addr-option:hover { border-color: rgba(245,158,11,.4); background: rgba(245,158,11,.06); }
         .dl-addr-option.selected { border-color: #F59E0B; background: rgba(245,158,11,.1); }
         .dl-addr-option input[type="radio"] { accent-color: #F59E0B; width: 16px; height: 16px; flex-shrink: 0; }
-        .dl-addr-option-label { font-size: 12px; font-weight: 700; color: #F59E0B; text-transform: uppercase; letter-spacing: .06em; }
-        .dl-addr-option-text { font-size: 13px; color: rgba(255,255,255,.7); }
-        .dl-addr-no-link { font-size: 13px; color: rgba(255,255,255,.4); }
-        .dl-addr-no-link a { color: #F59E0B; font-weight: 600; }
+        .dl-addr-option-label { font-size: 12px; font-weight: 700; color: #B45309; text-transform: uppercase; letter-spacing: .06em; }
+        .dl-addr-option-text { font-size: 13px; color: #4B5563; }
+        .dl-addr-no-link { font-size: 13px; color: #9CA3AF; }
+        .dl-addr-no-link a { color: #D97706; font-weight: 600; }
 
         /* Confirmation popup */
         .dl-confirm-overlay {
           position: fixed; inset: 0; z-index: 500;
-          background: rgba(0,0,0,.7); backdrop-filter: blur(8px);
+          background: rgba(0,0,0,.45); backdrop-filter: blur(8px);
           display: flex; align-items: center; justify-content: center; padding: 24px;
         }
         .dl-confirm-modal {
-          background: rgba(18,18,18,.96);
+          background: rgba(255,255,255,.88);
           backdrop-filter: blur(30px) saturate(1.6);
-          border: 1px solid rgba(255,255,255,.14);
+          -webkit-backdrop-filter: blur(30px) saturate(1.6);
+          border: 1px solid rgba(255,255,255,.95);
           border-radius: 24px; padding: 40px 36px;
           width: 100%; max-width: 420px; text-align: center;
-          box-shadow: 0 24px 80px rgba(0,0,0,.6);
+          box-shadow: 0 8px 40px rgba(0,0,0,.12);
         }
         .dl-confirm-icon {
           width: 64px; height: 64px; border-radius: 50%;
-          background: rgba(34,197,94,.15); border: 2px solid rgba(34,197,94,.4);
+          background: #D1FAE5; border: 2px solid #6EE7B7;
           display: flex; align-items: center; justify-content: center;
-          font-size: 28px; margin: 0 auto 20px;
+          font-size: 28px; margin: 0 auto 20px; color: #065F46;
         }
-        .dl-confirm-title { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px; letter-spacing: -.04em; }
-        .dl-confirm-num { font-size: 15px; color: #F59E0B; font-weight: 700; margin-bottom: 12px; font-family: monospace; }
-        .dl-confirm-text { font-size: 14px; color: rgba(255,255,255,.5); line-height: 1.6; margin-bottom: 28px; }
+        .dl-confirm-title { font-size: 22px; font-weight: 800; color: #1C1C1C; margin-bottom: 10px; letter-spacing: -.04em; }
+        .dl-confirm-num { font-size: 15px; color: #D97706; font-weight: 700; margin-bottom: 12px; font-family: monospace; }
+        .dl-confirm-text { font-size: 14px; color: #6B7280; line-height: 1.6; margin-bottom: 28px; }
         .dl-confirm-btn {
           width: 100%; padding: 13px; border-radius: 12px; border: none; cursor: pointer;
           font-size: 15px; font-weight: 800; font-family: inherit;
           background: linear-gradient(135deg,#F59E0B,#D97706); color: #fff;
-          box-shadow: 0 4px 20px rgba(245,158,11,.4);
-          transition: opacity .15s;
+          box-shadow: 0 4px 20px rgba(245,158,11,.3);
+          transition: opacity .15s, transform .1s;
         }
-        .dl-confirm-btn:hover { opacity: .9; }
+        .dl-confirm-btn:hover { opacity: .9; transform: translateY(-1px); }
       `}</style>
 
       <div className="dl-page">
@@ -274,19 +275,23 @@ export default function DealerDashboard({
       {showCart && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 300,
-          background: 'rgba(0,0,0,.65)', backdropFilter: 'blur(6px)',
-          display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+          background: 'rgba(0,0,0,.45)', backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 24,
         }}>
           <div style={{
-            background: 'rgba(18,18,18,.92)', backdropFilter: 'blur(24px) saturate(1.5)',
-            WebkitBackdropFilter: 'blur(24px) saturate(1.5)',
-            border: '1px solid rgba(255,255,255,.12)', borderRadius: '24px 24px 0 0',
+            background: 'rgba(255,255,255,.88)',
+            backdropFilter: 'blur(24px) saturate(1.6)',
+            WebkitBackdropFilter: 'blur(24px) saturate(1.6)',
+            border: '1px solid rgba(255,255,255,.95)',
+            borderRadius: 24,
             width: '100%', maxWidth: 680, maxHeight: '90vh', overflow: 'auto', padding: 32,
-            boxShadow: '0 -8px 40px rgba(0,0,0,.5)',
+            boxShadow: '0 8px 40px rgba(0,0,0,.12)',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#fff' }}>Вашата поръчка</h2>
-              <button style={{ background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 8, width: 32, height: 32, fontSize: 16, cursor: 'pointer', color: 'rgba(255,255,255,.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setShowCart(false)}>✕</button>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: '#1C1C1C', letterSpacing: '-.03em' }}>Вашата поръчка</h2>
+              <button style={{ background: 'rgba(0,0,0,.06)', border: '1px solid rgba(0,0,0,.1)', borderRadius: 8, width: 32, height: 32, fontSize: 16, cursor: 'pointer', color: 'rgba(0,0,0,.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} onClick={() => setShowCart(false)}>✕</button>
             </div>
 
             <table className="dl-order-table" style={{ marginBottom: 20 }}>
@@ -302,13 +307,13 @@ export default function DealerDashboard({
               <tbody>
                 {cart.map(item => (
                   <tr key={`${item.productId}-${item.color}`}>
-                    <td style={{ fontWeight: 600, color: '#fff' }}>{item.productName}</td>
-                    <td style={{ color: 'rgba(255,255,255,.4)' }}>{item.color ?? '—'}</td>
-                    <td style={{ textAlign: 'right', color: '#F59E0B', fontWeight: 700 }}>{fmt(item.unitPrice)} лв.</td>
-                    <td style={{ textAlign: 'center' }}>{item.quantity}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 800 }}>{fmt(item.unitPrice * item.quantity)} лв.</td>
+                    <td style={{ fontWeight: 600, color: '#1C1C1C' }}>{item.productName}</td>
+                    <td style={{ color: '#9CA3AF' }}>{item.color ?? '—'}</td>
+                    <td style={{ textAlign: 'right', color: '#B45309', fontWeight: 700 }}>{fmt(item.unitPrice)} лв.</td>
+                    <td style={{ textAlign: 'center', color: '#4B5563' }}>{item.quantity}</td>
+                    <td style={{ textAlign: 'right', fontWeight: 800, color: '#1C1C1C' }}>{fmt(item.unitPrice * item.quantity)} лв.</td>
                     <td>
-                      <button style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,.7)', cursor: 'pointer', fontSize: 14 }}
+                      <button style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: 14 }}
                         onClick={() => removeFromCart(item.productId, item.color)}>✕</button>
                     </td>
                   </tr>
@@ -316,13 +321,13 @@ export default function DealerDashboard({
               </tbody>
             </table>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 18, fontWeight: 800, marginBottom: 24, color: '#fff', paddingTop: 8, borderTop: '1px solid rgba(255,255,255,.08)' }}>
-              Общо: <span style={{ color: '#F59E0B', marginLeft: 8 }}>{fmt(cartTotal)} лв.</span>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 18, fontWeight: 800, marginBottom: 24, color: '#1C1C1C', paddingTop: 8, borderTop: '1px solid rgba(0,0,0,.08)' }}>
+              Общо:&nbsp;<span style={{ color: '#D97706' }}>{fmt(cartTotal)} лв.</span>
             </div>
 
             {/* Delivery address selector */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: 'rgba(245,158,11,.7)', marginBottom: 10 }}>Адрес за доставка</div>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.1em', color: '#B45309', marginBottom: 10 }}>Адрес за доставка</div>
               {addresses.length === 0 ? (
                 <div className="dl-addr-no-link">
                   Нямате запазени адреси.{' '}
@@ -341,8 +346,8 @@ export default function DealerDashboard({
                       </div>
                     </label>
                   ))}
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,.3)', marginTop: 2 }}>
-                    <a href="/dealers/account" target="_blank" rel="noopener" style={{ color: 'rgba(245,158,11,.6)' }}>+ Управление на адреси</a>
+                  <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+                    <a href="/dealers/account" target="_blank" rel="noopener" style={{ color: '#D97706' }}>+ Управление на адреси</a>
                   </div>
                 </div>
               )}
