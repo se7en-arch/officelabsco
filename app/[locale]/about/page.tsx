@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
+import { prisma } from '@/lib/prisma';
 
 export const metadata: Metadata = {
   title: 'За нас — OfficeLabs Co',
@@ -10,6 +11,11 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const t = await getTranslations('about');
+
+  const [productCount, categoryCount] = await Promise.all([
+    prisma.product.count({ where: { archived: false } }),
+    prisma.category.count(),
+  ]);
 
   const beliefs = [
     { num: '01', title: t('belief1Title'), text: t('belief1Text') },
@@ -71,11 +77,11 @@ export default async function AboutPage() {
               <span className="about-number__label">{t('statSeries')}</span>
             </div>
             <div className="about-number">
-              <span className="about-number__val">24+</span>
+              <span className="about-number__val">{productCount}</span>
               <span className="about-number__label">{t('statModels')}</span>
             </div>
             <div className="about-number">
-              <span className="about-number__val">8</span>
+              <span className="about-number__val">{categoryCount}</span>
               <span className="about-number__label">{t('statCategories')}</span>
             </div>
             <div className="about-number">
