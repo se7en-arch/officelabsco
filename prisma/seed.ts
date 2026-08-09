@@ -55,7 +55,6 @@ async function main() {
     { name: 'Ниски маси', slug: 'masi' },
     { name: 'Ниски шкафове', slug: 'niski-shkafove' },
     { name: 'Високи шкафове', slug: 'visoki-shkafove' },
-    { name: 'Пана за стена', slug: 'pana-za-stena' },
     { name: 'Контейнери', slug: 'konteineri' },
     { name: 'Шкаф за саксии', slug: 'shkaf-za-saksii' },
     { name: 'Етажерки', slug: 'etazherki' },
@@ -65,10 +64,10 @@ async function main() {
     categoryData.map((c) => prisma.category.create({ data: c }))
   );
 
-  const [catBiura, catMasi, catNiski, catVisoki, catPana, catKlasiori, catSaksii, catEtazherki] =
+  const [catBiura, catMasi, catNiski, catVisoki, catKlasiori, catSaksii, catEtazherki] =
     categories;
 
-  // Products — 4 per category (1 per series) = 32 total
+  // Products — 4 per category (1 per series) = 28 total
   const products = [
     // ── БЮРА (desks) ──
     {
@@ -284,60 +283,6 @@ async function main() {
       featured: true,
       seriesId: nova.id,
       categoryId: catVisoki.id,
-    },
-
-    // ── ПАНА ЗА СТЕНА (wall panels) ──
-    {
-      name: 'Astra Стенно пано',
-      slug: 'astra-wall-panel',
-      sku: '105001',
-      price: 420,
-      originalPrice: 520,
-      description: 'Декоративно стенно пано с рафт. Бяло лакирано дърво, монтаж включен.',
-      image: '/products/acc-panel-1.png',
-      badge: 'SALE',
-      featured: false,
-      seriesId: astra.id,
-      categoryId: catPana.id,
-    },
-    {
-      name: 'Terra Стенно пано',
-      slug: 'terra-wall-panel',
-      sku: '205001',
-      price: 480,
-      originalPrice: null,
-      description: 'Стенно пано от бреза с три рафта. Скандинавски минимализъм.',
-      image: '/products/acc-panel-2.png',
-      badge: null,
-      featured: false,
-      seriesId: terra.id,
-      categoryId: catPana.id,
-    },
-    {
-      name: 'Loft Стенен рафт',
-      slug: 'loft-wall-shelf',
-      sku: '405001',
-      price: 380,
-      originalPrice: null,
-      description: 'Стенен рафт от метал и масив. Издръжлив, носимост до 30 кг.',
-      image: '/products/acc-panel-3.png',
-      badge: null,
-      featured: false,
-      seriesId: loft.id,
-      categoryId: catPana.id,
-    },
-    {
-      name: 'Nova Стенно пано',
-      slug: 'nova-wall-panel',
-      sku: '305001',
-      price: 650,
-      originalPrice: null,
-      description: 'Стенно пано от масивен орех. Ръчна изработка, три рафта с нерегулярна форма.',
-      image: '/products/acc-panel-4.png',
-      badge: 'НОВ',
-      featured: true,
-      seriesId: nova.id,
-      categoryId: catPana.id,
     },
 
     // ── КОНТЕЙНЕРИ ──
