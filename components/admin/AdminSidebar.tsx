@@ -104,7 +104,7 @@ export default function AdminSidebar({ newOrders = 0, pendingDealers = 0 }: { ne
     <aside className="admin-sidebar">
       <div className="admin-sidebar__brand">
         <div className="admin-sidebar__brand-name">
-          <span style={{ fontWeight: 800 }}>OfficeLabs</span><span style={{ fontWeight: 400, fontSize: '0.88em', letterSpacing: 0, opacity: 0.5 }}>co.</span>
+          <span style={{ fontWeight: 700 }}>OfficeLabs</span><span style={{ fontWeight: 400, fontSize: '0.88em', letterSpacing: 0, opacity: 0.5 }}>co.</span>
         </div>
         <div className="admin-sidebar__label">Admin Panel</div>
       </div>

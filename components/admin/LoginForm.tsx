@@ -33,7 +33,7 @@ export default function LoginForm() {
     <div className="admin-login">
       <div className="admin-login__box">
         <div className="admin-login__logo">
-          <span style={{ fontWeight: 800 }}>OfficeLabs</span><span style={{ fontWeight: 400, fontSize: '0.88em', letterSpacing: 0, opacity: 0.55 }}>co.</span>
+          <span style={{ fontWeight: 700 }}>OfficeLabs</span><span style={{ fontWeight: 400, fontSize: '0.88em', letterSpacing: 0, opacity: 0.55 }}>co.</span>
         </div>
         <h1>Вход в администрацията</h1>
         <form onSubmit={handleSubmit}>
