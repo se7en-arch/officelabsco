@@ -37,7 +37,7 @@ export default async function DealerOrderDetailPage({ params }: { params: Promis
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
           <Link href="/dealers/orders" className="dl-btn dl-btn--outline dl-btn--sm">← Поръчки</Link>
           <h1 className="dl-title" style={{ margin: 0 }}>
-            Поръчка #{order.id.slice(-8).toUpperCase()}
+            Поръчка {order.orderNumber ? `#D${String(order.orderNumber).padStart(4,'0')}` : `#${order.id.slice(-8).toUpperCase()}`}
           </h1>
           <span className={`dl-badge dl-badge--${order.status}`}>{STATUS_LABELS[order.status] ?? order.status}</span>
         </div>
@@ -51,6 +51,15 @@ export default async function DealerOrderDetailPage({ params }: { params: Promis
             <div style={{ fontSize: 11, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '.06em' }}>Общо</div>
             <div style={{ fontWeight: 800, fontSize: 20 }}>{fmt(order.total)} лв.</div>
           </div>
+          {order.deliveryAddress && (
+            <div className="dl-stat" style={{ padding: '12px 20px' }}>
+              <div style={{ fontSize: 11, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '.06em' }}>Доставка до</div>
+              <div style={{ fontWeight: 600, fontSize: 13 }}>
+                {order.deliveryLabel && <div style={{ color: '#F59E0B', fontSize: 11, marginBottom: 2 }}>{order.deliveryLabel}</div>}
+                {order.deliveryAddress}<br />{order.deliveryCity}{order.deliveryPostcode ? ` ${order.deliveryPostcode}` : ''}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="dl-card" style={{ padding: 0, overflow: 'hidden', marginBottom: 24 }}>

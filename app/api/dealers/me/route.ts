@@ -10,8 +10,13 @@ export async function GET() {
     where: { id: session.id },
     select: {
       companyName: true, contactName: true, email: true, phone: true,
-      address: true, city: true, eik: true, vatRegistered: true,
-      vatNumber: true, discountPercent: true, status: true, createdAt: true,
+      address: true, city: true, companyPostcode: true,
+      eik: true, vatRegistered: true, vatNumber: true,
+      discountPercent: true, status: true, createdAt: true,
+      addresses: {
+        orderBy: [{ isDefault: 'desc' }, { id: 'asc' }],
+        select: { id: true, label: true, address: true, city: true, postcode: true, isDefault: true },
+      },
     },
   });
 

@@ -17,8 +17,9 @@ export default function CheckoutPage() {
 
   const STEPS = [t('stepData'), t('stepDelivery'), t('stepPayment')];
 
-  const [step, setStep] = useState(0);
-  const [done, setDone] = useState(false);
+  const [step, setStep]         = useState(0);
+  const [done, setDone]         = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const [firstName, setFirstName]   = useState('');
   const [lastName, setLastName]     = useState('');
@@ -179,6 +180,7 @@ export default function CheckoutPage() {
     }
     clear();
     setDone(true);
+    setShowPopup(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -208,6 +210,33 @@ export default function CheckoutPage() {
           </p>
           <Link href="/shop" className="btn-primary" style={{ marginTop: 24 }}>{t('continueShopping')}</Link>
         </div>
+
+        {showPopup && (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 500,
+            background: 'rgba(0,0,0,.6)', backdropFilter: 'blur(8px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24,
+          }} onClick={() => setShowPopup(false)}>
+            <div style={{
+              background: 'var(--card, #fff)', borderRadius: 24, padding: '40px 36px',
+              maxWidth: 400, width: '100%', textAlign: 'center',
+              boxShadow: '0 24px 80px rgba(0,0,0,.25)',
+              border: '1px solid var(--border, #E5E7EB)',
+            }} onClick={e => e.stopPropagation()}>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(34,197,94,.12)', border: '2px solid rgba(34,197,94,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 20px' }}>✓</div>
+              <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10, letterSpacing: '-.04em' }}>Поръчката е приета!</div>
+              <div style={{ fontSize: 14, color: 'var(--text-muted, #6B7280)', lineHeight: 1.6, marginBottom: 28 }}>
+                Ще получите обаждане от нашия екип за потвърждение и уточняване на детайлите по доставката.
+              </div>
+              <button
+                style={{ width: '100%', padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 15, fontWeight: 800, fontFamily: 'inherit', background: 'linear-gradient(135deg,#16A34A,#15803D)', color: '#fff', boxShadow: '0 4px 20px rgba(22,163,74,.3)', transition: 'opacity .15s' }}
+                onClick={() => setShowPopup(false)}
+              >
+                Разбрах →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

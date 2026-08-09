@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (session.status !== 'APPROVED') return NextResponse.json({ error: 'Not approved' }, { status: 403 });
 
   try {
-    const { items, notes } = await req.json();
+    const { items, notes, deliveryAddressId } = await req.json();
     if (!items?.length) return NextResponse.json({ error: 'Кошницата е празна.' }, { status: 400 });
     if (items.length > 50) return NextResponse.json({ error: 'Твърде много артикули.' }, { status: 400 });
 
@@ -65,12 +65,40 @@ export async function POST(req: NextRequest) {
 
     const total = +validatedItems.reduce((s, i) => s + i.unitPrice * i.quantity, 0).toFixed(2);
 
+    // Delivery address snapshot
+    let delivSnap: {
+      deliveryAddressId?: string;
+      deliveryLabel?: string;
+      deliveryAddress?: string;
+      deliveryCity?: string;
+      deliveryPostcode?: string | null;
+    } = {};
+
+    if (deliveryAddressId) {
+      const addr = await prisma.dealerAddress.findUnique({ where: { id: deliveryAddressId } });
+      if (addr && addr.dealerId === session.id) {
+        delivSnap = {
+          deliveryAddressId: addr.id,
+          deliveryLabel:     addr.label,
+          deliveryAddress:   addr.address,
+          deliveryCity:      addr.city,
+          deliveryPostcode:  addr.postcode ?? null,
+        };
+      }
+    }
+
+    // Sequential orderNumber: MAX + 1
+    const agg = await prisma.dealerOrder.aggregate({ _max: { orderNumber: true } });
+    const orderNumber = (agg._max.orderNumber ?? 0) + 1;
+
     const order = await prisma.dealerOrder.create({
       data: {
-        dealerId: session.id,
+        dealerId:    session.id,
+        orderNumber,
         total,
-        notes: notes ? String(notes).slice(0, 1000) : null,
-        items: { create: validatedItems },
+        notes:       notes ? String(notes).slice(0, 1000) : null,
+        ...delivSnap,
+        items:       { create: validatedItems },
       },
       include: { items: true },
     });
