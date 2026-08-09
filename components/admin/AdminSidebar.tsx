@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import LogoutButton from './LogoutButton';
 
 function isActive(href: string, pathname: string) {
@@ -98,8 +99,30 @@ const navItems = [
   },
 ];
 
-export default function AdminSidebar({ newOrders = 0, pendingDealers = 0 }: { newOrders?: number; pendingDealers?: number }) {
+export default function AdminSidebar() {
   const pathname = usePathname();
+  const [newOrders, setNewOrders]           = useState(0);
+  const [pendingDealers, setPendingDealers] = useState(0);
+
+  useEffect(() => {
+    async function fetchCounts() {
+      try {
+        const res = await fetch('/api/admin/badge-counts', { cache: 'no-store' });
+        if (!res.ok) return;
+        const { newOrders: no, pendingDealers: pd } = await res.json();
+        setNewOrders(no);
+        setPendingDealers(pd);
+      } catch {}
+    }
+
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 30_000);
+    window.addEventListener('focus', fetchCounts);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', fetchCounts);
+    };
+  }, []);
   return (
     <aside className="admin-sidebar">
       <div className="admin-sidebar__brand">

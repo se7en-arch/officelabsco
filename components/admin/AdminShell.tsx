@@ -1,15 +1,7 @@
 import type { ReactNode } from 'react';
 import AdminSidebar from './AdminSidebar';
-import { prisma } from '@/lib/prisma';
 
-export default async function AdminShell({ children }: { children: ReactNode }) {
-  const [newCustomerOrders, newDealerOrders, pendingDealers] = await Promise.all([
-    prisma.order.count({ where: { status: 'pending' } }),
-    prisma.dealerOrder.count({ where: { status: 'new' } }),
-    prisma.dealer.count({ where: { status: 'PENDING' } }),
-  ]);
-  const newOrders = newCustomerOrders + newDealerOrders;
-
+export default function AdminShell({ children }: { children: ReactNode }) {
   return (
     <>
       {/* ── Desktop-only block ── */}
@@ -27,7 +19,7 @@ export default async function AdminShell({ children }: { children: ReactNode }) 
 
       {/* ── Normal desktop layout ── */}
       <div className="admin-layout">
-        <AdminSidebar newOrders={newOrders} pendingDealers={pendingDealers} />
+        <AdminSidebar />
         <main className="admin-main">{children}</main>
       </div>
     </>
