@@ -136,8 +136,16 @@ export async function POST(req: NextRequest) {
   const referer   = req.headers.get('referer') ?? req.headers.get('origin') ?? null;
   const acceptLang = req.headers.get('accept-language')?.split(',')[0] ?? null;
 
+  // Global sequential orderNumber across both Order and DealerOrder tables
+  const [orderAgg, dealerAgg] = await Promise.all([
+    prisma.order.aggregate({ _max: { orderNumber: true } }),
+    prisma.dealerOrder.aggregate({ _max: { orderNumber: true } }),
+  ]);
+  const nextOrderNumber = Math.max(orderAgg._max.orderNumber ?? 0, dealerAgg._max.orderNumber ?? 0) + 1;
+
   const order = await prisma.order.create({
     data: {
+      orderNumber: nextOrderNumber,
       firstName:   sanitize(body.firstName,   100),
       lastName:    sanitize(body.lastName,    100),
       email:       body.email.slice(0, 200),

@@ -25,7 +25,8 @@ export async function GET(
 
   const isCompany = !!(order.company || order.eik);
   const year = new Date(order.createdAt).getFullYear();
-  const invoiceNo = `INV-${year}-${String(order.id).padStart(4, '0')}`;
+  const displayNum = order.orderNumber ?? order.id;
+  const invoiceNo = `INV-${year}-${String(displayNum).padStart(5, '0')}`;
   const dateFormatted = new Date(order.createdAt)
     .toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' });
 

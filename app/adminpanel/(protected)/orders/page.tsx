@@ -159,7 +159,7 @@ export default async function OrdersPage({
                   return (
                     <tr key={o.id}>
                       <td style={{ fontWeight: 700, color: 'var(--muted)', fontSize: 12, whiteSpace: 'nowrap' }}>
-                        #{String(o.id).padStart(4, '0')}
+                        #Order{String(o.orderNumber ?? o.id).padStart(5, '0')}
                       </td>
                       <td>
                         <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap' }}>

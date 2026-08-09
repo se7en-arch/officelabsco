@@ -25,7 +25,7 @@ function dealerPrice(price: number, discount: number) {
   return Math.round(price * (1 - discount / 100) * 100) / 100;
 }
 function fmtOrderNum(n: number) {
-  return `#D${String(n).padStart(4, '0')}`;
+  return `#Order${String(n).padStart(5, '0')}`;
 }
 
 export default function DealerDashboard({

@@ -1,7 +1,8 @@
 import { Resend } from 'resend';
 
 export interface OrderEmailData {
-  id:        number;
+  id:          number;
+  orderNumber?: number | null;
   firstName: string;
   lastName:  string;
   email:     string;
@@ -40,7 +41,8 @@ function row(label: string, value: string | null | undefined): string {
 
 function buildAdminHtml(order: OrderEmailData): string {
   const isCompany = !!(order.company || order.eik);
-  const invoiceNo = `INV-${new Date(order.createdAt).getFullYear()}-${String(order.id).padStart(4, '0')}`;
+  const displayNum = order.orderNumber ?? order.id;
+  const invoiceNo = `INV-${new Date(order.createdAt).getFullYear()}-${String(displayNum).padStart(5, '0')}`;
   const date = new Date(order.createdAt).toLocaleDateString('bg-BG', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
@@ -77,7 +79,7 @@ function buildAdminHtml(order: OrderEmailData): string {
           </td>
           <td align="right">
             <div style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:0.8px">Нова поръчка</div>
-            <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-top:2px">#${String(order.id).padStart(4, '0')}</div>
+            <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-top:2px">#Order${String(displayNum).padStart(5, '0')}</div>
           </td>
         </tr>
       </table>
@@ -178,7 +180,7 @@ function buildAdminHtml(order: OrderEmailData): string {
 // ─── Customer confirmation email ────────────────────────────────────────────
 
 function buildCustomerHtml(order: OrderEmailData): string {
-  const orderNo = `#${String(order.id).padStart(4, '0')}`;
+  const orderNo = `#Order${String(order.orderNumber ?? order.id).padStart(5, '0')}`;
   const date = new Date(order.createdAt).toLocaleDateString('bg-BG', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
@@ -295,7 +297,7 @@ export async function sendOrderNotification(order: OrderEmailData): Promise<void
   }
 
   const to      = process.env.NOTIFY_EMAIL ?? 'info@officelabsco.com';
-  const subject = `Нова поръчка #${String(order.id).padStart(4, '0')} — €${order.total.toFixed(2)} | OfficeLabs Co`;
+  const subject = `Нова поръчка #Order${String(order.orderNumber ?? order.id).padStart(5, '0')} — €${order.total.toFixed(2)} | OfficeLabs Co`;
 
   const { error } = await resend.emails.send({
     from:    'OfficeLabs Co <noreply@officelabsco.com>',
@@ -316,7 +318,7 @@ export async function sendCustomerConfirmation(order: OrderEmailData): Promise<v
     return;
   }
 
-  const subject = `Потвърждение на поръчка #${String(order.id).padStart(4, '0')} — OfficeLabs Co`;
+  const subject = `Потвърждение на поръчка #Order${String(order.orderNumber ?? order.id).padStart(5, '0')} — OfficeLabs Co`;
 
   const { error } = await resend.emails.send({
     from:    'OfficeLabs Co <noreply@officelabsco.com>',

@@ -87,9 +87,12 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Sequential orderNumber: MAX + 1
-    const agg = await prisma.dealerOrder.aggregate({ _max: { orderNumber: true } });
-    const orderNumber = (agg._max.orderNumber ?? 0) + 1;
+    // Global sequential orderNumber across both Order and DealerOrder tables
+    const [orderAgg, dealerAgg] = await Promise.all([
+      prisma.order.aggregate({ _max: { orderNumber: true } }),
+      prisma.dealerOrder.aggregate({ _max: { orderNumber: true } }),
+    ]);
+    const orderNumber = Math.max(orderAgg._max.orderNumber ?? 0, dealerAgg._max.orderNumber ?? 0) + 1;
 
     const order = await prisma.dealerOrder.create({
       data: {

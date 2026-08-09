@@ -70,8 +70,9 @@ model Product {
 }
 
 model Order {
-  id        Int         @id @default(autoincrement())
-  status    String      @default("pending")
+  id          Int         @id @default(autoincrement())
+  orderNumber Int?
+  status      String      @default("pending")
   firstName String
   lastName  String
   email     String

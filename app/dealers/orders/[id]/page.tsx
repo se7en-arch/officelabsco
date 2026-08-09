@@ -37,7 +37,7 @@ export default async function DealerOrderDetailPage({ params }: { params: Promis
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24, flexWrap: 'wrap' }}>
           <Link href="/dealers/orders" className="dl-btn dl-btn--outline dl-btn--sm">← Поръчки</Link>
           <h1 className="dl-title" style={{ margin: 0 }}>
-            Поръчка {order.orderNumber ? `#D${String(order.orderNumber).padStart(4,'0')}` : `#${order.id.slice(-8).toUpperCase()}`}
+            Поръчка #Order{String(order.orderNumber ?? 0).padStart(5, '0')}
           </h1>
           <span className={`dl-badge dl-badge--${order.status}`}>{STATUS_LABELS[order.status] ?? order.status}</span>
         </div>

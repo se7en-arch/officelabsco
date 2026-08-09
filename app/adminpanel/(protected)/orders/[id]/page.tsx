@@ -82,7 +82,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       <div className="admin-page-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div>
-            <h1>Поръчка #{String(order.id).padStart(4, '0')}</h1>
+            <h1>Поръчка #Order{String(order.orderNumber ?? order.id).padStart(5, '0')}</h1>
             <p>{new Date(order.createdAt).toLocaleString('bg-BG')}</p>
           </div>
           <span className="admin-order-status-pill" style={{ background: statusStyle.bg, color: statusStyle.color }}>
