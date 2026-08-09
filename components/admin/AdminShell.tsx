@@ -3,10 +3,12 @@ import AdminSidebar from './AdminSidebar';
 import { prisma } from '@/lib/prisma';
 
 export default async function AdminShell({ children }: { children: ReactNode }) {
-  const [newOrders, pendingDealers] = await Promise.all([
+  const [newCustomerOrders, newDealerOrders, pendingDealers] = await Promise.all([
     prisma.order.count({ where: { status: 'pending' } }),
+    prisma.dealerOrder.count({ where: { status: 'new' } }),
     prisma.dealer.count({ where: { status: 'PENDING' } }),
   ]);
+  const newOrders = newCustomerOrders + newDealerOrders;
 
   return (
     <>

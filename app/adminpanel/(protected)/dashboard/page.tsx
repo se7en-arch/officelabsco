@@ -15,6 +15,25 @@ const STATUS_PILL: Record<string, { bg: string; color: string }> = {
   cancelled:  { bg: '#fee2e2', color: '#991b1b' },
 };
 
+// Map dealer statuses → customer status keys for unified display
+const D_TO_C: Record<string, string> = {
+  new: 'pending', processing: 'processing', shipped: 'shipped',
+  completed: 'delivered', cancelled: 'cancelled',
+};
+
+type RecentOrder = {
+  type: 'customer' | 'dealer';
+  id: string;
+  orderNumber: number;
+  displayName: string;
+  email: string;
+  itemCount: number;
+  total: number;
+  status: string;
+  createdAt: Date;
+  href: string;
+};
+
 export default async function DashboardPage() {
   const now = new Date();
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
@@ -23,15 +42,19 @@ export default async function DashboardPage() {
 
   const [
     chartOrders,
+    chartDealerOrders,
     allTimeStats,
-    recentOrders,
+    dealerAllTimeStats,
+    recentCustomerOrders,
+    recentDealerOrders,
     activeProducts,
     archivedProducts,
     lowStockCount,
     outOfStock,
     totalCategories,
     totalSeries,
-    pendingOrders,
+    pendingCustomer,
+    pendingDealer,
     recentProducts,
   ] = await Promise.all([
     prisma.order.findMany({
@@ -39,11 +62,29 @@ export default async function DashboardPage() {
       select: { createdAt: true, total: true, status: true },
       orderBy: { createdAt: 'asc' },
     }),
+    prisma.dealerOrder.findMany({
+      where: { createdAt: { gte: sixMonthsAgo } },
+      select: { createdAt: true, total: true, status: true },
+      orderBy: { createdAt: 'asc' },
+    }),
     prisma.order.aggregate({ _sum: { total: true }, _count: { _all: true } }),
+    prisma.dealerOrder.aggregate({ _sum: { total: true }, _count: { _all: true } }),
     prisma.order.findMany({
       take: 8,
       orderBy: { createdAt: 'desc' },
-      include: { items: true },
+      select: {
+        id: true, orderNumber: true, firstName: true, lastName: true,
+        email: true, total: true, status: true, createdAt: true,
+        items: { select: { id: true } },
+      },
+    }),
+    prisma.dealerOrder.findMany({
+      take: 8,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        items: { select: { id: true, quantity: true } },
+        dealer: { select: { companyName: true, email: true } },
+      },
     }),
     prisma.product.count({ where: { archived: false } }),
     prisma.product.count({ where: { archived: true } }),
@@ -52,20 +93,28 @@ export default async function DashboardPage() {
     prisma.category.count(),
     prisma.series.count(),
     prisma.order.count({ where: { status: 'pending' } }),
+    prisma.dealerOrder.count({ where: { status: 'new' } }),
     prisma.product.findMany({
       take: 5, orderBy: { createdAt: 'desc' },
       include: { series: { select: { name: true } }, category: { select: { name: true } } },
     }),
   ]);
 
-  const totalRevenue = allTimeStats._sum.total ?? 0;
-  const totalOrderCount = allTimeStats._count._all;
-  const monthlyRevenue = chartOrders.filter(o => o.createdAt >= startOfMonth).reduce((s, o) => s + o.total, 0);
-  const todayRevenue = chartOrders.filter(o => o.createdAt >= startOfToday).reduce((s, o) => s + o.total, 0);
-  const allOrders = chartOrders;
+  const totalRevenue    = (allTimeStats._sum.total ?? 0) + (dealerAllTimeStats._sum.total ?? 0);
+  const totalOrderCount = allTimeStats._count._all + dealerAllTimeStats._count._all;
+  const pendingOrders   = pendingCustomer + pendingDealer;
+
+  // Combined chart orders with normalized status
+  const allChartOrders = [
+    ...chartOrders.map(o => ({ createdAt: o.createdAt, total: o.total, normStatus: o.status })),
+    ...chartDealerOrders.map(o => ({ createdAt: o.createdAt, total: o.total, normStatus: D_TO_C[o.status] ?? o.status })),
+  ];
+
+  const monthlyRevenue = allChartOrders.filter(o => o.createdAt >= startOfMonth).reduce((s, o) => s + o.total, 0);
+  const todayRevenue   = allChartOrders.filter(o => o.createdAt >= startOfToday).reduce((s, o) => s + o.total, 0);
 
   const statusCounts: Record<string, number> = {};
-  allOrders.forEach(o => { statusCounts[o.status] = (statusCounts[o.status] || 0) + 1; });
+  allChartOrders.forEach(o => { statusCounts[o.normStatus] = (statusCounts[o.normStatus] || 0) + 1; });
 
   // Build 6-month chart data
   const monthKeys: string[] = [];
@@ -76,7 +125,7 @@ export default async function DashboardPage() {
   const chartData = monthKeys.map((key, idx) => {
     const d = new Date(key + '-01');
     const label = d.toLocaleDateString('bg-BG', { month: 'short' });
-    const monthOrders = allOrders.filter(o => o.createdAt.toISOString().startsWith(key));
+    const monthOrders = allChartOrders.filter(o => o.createdAt.toISOString().startsWith(key));
     return {
       month: label,
       revenue: parseFloat(monthOrders.reduce((s, o) => s + o.total, 0).toFixed(2)),
@@ -95,6 +144,34 @@ export default async function DashboardPage() {
 
   const maxStatus = Math.max(...statusData.map(s => s.count), 1);
 
+  // Merge and sort recent orders from both tables
+  const recentOrders: RecentOrder[] = [
+    ...recentCustomerOrders.map(o => ({
+      type:        'customer' as const,
+      id:          String(o.id),
+      orderNumber: o.orderNumber ?? o.id,
+      displayName: `${o.firstName} ${o.lastName}`,
+      email:       o.email,
+      itemCount:   o.items.length,
+      total:       o.total,
+      status:      o.status,
+      createdAt:   o.createdAt,
+      href:        `/adminpanel/orders/${o.id}`,
+    })),
+    ...recentDealerOrders.map(o => ({
+      type:        'dealer' as const,
+      id:          o.id,
+      orderNumber: o.orderNumber ?? 0,
+      displayName: o.dealer.companyName,
+      email:       o.dealer.email,
+      itemCount:   o.items.reduce((s, i) => s + i.quantity, 0),
+      total:       o.total,
+      status:      D_TO_C[o.status] ?? o.status,
+      createdAt:   o.createdAt,
+      href:        `/adminpanel/dealers/orders/${o.id}`,
+    })),
+  ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 8);
+
   return (
     <>
       {/* ── Welcome header ── */}
@@ -107,7 +184,7 @@ export default async function DashboardPage() {
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           {pendingOrders > 0 && (
-            <Link href="/adminpanel/orders?status=pending" className="dash-alert-btn">
+            <Link href="/adminpanel/orders?status=new" className="dash-alert-btn">
               <span className="dash-alert-dot" />
               {pendingOrders} нови поръчки
             </Link>
@@ -245,7 +322,8 @@ export default async function DashboardPage() {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Клиент</th>
+                  <th>Клиент / Дилър</th>
+                  <th>Тип</th>
                   <th>Продукти</th>
                   <th>Дата</th>
                   <th>Сума</th>
@@ -255,20 +333,33 @@ export default async function DashboardPage() {
               </thead>
               <tbody>
                 {recentOrders.length === 0 && (
-                  <tr><td colSpan={7} className="admin-empty">Все още няма поръчки</td></tr>
+                  <tr><td colSpan={8} className="admin-empty">Все още няма поръчки</td></tr>
                 )}
                 {recentOrders.map(order => {
-                  const pill = STATUS_PILL[order.status] ?? { bg: '#f3f4f6', color: '#374151' };
+                  const pill     = STATUS_PILL[order.status] ?? { bg: '#f3f4f6', color: '#374151' };
+                  const isDealer = order.type === 'dealer';
                   return (
-                    <tr key={order.id}>
-                      <td style={{ fontWeight: 700, color: 'var(--muted)', fontSize: 12 }}>
-                        #{String(order.id).padStart(4, '0')}
+                    <tr key={`${order.type}-${order.id}`}>
+                      <td style={{ fontWeight: 700, color: 'var(--muted)', fontSize: 12, whiteSpace: 'nowrap' }}>
+                        #Order{String(order.orderNumber).padStart(5, '0')}
                       </td>
                       <td>
-                        <div style={{ fontWeight: 600, fontSize: 13 }}>{order.firstName} {order.lastName}</div>
+                        <div style={{ fontWeight: 600, fontSize: 13 }}>{order.displayName}</div>
                         <div style={{ fontSize: 11, color: 'var(--muted)' }}>{order.email}</div>
                       </td>
-                      <td style={{ fontSize: 13, color: 'var(--muted)' }}>{order.items.length} бр.</td>
+                      <td>
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+                          letterSpacing: '.05em', padding: '2px 7px', borderRadius: 20,
+                          background: isDealer ? '#FEF3C7' : '#EFF6FF',
+                          color:      isDealer ? '#92400E' : '#1E40AF',
+                          border:     `1px solid ${isDealer ? '#FDE68A' : '#BFDBFE'}`,
+                          whiteSpace: 'nowrap',
+                        }}>
+                          {isDealer ? 'Дилър' : 'Клиент'}
+                        </span>
+                      </td>
+                      <td style={{ fontSize: 13, color: 'var(--muted)' }}>{order.itemCount} бр.</td>
                       <td style={{ fontSize: 12, color: 'var(--muted)' }}>
                         {new Date(order.createdAt).toLocaleDateString('bg-BG')}
                       </td>
@@ -279,7 +370,7 @@ export default async function DashboardPage() {
                         </span>
                       </td>
                       <td>
-                        <Link href={`/adminpanel/orders/${order.id}`} className="admin-row-btn admin-row-btn--view">
+                        <Link href={order.href} className="admin-row-btn admin-row-btn--view">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M5 12h14M12 5l7 7-7 7"/>
                           </svg>
