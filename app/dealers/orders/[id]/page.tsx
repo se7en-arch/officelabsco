@@ -49,7 +49,11 @@ export default async function DealerOrderDetailPage({ params }: { params: Promis
           </div>
           <div className="dl-stat" style={{ padding: '12px 20px', flexShrink: 0 }}>
             <div style={{ fontSize: 11, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '.06em' }}>Общо</div>
-            <div style={{ fontWeight: 800, fontSize: 20 }}>{fmt(order.total)} лв.</div>
+            <div style={{ fontWeight: 800, fontSize: 20 }}>{fmt(order.total)} €</div>
+          </div>
+          <div className="dl-stat" style={{ padding: '12px 20px', flexShrink: 0 }}>
+            <div style={{ fontSize: 11, color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: '.06em' }}>Отстъпка</div>
+            <div style={{ fontWeight: 700, color: '#F59E0B' }}>{order.discountPercent}%</div>
           </div>
           {order.deliveryAddress && (
             <div className="dl-stat" style={{ padding: '12px 20px' }}>
@@ -86,10 +90,10 @@ export default async function DealerOrderDetailPage({ params }: { params: Promis
                     </td>
                     <td style={{ fontWeight: 600 }}>{item.productName}</td>
                     <td style={{ color: '#6B7280' }}>{item.color ?? '—'}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 700, color: '#B45309' }}>{fmt(item.unitPrice)} лв.</td>
-                    <td style={{ textAlign: 'right', color: '#9CA3AF', textDecoration: 'line-through', fontSize: 13 }}>{fmt(item.retailPrice)} лв.</td>
+                    <td style={{ textAlign: 'right', fontWeight: 700, color: '#B45309' }}>{fmt(item.unitPrice)} €</td>
+                    <td style={{ textAlign: 'right', color: '#9CA3AF', textDecoration: 'line-through', fontSize: 13 }}>{fmt(item.retailPrice)} €</td>
                     <td style={{ textAlign: 'center' }}>{item.quantity}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 800 }}>{fmt(item.unitPrice * item.quantity)} лв.</td>
+                    <td style={{ textAlign: 'right', fontWeight: 800 }}>{fmt(item.unitPrice * item.quantity)} €</td>
                   </tr>
                 ))}
               </tbody>

@@ -154,7 +154,7 @@ export default function AdminDealerDetailPage() {
             </svg>
           </div>
           <div className="admin-stat-card__value" style={{ fontSize: 22 }}>{fmt(totalRevenue)}</div>
-          <div className="admin-stat-card__label">Общ оборот (лв.)</div>
+          <div className="admin-stat-card__label">Общ оборот (€)</div>
         </div>
         <div className="admin-stat-card">
           <div className="admin-stat-card__icon admin-stat-card__icon--orange">
@@ -214,7 +214,7 @@ export default function AdminDealerDetailPage() {
                           {new Date(o.createdAt).toLocaleDateString('bg-BG')}
                         </td>
                         <td style={{ textAlign: 'right' }}>{qty} бр.</td>
-                        <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(o.total)} лв.</td>
+                        <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(o.total)} €</td>
                         <td>
                           <span className="admin-order-status-pill" style={{ background: op.bg, color: op.color }}>
                             {ORDER_STATUS[o.status] ?? o.status}

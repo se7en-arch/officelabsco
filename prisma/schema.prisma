@@ -196,6 +196,7 @@ model DealerOrder {
   orderNumber        Int?
   status             String            @default("new")
   total              Float
+  discountPercent    Int               @default(0)
   notes              String?
   deliveryAddressId  String?
   deliveryLabel      String?

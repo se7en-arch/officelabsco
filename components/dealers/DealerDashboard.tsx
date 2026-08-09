@@ -229,12 +229,12 @@ export default function DealerDashboard({
                   <div className="dl-product-card__prices">
                     <div className="dl-product-card__price-block dl-product-card__price-block--retail">
                       <div className="dl-product-card__price-head">Клиентска</div>
-                      <div className="dl-product-card__price-main">{fmt(p.price)} лв.</div>
+                      <div className="dl-product-card__price-main">{fmt(p.price)} €</div>
                       <div className="dl-product-card__price-vat">{fmt(retailVat)} с ДДС</div>
                     </div>
                     <div className="dl-product-card__price-block dl-product-card__price-block--dealer">
                       <div className="dl-product-card__price-head">Дилърска</div>
-                      <div className="dl-product-card__price-main">{fmt(dp)} лв.</div>
+                      <div className="dl-product-card__price-main">{fmt(dp)} €</div>
                       <div className="dl-product-card__price-vat">{fmt(dpVat)} с ДДС</div>
                     </div>
                   </div>
@@ -261,7 +261,7 @@ export default function DealerDashboard({
       <div className={`dl-cart-bar${cartCount > 0 ? ' visible' : ''}`}>
         <div className="dl-cart-bar__info">
           <div className="dl-cart-bar__count">{cartCount} {cartCount === 1 ? 'артикул' : 'артикула'}</div>
-          <div className="dl-cart-bar__total">{fmt(cartTotal)} лв.</div>
+          <div className="dl-cart-bar__total">{fmt(cartTotal)} €</div>
         </div>
         <button className="dl-btn dl-btn--outline" style={{ color: '#fff', borderColor: 'rgba(255,255,255,.3)' }} onClick={() => setCart([])}>
           Изчисти
@@ -309,9 +309,9 @@ export default function DealerDashboard({
                   <tr key={`${item.productId}-${item.color}`}>
                     <td style={{ fontWeight: 600, color: '#1C1C1C' }}>{item.productName}</td>
                     <td style={{ color: '#9CA3AF' }}>{item.color ?? '—'}</td>
-                    <td style={{ textAlign: 'right', color: '#B45309', fontWeight: 700 }}>{fmt(item.unitPrice)} лв.</td>
+                    <td style={{ textAlign: 'right', color: '#B45309', fontWeight: 700 }}>{fmt(item.unitPrice)} €</td>
                     <td style={{ textAlign: 'center', color: '#4B5563' }}>{item.quantity}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 800, color: '#1C1C1C' }}>{fmt(item.unitPrice * item.quantity)} лв.</td>
+                    <td style={{ textAlign: 'right', fontWeight: 800, color: '#1C1C1C' }}>{fmt(item.unitPrice * item.quantity)} €</td>
                     <td>
                       <button style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: 14 }}
                         onClick={() => removeFromCart(item.productId, item.color)}>✕</button>
@@ -322,7 +322,7 @@ export default function DealerDashboard({
             </table>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', fontSize: 18, fontWeight: 800, marginBottom: 24, color: '#1C1C1C', paddingTop: 8, borderTop: '1px solid rgba(0,0,0,.08)' }}>
-              Общо:&nbsp;<span style={{ color: '#D97706' }}>{fmt(cartTotal)} лв.</span>
+              Общо:&nbsp;<span style={{ color: '#D97706' }}>{fmt(cartTotal)} €</span>
             </div>
 
             {/* Delivery address selector */}

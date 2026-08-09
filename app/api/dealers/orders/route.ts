@@ -96,12 +96,13 @@ export async function POST(req: NextRequest) {
 
     const order = await prisma.dealerOrder.create({
       data: {
-        dealerId:    session.id,
+        dealerId:        session.id,
         orderNumber,
         total,
-        notes:       notes ? String(notes).slice(0, 1000) : null,
+        discountPercent: session.discountPercent,
+        notes:           notes ? String(notes).slice(0, 1000) : null,
         ...delivSnap,
-        items:       { create: validatedItems },
+        items:           { create: validatedItems },
       },
       include: { items: true },
     });

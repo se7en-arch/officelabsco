@@ -64,7 +64,7 @@ export default async function DealerOrdersPage() {
                       <td style={{ fontWeight: 700, fontFamily: 'monospace' }}>#Order{String(o.orderNumber ?? 0).padStart(5, '0')}</td>
                       <td style={{ color: '#6B7280' }}>{new Date(o.createdAt).toLocaleDateString('bg-BG')}</td>
                       <td>{o.items.reduce((s, i) => s + i.quantity, 0)} бр.</td>
-                      <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(o.total)} лв.</td>
+                      <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(o.total)} €</td>
                       <td><span className={`dl-badge dl-badge--${o.status}`}>{STATUS_LABELS[o.status] ?? o.status}</span></td>
                       <td>
                         <Link href={`/dealers/orders/${o.id}`} className="dl-btn dl-btn--outline dl-btn--sm">

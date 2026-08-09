@@ -27,7 +27,7 @@ export default async function AdminDealerOrderPage({ params }: { params: Promise
     include: {
       items: true,
       dealer: {
-        select: { id: true, companyName: true, contactName: true, email: true, phone: true, discountPercent: true },
+        select: { id: true, companyName: true, contactName: true, email: true, phone: true },
       },
     },
   });
@@ -92,17 +92,17 @@ export default async function AdminDealerOrderPage({ params }: { params: Promise
                       {item.productSlug && <div className="admin-product-sku">{item.productSlug}</div>}
                     </td>
                     <td style={{ color: 'var(--muted)' }}>{item.color ?? '—'}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(item.unitPrice)} лв.</td>
-                    <td style={{ textAlign: 'right', color: 'var(--muted)', textDecoration: 'line-through', fontSize: 12 }}>{fmt(item.retailPrice)} лв.</td>
+                    <td style={{ textAlign: 'right', fontWeight: 700 }}>{fmt(item.unitPrice)} €</td>
+                    <td style={{ textAlign: 'right', color: 'var(--muted)', textDecoration: 'line-through', fontSize: 12 }}>{fmt(item.retailPrice)} €</td>
                     <td style={{ textAlign: 'center', fontWeight: 600 }}>{item.quantity}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 800 }}>{fmt(item.unitPrice * item.quantity)} лв.</td>
+                    <td style={{ textAlign: 'right', fontWeight: 800 }}>{fmt(item.unitPrice * item.quantity)} €</td>
                   </tr>
                 ))}
               </tbody>
             </table>
             <div className="admin-order-total">
               <span>Общо</span>
-              <span>{fmt(order.total)} лв.</span>
+              <span>{fmt(order.total)} €</span>
             </div>
           </div>
 
@@ -129,7 +129,7 @@ export default async function AdminDealerOrderPage({ params }: { params: Promise
                 ['Контакт',  order.dealer.contactName],
                 ['Имейл',    order.dealer.email],
                 ['Телефон',  order.dealer.phone],
-                ['Отстъпка', `${order.dealer.discountPercent}%`],
+                ['Отстъпка при поръчка', `${order.discountPercent}%`],
               ].map(([label, value]) => (
                 <div key={label} className="admin-detail-row">
                   <span className="admin-detail-row__label">{label}</span>
