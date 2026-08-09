@@ -36,7 +36,7 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
           color: #1C1C1C;
           display: flex; align-items: center; padding: 0 24px; gap: 16px;
         }
-        .dl-topbar__logo { font-size: 15px; font-weight: 800; letter-spacing: -.03em; color: #1C1C1C; }
+        .dl-topbar__logo { font-size: 1.05rem; font-weight: 800; letter-spacing: -.03em; color: #1C1C1C; }
         .dl-topbar__sep { width: 1px; height: 16px; background: rgba(0,0,0,.1); }
         .dl-topbar__label { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: rgba(0,0,0,.3); }
         .dl-topbar__spacer { flex: 1; }
