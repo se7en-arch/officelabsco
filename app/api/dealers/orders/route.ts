@@ -24,35 +24,53 @@ export async function POST(req: NextRequest) {
   try {
     const { items, notes } = await req.json();
     if (!items?.length) return NextResponse.json({ error: 'Кошницата е празна.' }, { status: 400 });
+    if (items.length > 50) return NextResponse.json({ error: 'Твърде много артикули.' }, { status: 400 });
 
-    const total = items.reduce((sum: number, i: { unitPrice: number; quantity: number }) => sum + i.unitPrice * i.quantity, 0);
+    // H-03: Look up real prices from DB — never trust client-submitted prices
+    const productIds = (items as Array<{ productId?: number }>)
+      .map(i => i.productId)
+      .filter((id): id is number => typeof id === 'number' && id > 0);
+
+    const dbProducts = productIds.length > 0
+      ? await prisma.product.findMany({
+          where: { id: { in: productIds }, archived: false },
+          select: { id: true, price: true },
+        })
+      : [];
+    const priceMap = new Map(dbProducts.map(p => [p.id, p.price]));
+
+    const validatedItems = (items as Array<{
+      productId?: number;
+      productName: string;
+      productSlug: string;
+      quantity: number;
+      color?: string;
+      image?: string;
+    }>).map(i => {
+      const retailPrice = i.productId && priceMap.has(i.productId)
+        ? priceMap.get(i.productId)!
+        : 0;
+      const unitPrice = +(retailPrice * (1 - session.discountPercent / 100)).toFixed(2);
+      return {
+        productId:   i.productId ?? null,
+        productName: String(i.productName ?? '').slice(0, 200),
+        productSlug: String(i.productSlug ?? '').slice(0, 200),
+        quantity:    Math.min(Math.max(1, Number(i.quantity) || 1), 999),
+        unitPrice,
+        retailPrice,
+        color: i.color ? String(i.color).slice(0, 100) : null,
+        image: i.image ? String(i.image).slice(0, 500) : null,
+      };
+    });
+
+    const total = +validatedItems.reduce((s, i) => s + i.unitPrice * i.quantity, 0).toFixed(2);
 
     const order = await prisma.dealerOrder.create({
       data: {
         dealerId: session.id,
         total,
-        notes: notes || null,
-        items: {
-          create: items.map((i: {
-            productId?: number;
-            productName: string;
-            productSlug: string;
-            quantity: number;
-            unitPrice: number;
-            retailPrice: number;
-            color?: string;
-            image?: string;
-          }) => ({
-            productId: i.productId ?? null,
-            productName: i.productName,
-            productSlug: i.productSlug,
-            quantity: i.quantity,
-            unitPrice: i.unitPrice,
-            retailPrice: i.retailPrice,
-            color: i.color ?? null,
-            image: i.image ?? null,
-          })),
-        },
+        notes: notes ? String(notes).slice(0, 1000) : null,
+        items: { create: validatedItems },
       },
       include: { items: true },
     });

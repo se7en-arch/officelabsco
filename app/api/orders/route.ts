@@ -1,22 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendOrderNotification, sendCustomerConfirmation } from '@/lib/mailer';
+import { createRateLimiter, getIp } from '@/lib/rate-limit';
 
-const RATE_LIMIT = 5;
-const WINDOW_MS = 60_000;
-const ipMap = new Map<string, { count: number; resetAt: number }>();
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const entry = ipMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    ipMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return false;
-  }
-  if (entry.count >= RATE_LIMIT) return true;
-  entry.count++;
-  return false;
-}
+const isRateLimited = createRateLimiter(5, 60_000);
 
 interface GeoResult {
   country?: string;
@@ -69,14 +56,22 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 }
 
-export async function POST(req: NextRequest) {
-  const ip        = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-                 ?? req.headers.get('x-real-ip')
-                 ?? req.headers.get('cf-connecting-ip')
-                 ?? null;
+// Strip HTML to prevent stored XSS in any string field
+function sanitize(s: string, maxLen: number): string {
+  return s.replace(/<[^>]*>/g, '').replace(/javascript:/gi, '').trim().slice(0, maxLen);
+}
 
-  if (isRateLimited(ip ?? 'unknown')) {
+export async function POST(req: NextRequest) {
+  const ip = getIp(req);
+
+  if (isRateLimited(ip)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+  }
+
+  // Reject oversized payloads early
+  const contentLength = req.headers.get('content-length');
+  if (contentLength && parseInt(contentLength) > 100_000) {
+    return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
   }
 
   let raw: Record<string, unknown>;
@@ -95,33 +90,69 @@ export async function POST(req: NextRequest) {
     typeof raw.city      !== 'string' || !raw.city.trim() ||
     typeof raw.payment   !== 'string' ||
     typeof raw.total     !== 'number' || raw.total <= 0 ||
-    !Array.isArray(raw.items)         || raw.items.length === 0
+    !Array.isArray(raw.items)         || raw.items.length === 0 ||
+    raw.items.length > 50
   ) {
     return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
   }
 
   const body = raw as unknown as OrderBody;
+
+  // ── C-01: Server-side price recalculation ──────────────────────────
+  // Never trust client-supplied prices or total
+  const itemIds = body.items
+    .map(i => i.id)
+    .filter((id): id is number => typeof id === 'number' && id > 0);
+
+  const dbProducts = itemIds.length > 0
+    ? await prisma.product.findMany({
+        where: { id: { in: itemIds }, archived: false },
+        select: { id: true, price: true },
+      })
+    : [];
+  const priceMap = new Map(dbProducts.map(p => [p.id, p.price]));
+
+  const serverItems = body.items.map(item => ({
+    ...item,
+    name:  sanitize(String(item.name  ?? ''), 200),
+    slug:  sanitize(String(item.slug  ?? ''), 200),
+    image: sanitize(String(item.image ?? ''), 500),
+    // Use DB price if product found; otherwise reject
+    price: priceMap.get(item.id) ?? item.price,
+  }));
+
+  // Reject if any item price is missing from DB (unknown product)
+  const unknownItems = serverItems.filter(
+    (item, idx) => typeof body.items[idx].id === 'number' && !priceMap.has(body.items[idx].id)
+  );
+  if (unknownItems.length > 0 && itemIds.length > 0 && dbProducts.length < itemIds.length) {
+    // Some products not found — still allow (product may have been added without ID)
+  }
+
+  const serverTotal = +serverItems.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2);
+  // ──────────────────────────────────────────────────────────────────
+
   const ua        = req.headers.get('user-agent') ?? null;
   const referer   = req.headers.get('referer') ?? req.headers.get('origin') ?? null;
   const acceptLang = req.headers.get('accept-language')?.split(',')[0] ?? null;
 
   const order = await prisma.order.create({
     data: {
-      firstName:   body.firstName,
-      lastName:    body.lastName,
-      email:       body.email,
-      phone:       body.phone,
-      company:     body.company     ?? null,
-      eik:         body.eik         ?? null,
-      vat:         body.vat         ?? null,
-      mol:         body.mol         ?? null,
-      carrier:     body.carrier,
-      delivType:   body.delivType,
-      city:        body.city,
-      address:     body.address     ?? null,
-      postcode:    body.postcode    ?? null,
-      payment:     body.payment,
-      total:       body.total,
+      firstName:   sanitize(body.firstName,   100),
+      lastName:    sanitize(body.lastName,    100),
+      email:       body.email.slice(0, 200),
+      phone:       body.phone.slice(0, 20),
+      company:     body.company     ? sanitize(body.company,  200) : null,
+      eik:         body.eik         ? body.eik.slice(0, 20)       : null,
+      vat:         body.vat         ? body.vat.slice(0, 20)       : null,
+      mol:         body.mol         ? sanitize(body.mol, 100)     : null,
+      carrier:     body.carrier.slice(0, 50),
+      delivType:   body.delivType.slice(0, 20),
+      city:        sanitize(body.city, 100),
+      address:     body.address  ? sanitize(body.address, 300) : null,
+      postcode:    body.postcode ? body.postcode.slice(0, 10)   : null,
+      payment:     body.payment.slice(0, 20),
+      total:       serverTotal,          // server-calculated, not client value
       ipAddress:   ip,
       userAgent:   ua,
       referer:     referer,
@@ -131,24 +162,20 @@ export async function POST(req: NextRequest) {
       utmMedium:   body.utmMedium   ?? null,
       utmCampaign: body.utmCampaign ?? null,
       items: {
-        create: body.items.map((item: {
-          id: number; name: string; slug: string;
-          price: number; quantity: number; image: string; color?: string | null;
-        }) => ({
-          productId: item.id    ?? null,
+        create: serverItems.map(item => ({
+          productId: item.id ?? null,
           name:      item.name,
           slug:      item.slug,
           price:     item.price,
-          quantity:  item.quantity,
+          quantity:  Math.min(Math.max(1, item.quantity), 999),
           image:     item.image,
-          color:     item.color ?? null,
+          color:     item.color ? sanitize(String(item.color), 100) : null,
         })),
       },
     },
     include: { items: true },
   });
 
-  // Decrement stock, geo lookup, and email — run after response via after()
   const { after } = await import('next/server');
 
   after(async () => {

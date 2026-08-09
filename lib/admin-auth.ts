@@ -10,20 +10,20 @@ async function sha256hex(data: string): Promise<string> {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// L-04: DB errors propagate instead of silently falling back to default credentials
 async function getCredentials(): Promise<{ username: string; passwordHash: string }> {
-  try {
-    const rows = await prisma.siteSettings.findMany({
-      where: { key: { in: ['adminUsername', 'adminPasswordHash'] } },
-    });
-    const map: Record<string, string> = {};
-    for (const r of rows) map[r.key] = r.value;
-    if (map.adminPasswordHash) {
-      return {
-        username: map.adminUsername ?? ENV_USERNAME,
-        passwordHash: map.adminPasswordHash,
-      };
-    }
-  } catch {}
+  const rows = await prisma.siteSettings.findMany({
+    where: { key: { in: ['adminUsername', 'adminPasswordHash'] } },
+  });
+  const map: Record<string, string> = {};
+  for (const r of rows) map[r.key] = r.value;
+  if (map.adminPasswordHash) {
+    return {
+      username: map.adminUsername ?? ENV_USERNAME,
+      passwordHash: map.adminPasswordHash,
+    };
+  }
+  // No DB credentials configured (fresh install) — fall back to env
   return {
     username: ENV_USERNAME,
     passwordHash: await sha256hex(ENV_PASSWORD),
