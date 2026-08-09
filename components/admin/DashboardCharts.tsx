@@ -17,6 +17,18 @@ export function RevenueChart({ data }: { data: MonthlyPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={210}>
       <BarChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }} barCategoryGap="30%">
+        <defs>
+          <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#FBBF24" />
+            <stop offset="55%"  stopColor="#F97316" />
+            <stop offset="100%" stopColor="#EF4444" />
+          </linearGradient>
+          <linearGradient id="barGradPast" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="#FDE68A" />
+            <stop offset="55%"  stopColor="#FDBA74" />
+            <stop offset="100%" stopColor="#FCA5A5" />
+          </linearGradient>
+        </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
         <XAxis
           dataKey="month"
@@ -31,7 +43,7 @@ export function RevenueChart({ data }: { data: MonthlyPoint[] }) {
           tickFormatter={(v: number) => v === 0 ? '0' : `€${v}`}
         />
         <Tooltip
-          cursor={{ fill: 'rgba(28,28,28,.04)' }}
+          cursor={{ fill: 'rgba(245,158,11,.06)' }}
           contentStyle={{
             fontSize: 12,
             border: '1px solid #E8E8E8',
@@ -42,11 +54,11 @@ export function RevenueChart({ data }: { data: MonthlyPoint[] }) {
           formatter={(v) => [`€${Number(v).toFixed(2)}`, 'Приход']}
           labelStyle={{ fontWeight: 700, color: '#1C1C1C', marginBottom: 2 }}
         />
-        <Bar dataKey="revenue" radius={[4, 4, 0, 0]}>
+        <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
           {data.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={entry.isCurrent ? '#1C1C1C' : '#D1D5DB'}
+              fill={entry.isCurrent ? 'url(#barGrad)' : 'url(#barGradPast)'}
             />
           ))}
         </Bar>
