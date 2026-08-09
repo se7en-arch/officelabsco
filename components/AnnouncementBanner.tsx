@@ -32,6 +32,11 @@ const ITEMS = [
     title: 'Speedy Widget — избор на офис',
     desc: 'Регистрирай се на api.speedy.bg за API ключ (безплатно). Предоставят JS widget "Speedy Map" — iframe с карта за избор на офис. При избор на "До офис" и куриер Speedy го зареждаш в модал с callback при потвърждение.',
   },
+  {
+    icon: '📧',
+    title: 'Имейл — info@officelabsco.com (3 стъпки)',
+    desc: 'Стъпка 1 — Cloudflare Email Routing (получаване): Cloudflare → officelabsco.com → Email → Email Routing → активирай → добави правило info@officelabsco.com → препрати към твоя личен имейл. | Стъпка 2 — Resend Domain Verification (изпращане от сайта): resend.com → Domains → Add Domain → officelabsco.com → вземи DNS записите (TXT/CNAME) → добави ги в Cloudflare DNS → натисни Verify в Resend. | Стъпка 3 — Gmail "Send mail as" (отговаряне от info@): Gmail → Settings → See all settings → Accounts and Import → Send mail as → Add another email address → info@officelabsco.com → потвърди verification имейла.',
+  },
 ];
 
 export default function AnnouncementBanner() {
