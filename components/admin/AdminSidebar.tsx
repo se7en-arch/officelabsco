@@ -104,13 +104,7 @@ export default function AdminSidebar({ newOrders = 0, pendingDealers = 0 }: { ne
     <aside className="admin-sidebar">
       <div className="admin-sidebar__brand">
         <div className="admin-sidebar__brand-name">
-          <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-            <ellipse cx="8" cy="3.2" rx="2.6" ry="3.2" />
-            <ellipse cx="12.8" cy="8" rx="3.2" ry="2.6" />
-            <ellipse cx="8" cy="12.8" rx="2.6" ry="3.2" />
-            <ellipse cx="3.2" cy="8" rx="3.2" ry="2.6" />
-          </svg>
-          OfficeLabs Co
+          <span style={{ fontWeight: 800 }}>OfficeLabs</span><span style={{ fontWeight: 400, fontSize: '0.88em', letterSpacing: 0, opacity: 0.5 }}>co.</span>
         </div>
         <div className="admin-sidebar__label">Admin Panel</div>
       </div>

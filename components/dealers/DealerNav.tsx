@@ -33,7 +33,9 @@ export default function DealerNav({ companyName, discount, active }: Props) {
   return (
     <>
       <div className="dl-topbar">
-        <div className="dl-topbar__logo">OfficeLabs Co</div>
+        <div className="dl-topbar__logo">
+          <span style={{ fontWeight: 800 }}>OfficeLabs</span><span style={{ fontWeight: 400, fontSize: '0.88em', letterSpacing: 0, opacity: 0.55 }}>co.</span>
+        </div>
         <div className="dl-topbar__sep" />
         <div className="dl-topbar__label">Дилърски портал</div>
         <div className="dl-topbar__spacer" />
