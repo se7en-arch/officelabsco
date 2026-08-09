@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -8,6 +8,7 @@ const PHONE_RX = /^(\+359|0)([ \-]?\d){8,10}$/;
 
 export default function DealerRegisterPage() {
   const router = useRouter();
+  const topRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -54,7 +55,11 @@ export default function DealerRegisterPage() {
     });
     if (form.password !== form.confirmPassword) newErrors.confirmPassword = 'Паролите не съвпадат.';
     if (form.password.length < 8) newErrors.password = 'Минимум 8 символа';
-    if (Object.keys(newErrors).length) { setFieldErrors(newErrors); return; }
+    if (Object.keys(newErrors).length) {
+      setFieldErrors(newErrors);
+      topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
 
     setLoading(true);
     try {
@@ -64,10 +69,15 @@ export default function DealerRegisterPage() {
         body: JSON.stringify({ ...form, vatRegistered: vatReg }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error); return; }
+      if (!res.ok) {
+        setError(data.error);
+        topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
       router.push('/dealers/pending');
     } catch {
       setError('Грешка при регистрация.');
+      topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } finally {
       setLoading(false);
     }
@@ -176,7 +186,7 @@ export default function DealerRegisterPage() {
       <div className="dl-reg-bg" />
 
       <div className="dl-reg-scene">
-        <div className="dl-reg-card">
+        <div className="dl-reg-card" ref={topRef}>
 
           <div className="dl-reg-logo">
             <svg width="22" height="22" viewBox="0 0 16 16" fill="rgba(245,158,11,.9)" aria-hidden="true">

@@ -6,8 +6,8 @@ import { createRateLimiter, getIp } from '@/lib/rate-limit';
 const EIK_RX   = /^\d{9}(\d{4})?$/;
 const PHONE_RX = /^(\+359|0)([ \-]?\d){8,10}$/;
 
-// M-04: 3 registrations per hour per IP
-const isRateLimited = createRateLimiter(3, 60 * 60_000);
+// M-04: 7 registrations per hour per IP
+const isRateLimited = createRateLimiter(7, 60 * 60_000);
 
 export async function POST(req: NextRequest) {
   if (isRateLimited(getIp(req))) {
