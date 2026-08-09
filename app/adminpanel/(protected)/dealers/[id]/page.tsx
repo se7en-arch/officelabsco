@@ -6,6 +6,7 @@ import Link from 'next/link';
 interface DealerOrder {
   id: string;
   orderNumber: number | null;
+  orderCode: string | null;
   createdAt: string;
   status: string;
   total: number;
@@ -209,7 +210,7 @@ export default function AdminDealerDetailPage() {
                     return (
                       <tr key={o.id} style={{ cursor: 'pointer' }} onClick={() => window.location.href = `/adminpanel/dealers/orders/${o.id}`}>
                         <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>
-                          #Order{String(o.orderNumber ?? 0).padStart(5, '0')}
+                          #{o.orderCode ?? String(o.orderNumber ?? 0).padStart(5, '0')}
                         </td>
                         <td style={{ color: 'var(--muted)' }}>
                           {new Date(o.createdAt).toLocaleDateString('bg-BG')}

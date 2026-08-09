@@ -25,6 +25,7 @@ type RecentOrder = {
   type: 'customer' | 'dealer';
   id: string;
   orderNumber: number;
+  orderCode: string | null;
   displayName: string;
   email: string;
   itemCount: number;
@@ -150,6 +151,7 @@ export default async function DashboardPage() {
       type:        'customer' as const,
       id:          String(o.id),
       orderNumber: o.orderNumber ?? o.id,
+      orderCode:   o.orderCode ?? null,
       displayName: `${o.firstName} ${o.lastName}`,
       email:       o.email,
       itemCount:   o.items.length,
@@ -162,6 +164,7 @@ export default async function DashboardPage() {
       type:        'dealer' as const,
       id:          o.id,
       orderNumber: o.orderNumber ?? 0,
+      orderCode:   o.orderCode ?? null,
       displayName: o.dealer.companyName,
       email:       o.dealer.email,
       itemCount:   o.items.reduce((s, i) => s + i.quantity, 0),
@@ -341,7 +344,7 @@ export default async function DashboardPage() {
                   return (
                     <tr key={`${order.type}-${order.id}`}>
                       <td style={{ fontWeight: 700, color: 'var(--muted)', fontSize: 12, whiteSpace: 'nowrap' }}>
-                        #Order{String(order.orderNumber).padStart(5, '0')}
+                        #{order.orderCode ?? String(order.orderNumber).padStart(5, '0')}
                       </td>
                       <td>
                         <div style={{ fontWeight: 600, fontSize: 13 }}>{order.displayName}</div>

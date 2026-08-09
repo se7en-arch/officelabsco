@@ -28,6 +28,7 @@ type UnifiedOrder = {
   type: 'customer' | 'dealer';
   id: string;
   orderNumber: number;
+  orderCode: string | null;
   displayName: string;
   email: string;
   phone: string;
@@ -70,6 +71,7 @@ export default async function OrdersPage({
       type:        'customer' as const,
       id:          String(o.id),
       orderNumber: o.orderNumber ?? o.id,
+      orderCode:   o.orderCode ?? null,
       displayName: `${o.firstName} ${o.lastName}`,
       email:       o.email,
       phone:       o.phone,
@@ -84,6 +86,7 @@ export default async function OrdersPage({
       type:        'dealer' as const,
       id:          o.id,
       orderNumber: o.orderNumber ?? 0,
+      orderCode:   o.orderCode ?? null,
       displayName: o.dealer.companyName,
       email:       o.dealer.email,
       phone:       o.dealer.phone,
@@ -215,7 +218,7 @@ export default async function OrdersPage({
                   return (
                     <tr key={`${o.type}-${o.id}`}>
                       <td style={{ fontWeight: 700, color: 'var(--muted)', fontSize: 12, whiteSpace: 'nowrap' }}>
-                        #Order{String(o.orderNumber).padStart(5, '0')}
+                        #{o.orderCode ?? String(o.orderNumber).padStart(5, '0')}
                       </td>
                       <td>
                         <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap' }}>

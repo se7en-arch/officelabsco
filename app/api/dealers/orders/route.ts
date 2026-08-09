@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getDealerSession } from '@/lib/dealer-auth';
+import { generateOrderCode } from '@/lib/order-code';
 
 export async function GET() {
   const session = await getDealerSession();
@@ -87,10 +88,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Global sequential orderNumber across both Order and DealerOrder tables
-    const [orderAgg, dealerAgg] = await Promise.all([
+    // Global sequential orderNumber + date-based orderCode
+    const [orderAgg, dealerAgg, orderCode] = await Promise.all([
       prisma.order.aggregate({ _max: { orderNumber: true } }),
       prisma.dealerOrder.aggregate({ _max: { orderNumber: true } }),
+      generateOrderCode(),
     ]);
     const orderNumber = Math.max(orderAgg._max.orderNumber ?? 0, dealerAgg._max.orderNumber ?? 0) + 1;
 
@@ -98,6 +100,7 @@ export async function POST(req: NextRequest) {
       data: {
         dealerId:        session.id,
         orderNumber,
+        orderCode,
         total,
         discountPercent: session.discountPercent,
         notes:           notes ? String(notes).slice(0, 1000) : null,

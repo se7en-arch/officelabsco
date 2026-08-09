@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { generateOrderCode } from '@/lib/order-code';
 import { sendOrderNotification, sendCustomerConfirmation } from '@/lib/mailer';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
 
@@ -136,16 +137,18 @@ export async function POST(req: NextRequest) {
   const referer   = req.headers.get('referer') ?? req.headers.get('origin') ?? null;
   const acceptLang = req.headers.get('accept-language')?.split(',')[0] ?? null;
 
-  // Global sequential orderNumber across both Order and DealerOrder tables
-  const [orderAgg, dealerAgg] = await Promise.all([
+  // Global sequential orderNumber + date-based orderCode
+  const [orderAgg, dealerAgg, orderCode] = await Promise.all([
     prisma.order.aggregate({ _max: { orderNumber: true } }),
     prisma.dealerOrder.aggregate({ _max: { orderNumber: true } }),
+    generateOrderCode(),
   ]);
   const nextOrderNumber = Math.max(orderAgg._max.orderNumber ?? 0, dealerAgg._max.orderNumber ?? 0) + 1;
 
   const order = await prisma.order.create({
     data: {
       orderNumber: nextOrderNumber,
+      orderCode,
       firstName:   sanitize(body.firstName,   100),
       lastName:    sanitize(body.lastName,    100),
       email:       body.email.slice(0, 200),

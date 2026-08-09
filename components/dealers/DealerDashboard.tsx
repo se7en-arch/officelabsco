@@ -24,8 +24,8 @@ function fmt(n: number) {
 function dealerPrice(price: number, discount: number) {
   return Math.round(price * (1 - discount / 100) * 100) / 100;
 }
-function fmtOrderNum(n: number) {
-  return `#Order${String(n).padStart(5, '0')}`;
+function fmtOrderNum(code: string | null, n: number | null) {
+  return code ? `#${code}` : `#${String(n ?? 0).padStart(5, '0')}`;
 }
 
 export default function DealerDashboard({
@@ -42,7 +42,7 @@ export default function DealerDashboard({
   const [addresses, setAddresses]               = useState<DealerAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
   const [showConfirm, setShowConfirm]           = useState(false);
-  const [lastOrderNum, setLastOrderNum]         = useState<number | null>(null);
+  const [lastOrderNum, setLastOrderNum]         = useState<string | number | null>(null);
 
   useEffect(() => {
     fetch('/api/dealers/addresses')
@@ -108,7 +108,7 @@ export default function DealerDashboard({
       setCart([]);
       setNotes('');
       setShowCart(false);
-      setLastOrderNum(order.orderNumber ?? null);
+      setLastOrderNum(order.orderCode ?? order.orderNumber ?? null);
       setShowConfirm(true);
     } catch {
       alert('Грешка при поръчката.');
@@ -373,7 +373,7 @@ export default function DealerDashboard({
             <div className="dl-confirm-icon">✓</div>
             <div className="dl-confirm-title">Поръчката е изпратена!</div>
             {lastOrderNum !== null && (
-              <div className="dl-confirm-num">{fmtOrderNum(lastOrderNum)}</div>
+              <div className="dl-confirm-num">{typeof lastOrderNum === 'string' ? `#${lastOrderNum}` : fmtOrderNum(null, lastOrderNum)}</div>
             )}
             <div className="dl-confirm-text">
               Ще получите обаждане от нашия екип за потвърждение на поръчката и уточняване на детайлите по доставката.

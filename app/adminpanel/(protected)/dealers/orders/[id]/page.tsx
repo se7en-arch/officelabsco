@@ -45,7 +45,7 @@ export default async function AdminDealerOrderPage({ params }: { params: Promise
           </Link>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <h1>Поръчка #Order{String(order.orderNumber ?? 0).padStart(5, '0')}</h1>
+              <h1>Поръчка #{order.orderCode ?? String(order.orderNumber ?? 0).padStart(5, '0')}</h1>
               <span className="admin-order-status-pill" style={{ background: pill.bg, color: pill.color }}>
                 {STATUS_LABELS[order.status] ?? order.status}
               </span>
