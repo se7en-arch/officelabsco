@@ -151,6 +151,106 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
 
   // ── Loft ─────────────────────────────────────────────────────────────────
+  'loft-steel-desk': [
+    {
+      name: 'Черен',
+      color: '#2B2B2B',
+      images: [
+        '/products/loft-desk-black-1.png',
+        '/products/loft-desk-black-2.png',
+        '/products/loft-desk-black-3.png',
+      ],
+    },
+    {
+      name: 'Тъмно зелен',
+      color: '#2D5A45',
+      images: [
+        '/products/loft-desk-deep-green-1.png',
+        '/products/loft-desk-deep-green-2.png',
+        '/products/loft-desk-deep-green-3.png',
+      ],
+    },
+  ],
+  'loft-iron-table': [
+    {
+      name: 'Черен',
+      color: '#2B2B2B',
+      images: [
+        '/products/loft-coffee-table-black-1.png',
+        '/products/loft-coffee-table-black-2.png',
+        '/products/loft-coffee-table-black-3.png',
+      ],
+    },
+    {
+      name: 'Тъмно зелен',
+      color: '#2D5A45',
+      images: [
+        '/products/loft-coffee-table-deep-green-1.png',
+        '/products/loft-coffee-table-deep-green-2.png',
+        '/products/loft-coffee-table-deep-green-3.png',
+      ],
+    },
+  ],
+  'loft-low-cabinet': [
+    {
+      name: 'Черен',
+      color: '#2B2B2B',
+      images: [
+        '/products/loft-low-cab-black-1.png',
+        '/products/loft-low-cab-black-2.png',
+        '/products/loft-low-cab-black-3.png',
+      ],
+    },
+    {
+      name: 'Тъмно зелен',
+      color: '#2D5A45',
+      images: [
+        '/products/loft-low-cab-deep-green-1.png',
+        '/products/loft-low-cab-deep-green-2.png',
+        '/products/loft-low-cab-deep-green-3.png',
+      ],
+    },
+  ],
+  'loft-filing-cabinet': [
+    {
+      name: 'Черен',
+      color: '#2B2B2B',
+      images: [
+        '/products/loft-container-black-1.png',
+        '/products/loft-container-black-2.png',
+        '/products/loft-container-black-3.png',
+      ],
+    },
+    {
+      name: 'Тъмно зелен',
+      color: '#2D5A45',
+      images: [
+        '/products/loft-container-deep-green-1.png',
+        '/products/loft-container-deep-green-2.png',
+        '/products/loft-container-deep-green-3.png',
+      ],
+    },
+  ],
+  'loft-plant-stand': [
+    {
+      name: 'Черен',
+      color: '#2B2B2B',
+      images: [
+        '/products/loft-plant-black-1.png',
+        '/products/loft-plant-black-2.png',
+        '/products/loft-plant-black-3.png',
+      ],
+    },
+    {
+      name: 'Тъмно зелен',
+      color: '#2D5A45',
+      images: [
+        '/products/loft-plant-deep-green-1.png',
+        '/products/loft-plant-deep-green-2.png',
+        '/products/loft-plant-deep-green-3.png',
+      ],
+    },
+  ],
   'loft-high-cabinet': [
     {
       name: 'Черен',
