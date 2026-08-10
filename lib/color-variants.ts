@@ -153,15 +153,6 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   // ── Loft ─────────────────────────────────────────────────────────────────
   'loft-steel-desk': [
     {
-      name: 'Черен',
-      color: '#2B2B2B',
-      images: [
-        '/products/loft-desk-black-1.png',
-        '/products/loft-desk-black-2.png',
-        '/products/loft-desk-black-3.png',
-      ],
-    },
-    {
       name: 'Тъмно зелен',
       color: '#2D5A45',
       images: [
@@ -170,17 +161,17 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
         '/products/loft-desk-deep-green-3.png',
       ],
     },
-  ],
-  'loft-iron-table': [
     {
       name: 'Черен',
       color: '#2B2B2B',
       images: [
-        '/products/loft-coffee-table-black-1.png',
-        '/products/loft-coffee-table-black-2.png',
-        '/products/loft-coffee-table-black-3.png',
+        '/products/loft-desk-black-1.png',
+        '/products/loft-desk-black-2.png',
+        '/products/loft-desk-black-3.png',
       ],
     },
+  ],
+  'loft-iron-table': [
     {
       name: 'Тъмно зелен',
       color: '#2D5A45',
@@ -190,17 +181,17 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
         '/products/loft-coffee-table-deep-green-3.png',
       ],
     },
-  ],
-  'loft-low-cabinet': [
     {
       name: 'Черен',
       color: '#2B2B2B',
       images: [
-        '/products/loft-low-cab-black-1.png',
-        '/products/loft-low-cab-black-2.png',
-        '/products/loft-low-cab-black-3.png',
+        '/products/loft-coffee-table-black-1.png',
+        '/products/loft-coffee-table-black-2.png',
+        '/products/loft-coffee-table-black-3.png',
       ],
     },
+  ],
+  'loft-low-cabinet': [
     {
       name: 'Тъмно зелен',
       color: '#2D5A45',
@@ -210,17 +201,17 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
         '/products/loft-low-cab-deep-green-3.png',
       ],
     },
-  ],
-  'loft-filing-cabinet': [
     {
       name: 'Черен',
       color: '#2B2B2B',
       images: [
-        '/products/loft-container-black-1.png',
-        '/products/loft-container-black-2.png',
-        '/products/loft-container-black-3.png',
+        '/products/loft-low-cab-black-1.png',
+        '/products/loft-low-cab-black-2.png',
+        '/products/loft-low-cab-black-3.png',
       ],
     },
+  ],
+  'loft-filing-cabinet': [
     {
       name: 'Тъмно зелен',
       color: '#2D5A45',
@@ -230,17 +221,17 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
         '/products/loft-container-deep-green-3.png',
       ],
     },
-  ],
-  'loft-plant-stand': [
     {
       name: 'Черен',
       color: '#2B2B2B',
       images: [
-        '/products/loft-plant-black-1.png',
-        '/products/loft-plant-black-2.png',
-        '/products/loft-plant-black-3.png',
+        '/products/loft-container-black-1.png',
+        '/products/loft-container-black-2.png',
+        '/products/loft-container-black-3.png',
       ],
     },
+  ],
+  'loft-plant-stand': [
     {
       name: 'Тъмно зелен',
       color: '#2D5A45',
@@ -250,17 +241,17 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
         '/products/loft-plant-deep-green-3.png',
       ],
     },
-  ],
-  'loft-high-cabinet': [
     {
       name: 'Черен',
       color: '#2B2B2B',
       images: [
-        '/products/loft-high-cab-black-1.png',
-        '/products/loft-high-cab-black-2.png',
-        '/products/loft-high-cab-black-3.png',
+        '/products/loft-plant-black-1.png',
+        '/products/loft-plant-black-2.png',
+        '/products/loft-plant-black-3.png',
       ],
     },
+  ],
+  'loft-high-cabinet': [
     {
       name: 'Тъмно зелен',
       color: '#2D5A45',
@@ -270,17 +261,17 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
         '/products/loft-high-cab-deep-green-3.png',
       ],
     },
-  ],
-  'loft-pipe-bookshelf': [
     {
       name: 'Черен',
       color: '#2B2B2B',
       images: [
-        '/products/loft-shelf-black-1.png',
-        '/products/loft-shelf-black-2.png',
-        '/products/loft-shelf-black-3.png',
+        '/products/loft-high-cab-black-1.png',
+        '/products/loft-high-cab-black-2.png',
+        '/products/loft-high-cab-black-3.png',
       ],
     },
+  ],
+  'loft-pipe-bookshelf': [
     {
       name: 'Тъмно зелен',
       color: '#2D5A45',
@@ -288,6 +279,15 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
         '/products/loft-shelf-deep-green-1.png',
         '/products/loft-shelf-deep-green-2.png',
         '/products/loft-shelf-deep-green-3.png',
+      ],
+    },
+    {
+      name: 'Черен',
+      color: '#2B2B2B',
+      images: [
+        '/products/loft-shelf-black-1.png',
+        '/products/loft-shelf-black-2.png',
+        '/products/loft-shelf-black-3.png',
       ],
     },
   ],
