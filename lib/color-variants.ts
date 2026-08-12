@@ -49,6 +49,46 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
 
   // ── Terra ────────────────────────────────────────────────────────────────
+  'terra-dining-table': [
+    {
+      name: 'Евкалипт',
+      color: '#7A9E87',
+      images: [
+        '/products/terra-coffee-table-eucalypt-1.png',
+        '/products/terra-coffee-table-eucalypt-2.png',
+        '/products/terra-coffee-table-eucalypt-3.png',
+      ],
+    },
+    {
+      name: 'Корал',
+      color: '#C4956A',
+      images: [
+        '/products/terra-coffee-table-caramel-1.png',
+        '/products/terra-coffee-table-caramel-2.png',
+        '/products/terra-coffee-table-caramel-3.png',
+      ],
+    },
+  ],
+  'terra-filing-cabinet': [
+    {
+      name: 'Евкалипт',
+      color: '#7A9E87',
+      images: [
+        '/products/terra-container-eucalypt-1.png',
+        '/products/terra-container-eucalypt-2.png',
+        '/products/terra-container-eucalypt-3.png',
+      ],
+    },
+    {
+      name: 'Корал',
+      color: '#C4956A',
+      images: [
+        '/products/terra-container-caramel-1.png',
+        '/products/terra-container-caramel-2.png',
+        '/products/terra-container-caramel-3.png',
+      ],
+    },
+  ],
   'terra-desk-oak': [
     {
       name: 'Евкалипт',
