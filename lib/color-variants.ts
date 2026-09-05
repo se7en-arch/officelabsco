@@ -27,6 +27,46 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
   ],
+  'astra-table': [
+    {
+      name: 'Ангора',
+      color: '#E8DFD8',
+      images: [
+        '/products/astra-table-angora-1.png',
+        '/products/astra-table-angora-2.png',
+        '/products/astra-table-angora-3.png',
+      ],
+    },
+    {
+      name: 'Кубанит',
+      color: '#AE9F8F',
+      images: [
+        '/products/astra-table-cubanit-1.png',
+        '/products/astra-table-cubanit-2.png',
+        '/products/astra-table-cubanit-3.png',
+      ],
+    },
+  ],
+  'astra-filing-cabinet': [
+    {
+      name: 'Ангора',
+      color: '#E8DFD8',
+      images: [
+        '/products/astra-container-angora-1.png',
+        '/products/astra-container-angora-2.png',
+        '/products/astra-container-angora-3.png',
+      ],
+    },
+    {
+      name: 'Кубанит',
+      color: '#AE9F8F',
+      images: [
+        '/products/astra-container-cubanit-1.png',
+        '/products/astra-container-cubanit-2.png',
+        '/products/astra-container-cubanit-3.png',
+      ],
+    },
+  ],
   'astra-high-cabinet': [
     {
       name: 'Лате',
