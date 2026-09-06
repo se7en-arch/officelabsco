@@ -373,6 +373,46 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
 
   // ── Nova ─────────────────────────────────────────────────────────────────
+  'nova-farm-table': [
+    {
+      name: 'Антрацит',
+      color: '#B5C8D4',
+      images: [
+        '/products/nova-coffee-table-diamond-1.png',
+        '/products/nova-coffee-table-diamond-2.png',
+        '/products/nova-coffee-table-diamond-3.png',
+      ],
+    },
+    {
+      name: 'Крем',
+      color: '#EDE8DF',
+      images: [
+        '/products/nova-coffee-table-cream-1.png',
+        '/products/nova-coffee-table-cream-2.png',
+        '/products/nova-coffee-table-cream-3.png',
+      ],
+    },
+  ],
+  'nova-filing-cabinet': [
+    {
+      name: 'Антрацит',
+      color: '#B5C8D4',
+      images: [
+        '/products/nova-container-diamond-1.png',
+        '/products/nova-container-diamond-2.png',
+        '/products/nova-container-diamond-3.png',
+      ],
+    },
+    {
+      name: 'Крем',
+      color: '#EDE8DF',
+      images: [
+        '/products/nova-container-cream-1.png',
+        '/products/nova-container-cream-2.png',
+        '/products/nova-container-cream-3.png',
+      ],
+    },
+  ],
   'nova-walnut-desk': [
     {
       name: 'Антрацит',
