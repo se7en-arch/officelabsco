@@ -860,7 +860,7 @@ export default function CostCalculator({
         .cc-header { padding-top: 28px; padding-bottom: 22px; }
         .cc-h2 { font-size: 15px; font-weight: 700; color: ${COLORS.text}; margin: 0; }
 
-        .cc-pricelist-col { display: flex; flex-direction: column; gap: 14px; max-width: 760px; }
+        .cc-pricelist-col { display: flex; flex-direction: column; gap: 14px; max-width: 980px; }
 
         .cc-collapsible__head {
           padding: 13px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px;
@@ -870,15 +870,22 @@ export default function CostCalculator({
 
         /* ── price rows ── */
         .cc-price-row {
-          display: grid; align-items: center; gap: 8px; padding: 7px 0;
+          display: grid; align-items: center; gap: 10px; padding: 8px 0;
           border-bottom: 1px solid #f8fafc;
         }
         .cc-price-row:last-of-type { border-bottom: none; }
-        .cc-price-row--hardware { grid-template-columns: 1fr 56px 110px 30px; }
-        .cc-price-row--material { grid-template-columns: minmax(140px,1.6fr) 60px 96px 96px 96px 30px; }
+        .cc-price-row--hardware { grid-template-columns: 1fr 64px 130px 30px; }
+        .cc-price-row--material { grid-template-columns: minmax(220px,2fr) 68px 116px 116px 116px 30px; }
         .cc-price-row__name { width: 100%; }
         .cc-price-row__unit { width: 100%; }
         .cc-price-row__remove { justify-self: end; }
+
+        /* ── markup / vat ── */
+        .cc-rate-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+        .cc-rate-card {
+          background: #fff; border: 1px solid ${COLORS.border}; border-radius: 12px;
+          padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+        }
 
         .cc-price-group {
           display: flex; align-items: center; gap: 5px; background: #f8fafc;
