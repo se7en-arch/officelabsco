@@ -1,18 +1,23 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type Category = 'material' | 'hardware';
 type CostItem = { id: string; name: string; unit: string; price: number; category: Category };
-type ModuleRow = { id: string; name: string; qty: Record<string, number> };
+type ModuleRow = {
+  id: string; name: string; qty: Record<string, number>;
+  productId?: number; seriesName?: string; categoryName?: string;
+};
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 type CalcState = { priceList: CostItem[]; modules: ModuleRow[]; markup: number; vat: number };
+type ProductRef = { id: number; name: string; seriesName: string; categoryName: string };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
+const OTHER_GROUP = 'Други';
 
 const HARDWARE_DEFAULTS: [string, string][] = [
   ['Рафтоносачи', 'бр.'],
-  ['Кант', 'м'],
+  ['Кантиране', 'м'],
   ['Рязане на детайл', 'бр.'],
   ['Разпробиване', 'бр.'],
   ['Панти', 'бр.'],
@@ -49,14 +54,28 @@ function fmt(n: number): string {
   return n.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+const inputBase: React.CSSProperties = {
+  padding: '6px 9px', border: '1px solid #e2e8f0', borderRadius: 6,
+  fontSize: 13, outline: 'none', fontFamily: 'inherit', background: '#fafafa',
+  color: '#111827',
+};
+
+const addBtnStyle: React.CSSProperties = {
+  width: '100%', marginTop: 6, padding: '8px 10px', border: '1px dashed #cbd5e1',
+  borderRadius: 8, background: 'transparent', color: '#64748b', fontSize: 12.5,
+  fontWeight: 600, cursor: 'pointer',
+};
+
 export default function CostCalculator({
   initial,
   seriesMaterials,
   defaultVat,
+  products,
 }: {
   initial: Partial<CalcState> | null;
   seriesMaterials: Record<string, string[]>;
   defaultVat: number;
+  products: ProductRef[];
 }) {
   const [state, setState] = useState<CalcState>(() => ({
     priceList: initial?.priceList?.length ? initial.priceList : defaultPriceList(seriesMaterials),
@@ -66,26 +85,72 @@ export default function CostCalculator({
   }));
   const [saveState, setSaveState] = useState<SaveState>('idle');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [materialsOpen, setMaterialsOpen] = useState(false);
+  const [hardwareOpen, setHardwareOpen] = useState(false);
+  const [filterSeries, setFilterSeries] = useState('all');
+  const [moduleSearch, setModuleSearch] = useState('');
   const saveTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const didInit = useRef(false);
 
-  // Fallback: if the DB had nothing, try localStorage cache and push it up.
+  // UI-only collapse preference (not synced to DB — per-device convenience)
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem('ol_cost_calc_ui');
+      if (cached) {
+        const p = JSON.parse(cached);
+        if (typeof p.materialsOpen === 'boolean') setMaterialsOpen(p.materialsOpen);
+        if (typeof p.hardwareOpen === 'boolean') setHardwareOpen(p.hardwareOpen);
+      }
+    } catch { /* ignore */ }
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem('ol_cost_calc_ui', JSON.stringify({ materialsOpen, hardwareOpen })); } catch { /* ignore */ }
+  }, [materialsOpen, hardwareOpen]);
+
+  // One-time mount fallback: the server already seeds product module cards whenever
+  // it has a DB row (see app/calculator/page.tsx). This only covers the rare case
+  // where the DB has nothing yet but this browser has a localStorage cache — then we
+  // also reconcile products here, since the server couldn't in that case.
+  useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
     if (initial) return;
+
+    let base = state;
     try {
       const cached = localStorage.getItem('ol_cost_calculator');
       if (cached) {
         const parsed = JSON.parse(cached) as Partial<CalcState>;
-        setState(prev => ({
-          priceList: parsed.priceList ?? prev.priceList,
-          modules: parsed.modules ?? prev.modules,
-          markup: typeof parsed.markup === 'number' ? parsed.markup : prev.markup,
-          vat: typeof parsed.vat === 'number' ? parsed.vat : prev.vat,
-        }));
-        fetch('/api/table/cost-calculator', {
-          method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: cached,
-        }).catch(() => {});
+        base = {
+          priceList: parsed.priceList ?? base.priceList,
+          modules: parsed.modules ?? base.modules,
+          markup: typeof parsed.markup === 'number' ? parsed.markup : base.markup,
+          vat: typeof parsed.vat === 'number' ? parsed.vat : base.vat,
+        };
       }
     } catch { /* ignore */ }
+
+    if (products.length > 0) {
+      const existingIds = new Set(base.modules.filter(m => m.productId != null).map(m => m.productId));
+      const missing = products.filter(p => !existingIds.has(p.id));
+      if (missing.length > 0) {
+        base = {
+          ...base,
+          modules: [
+            ...base.modules,
+            ...missing.map(p => ({ id: uid(), productId: p.id, name: p.name, seriesName: p.seriesName, categoryName: p.categoryName, qty: {} })),
+          ],
+        };
+      }
+    }
+
+    if (base !== state) {
+      setState(base);
+      try { localStorage.setItem('ol_cost_calculator', JSON.stringify(base)); } catch { /* ignore */ }
+      fetch('/api/table/cost-calculator', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(base),
+      }).catch(() => {});
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -142,7 +207,7 @@ export default function CostCalculator({
   }
   function duplicateModule(src: ModuleRow) {
     const id = uid();
-    commit(prev => ({ ...prev, modules: [...prev.modules, { ...src, id, name: src.name + ' (копие)' }] }));
+    commit(prev => ({ ...prev, modules: [...prev.modules, { ...src, id, productId: undefined, name: src.name + ' (копие)' }] }));
     setExpanded(e => new Set(e).add(id));
   }
   function removeModule(id: string) {
@@ -154,34 +219,60 @@ export default function CostCalculator({
   function updateModuleQty(moduleId: string, itemId: string, qty: number) {
     commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === moduleId ? { ...m, qty: { ...m.qty, [itemId]: qty } } : m) }));
   }
+  function addModuleItem(moduleId: string, itemId: string) {
+    if (!itemId) return;
+    commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === moduleId ? { ...m, qty: { ...m.qty, [itemId]: 1 } } : m) }));
+  }
+  function removeModuleItem(moduleId: string, itemId: string) {
+    commit(prev => ({
+      ...prev,
+      modules: prev.modules.map(m => {
+        if (m.id !== moduleId) return m;
+        const qty = { ...m.qty };
+        delete qty[itemId];
+        return { ...m, qty };
+      }),
+    }));
+  }
   function toggleExpand(id: string) {
     setExpanded(e => { const n = new Set(e); n.has(id) ? n.delete(id) : n.add(id); return n; });
   }
 
+  const priceById = useMemo(() => {
+    const map: Record<string, CostItem> = {};
+    for (const it of state.priceList) map[it.id] = it;
+    return map;
+  }, [state.priceList]);
+
   function moduleCost(m: ModuleRow): number {
-    return state.priceList.reduce((sum, item) => sum + (m.qty[item.id] || 0) * item.price, 0);
+    return Object.entries(m.qty).reduce((sum, [itemId, q]) => sum + (priceById[itemId]?.price ?? 0) * (q || 0), 0);
   }
-  function moduleSale(m: ModuleRow): number {
-    return moduleCost(m) * (1 + state.markup / 100);
-  }
-  function moduleFinal(m: ModuleRow): number {
-    return moduleSale(m) * (1 + state.vat / 100);
-  }
+  function moduleSale(m: ModuleRow): number { return moduleCost(m) * (1 + state.markup / 100); }
+  function moduleFinal(m: ModuleRow): number { return moduleSale(m) * (1 + state.vat / 100); }
 
   const materials = state.priceList.filter(i => i.category === 'material');
   const hardware = state.priceList.filter(i => i.category === 'hardware');
+
+  const allSeriesNames = useMemo(() => {
+    const set = new Set(state.modules.map(m => m.seriesName || OTHER_GROUP));
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'bg'));
+  }, [state.modules]);
+
+  const filteredModules = useMemo(() => {
+    let list = state.modules;
+    if (filterSeries !== 'all') list = list.filter(m => (m.seriesName || OTHER_GROUP) === filterSeries);
+    if (moduleSearch.trim()) {
+      const q = moduleSearch.toLowerCase();
+      list = list.filter(m => m.name.toLowerCase().includes(q) || (m.categoryName ?? '').toLowerCase().includes(q));
+    }
+    return list;
+  }, [state.modules, filterSeries, moduleSearch]);
 
   const grandCost = state.modules.reduce((s, m) => s + moduleCost(m), 0);
   const grandSale = state.modules.reduce((s, m) => s + moduleSale(m), 0);
 
   const SAVE_LABEL: Record<SaveState, string> = {
     idle: '', saving: 'Запазване…', saved: 'Запазено ✓', error: 'Грешка при запис',
-  };
-
-  const inputBase: React.CSSProperties = {
-    padding: '6px 9px', border: '1px solid #e2e8f0', borderRadius: 6,
-    fontSize: 13, outline: 'none', fontFamily: 'inherit', background: '#fafafa',
-    color: '#111827',
   };
 
   function PriceRow({ item }: { item: CostItem }) {
@@ -239,9 +330,83 @@ export default function CostCalculator({
           placeholder="0"
           style={{ ...inputBase, width: 64, textAlign: 'right', flexShrink: 0 }}
         />
-        <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 70, textAlign: 'right', flexShrink: 0 }}>
+        <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
           {line > 0 ? `${fmt(line)} €` : '—'}
         </span>
+        <button
+          onClick={() => removeModuleItem(m.id, item.id)}
+          title="Премахни позицията"
+          style={{ width: 20, height: 20, flexShrink: 0, border: 'none', background: 'transparent', color: '#cbd5e1', cursor: 'pointer', fontSize: 13, lineHeight: 1, borderRadius: 5 }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }}
+        >×</button>
+      </div>
+    );
+  }
+
+  function ModuleBody({ m }: { m: ModuleRow }) {
+    const addedIds = Object.keys(m.qty);
+    const addedMaterials = addedIds.map(id => priceById[id]).filter((i): i is CostItem => !!i && i.category === 'material');
+    const addedHardware = addedIds.map(id => priceById[id]).filter((i): i is CostItem => !!i && i.category === 'hardware');
+    const availableMaterials = materials.filter(i => !(i.id in m.qty));
+    const availableHardware = hardware.filter(i => !(i.id in m.qty));
+
+    return (
+      <div className="cc-module-body" style={{ borderTop: '1px solid #f1f5f9', padding: '12px 14px 16px' }}>
+        {addedMaterials.length === 0 && addedHardware.length === 0 && (
+          <p style={{ fontSize: 12.5, color: '#94a3b8', margin: '0 0 10px' }}>Няма добавени позиции — избери отдолу какво влиза в тази мебел.</p>
+        )}
+        {addedMaterials.length > 0 && (
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 4 }}>Материали</div>
+            {addedMaterials.map(item => <QtyRow key={item.id} m={m} item={item} />)}
+          </div>
+        )}
+        {addedHardware.length > 0 && (
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 4 }}>Обков и труд</div>
+            {addedHardware.map(item => <QtyRow key={item.id} m={m} item={item} />)}
+          </div>
+        )}
+        {(availableMaterials.length > 0 || availableHardware.length > 0) && (
+          <select
+            value=""
+            onChange={e => addModuleItem(m.id, e.target.value)}
+            style={{ ...inputBase, width: '100%', marginTop: 4 }}
+          >
+            <option value="">+ Добави позиция…</option>
+            {availableMaterials.length > 0 && (
+              <optgroup label="Материали">
+                {availableMaterials.map(i => <option key={i.id} value={i.id}>{i.name || '(без име)'}</option>)}
+              </optgroup>
+            )}
+            {availableHardware.length > 0 && (
+              <optgroup label="Обков и труд">
+                {availableHardware.map(i => <option key={i.id} value={i.id}>{i.name || '(без име)'}</option>)}
+              </optgroup>
+            )}
+          </select>
+        )}
+      </div>
+    );
+  }
+
+  function CollapsibleCard({
+    title, sub, accent, open, onToggle, children,
+  }: { title: string; sub: string; accent: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+    return (
+      <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', borderTop: `3px solid ${accent}`, boxShadow: '0 1px 4px rgba(0,0,0,.06)', overflow: 'hidden' }}>
+        <div
+          onClick={onToggle}
+          style={{ padding: '11px 14px 9px', borderBottom: open ? '1px solid #f1f5f9' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
+        >
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>{title}</div>
+            <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, letterSpacing: '.1em', marginTop: 1 }}>{sub}</div>
+          </div>
+          <span style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s', color: '#94a3b8', fontSize: 12 }}>▾</span>
+        </div>
+        {open && <div style={{ padding: '8px 14px 14px' }}>{children}</div>}
       </div>
     );
   }
@@ -268,7 +433,7 @@ export default function CostCalculator({
             Калкулатор на себестойност
           </h1>
           <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0' }}>
-            Задай цени на материали и обков → добави модул → въведи количества → цената излиза автоматично
+            Задай цени на материали и обков → отвори мебел → избери какво влиза в нея → цената излиза автоматично
           </p>
         </div>
 
@@ -288,7 +453,7 @@ export default function CostCalculator({
         </div>
       </div>
 
-      {/* ── Price list: materials + hardware ── */}
+      {/* ── Price list: materials + hardware (collapsible) ── */}
       <div className="cc-section" style={{ padding: '0 32px 24px' }}>
         <div style={{ marginBottom: 12, display: 'flex', alignItems: 'baseline', gap: 10 }}>
           <h2 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Ценоразпис</h2>
@@ -296,27 +461,21 @@ export default function CostCalculator({
         </div>
         <div className="cc-pricelist-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
 
-          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', borderTop: '3px solid #3b82f6', boxShadow: '0 1px 4px rgba(0,0,0,.06)' }}>
-            <div style={{ padding: '11px 14px 9px', borderBottom: '1px solid #f1f5f9' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>Материали</div>
-              <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, letterSpacing: '.1em', marginTop: 1 }}>ПО СЕРИИ / ЦВЯТ · ЦЕНА НА М²</div>
-            </div>
-            <div style={{ padding: '8px 14px 14px' }}>
-              {materials.map(item => <PriceRow key={item.id} item={item} />)}
-              <button onClick={() => addPriceItem('material')} style={addBtnStyle}>+ Добави материал</button>
-            </div>
-          </div>
+          <CollapsibleCard
+            title="Материали" sub="ПО СЕРИИ / ЦВЯТ · ЦЕНА НА М²" accent="#3b82f6"
+            open={materialsOpen} onToggle={() => setMaterialsOpen(o => !o)}
+          >
+            {materials.map(item => <PriceRow key={item.id} item={item} />)}
+            <button onClick={() => addPriceItem('material')} style={addBtnStyle}>+ Добави материал</button>
+          </CollapsibleCard>
 
-          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', borderTop: '3px solid #f59e0b', boxShadow: '0 1px 4px rgba(0,0,0,.06)' }}>
-            <div style={{ padding: '11px 14px 9px', borderBottom: '1px solid #f1f5f9' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>Обков и труд</div>
-              <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, letterSpacing: '.1em', marginTop: 1 }}>ЦЕНА ЗА ЕДИНИЦА</div>
-            </div>
-            <div style={{ padding: '8px 14px 14px' }}>
-              {hardware.map(item => <PriceRow key={item.id} item={item} />)}
-              <button onClick={() => addPriceItem('hardware')} style={addBtnStyle}>+ Добави позиция</button>
-            </div>
-          </div>
+          <CollapsibleCard
+            title="Обков и труд" sub="ЦЕНА ЗА ЕДИНИЦА" accent="#f59e0b"
+            open={hardwareOpen} onToggle={() => setHardwareOpen(o => !o)}
+          >
+            {hardware.map(item => <PriceRow key={item.id} item={item} />)}
+            <button onClick={() => addPriceItem('hardware')} style={addBtnStyle}>+ Добави позиция</button>
+          </CollapsibleCard>
 
         </div>
 
@@ -347,22 +506,47 @@ export default function CostCalculator({
 
       {/* ── Modules ── */}
       <div className="cc-section" style={{ padding: '0 32px 60px' }}>
-        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <h2 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Модули (мебели)</h2>
-          <span style={{ fontSize: 12, color: '#94a3b8' }}>{state.modules.length} бр.</span>
-          <button onClick={addModule} style={{ ...addBtnStyle, marginLeft: 'auto', width: 'auto', padding: '7px 16px', background: '#111827', color: '#fff', border: 'none' }}>
+          <span style={{ fontSize: 12, color: '#94a3b8' }}>{filteredModules.length} / {state.modules.length}</span>
+          <button onClick={() => setExpanded(new Set(filteredModules.map(m => m.id)))} style={{ ...addBtnStyle, width: 'auto', marginTop: 0, padding: '6px 12px' }}>Разгъни всички</button>
+          <button onClick={() => setExpanded(new Set())} style={{ ...addBtnStyle, width: 'auto', marginTop: 0, padding: '6px 12px' }}>Свий всички</button>
+          <button onClick={addModule} style={{ ...addBtnStyle, marginLeft: 'auto', width: 'auto', marginTop: 0, padding: '7px 16px', background: '#111827', color: '#fff', border: 'none' }}>
             + Нов модул
           </button>
         </div>
 
-        {state.modules.length === 0 && (
+        <div className="cc-toolbar" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
+          <div style={{ display: 'flex', background: '#e2e8f0', borderRadius: 8, padding: 3, gap: 2, flexWrap: 'wrap' }}>
+            {['all', ...allSeriesNames].map(s => {
+              const active = filterSeries === s;
+              return (
+                <button key={s} onClick={() => setFilterSeries(s)} style={{
+                  padding: '5px 14px', border: 'none', borderRadius: 6, fontSize: 12,
+                  fontWeight: 600, cursor: 'pointer', background: active ? '#fff' : 'transparent',
+                  color: active ? '#0f172a' : '#64748b', boxShadow: active ? '0 1px 2px rgba(0,0,0,.08)' : 'none',
+                }}>
+                  {s === 'all' ? 'Всички' : s}
+                </button>
+              );
+            })}
+          </div>
+          <input
+            value={moduleSearch}
+            onChange={e => setModuleSearch(e.target.value)}
+            placeholder="Търси модул…"
+            style={{ ...inputBase, minWidth: 200 }}
+          />
+        </div>
+
+        {filteredModules.length === 0 && (
           <div style={{ background: '#fff', border: '1px dashed #cbd5e1', borderRadius: 12, padding: '40px 20px', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>
-            Няма добавени модули. Натисни &quot;+ Нов модул&quot;, за да добавиш първата мебел за сметка.
+            Няма модули за показване.
           </div>
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {state.modules.map(m => {
+          {filteredModules.map(m => {
             const isOpen = expanded.has(m.id);
             const cost = moduleCost(m);
             const sale = moduleSale(m);
@@ -371,14 +555,21 @@ export default function CostCalculator({
               <div key={m.id} style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,.06)', overflow: 'hidden' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', cursor: 'pointer' }} onClick={() => toggleExpand(m.id)}>
                   <span style={{ transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform .15s', color: '#94a3b8', fontSize: 12 }}>▶</span>
-                  <input
-                    value={m.name}
-                    onChange={e => updateModuleName(m.id, e.target.value)}
-                    onClick={e => e.stopPropagation()}
-                    style={{ ...inputBase, flex: 1, minWidth: 120, fontWeight: 700, fontSize: 14, background: '#fff', border: '1px solid transparent' }}
-                    onFocus={e => { e.currentTarget.style.borderColor = '#3b82f6'; }}
-                    onBlur={e => { e.currentTarget.style.borderColor = 'transparent'; }}
-                  />
+                  <div style={{ flex: 1, minWidth: 120 }}>
+                    <input
+                      value={m.name}
+                      onChange={e => updateModuleName(m.id, e.target.value)}
+                      onClick={e => e.stopPropagation()}
+                      style={{ ...inputBase, width: '100%', fontWeight: 700, fontSize: 14, background: '#fff', border: '1px solid transparent', padding: '4px 6px' }}
+                      onFocus={e => { e.currentTarget.style.borderColor = '#3b82f6'; }}
+                      onBlur={e => { e.currentTarget.style.borderColor = 'transparent'; }}
+                    />
+                    {(m.seriesName || m.categoryName) && (
+                      <div style={{ fontSize: 10.5, color: '#94a3b8', padding: '0 6px', marginTop: 1 }}>
+                        {[m.seriesName, m.categoryName].filter(Boolean).join(' · ')}
+                      </div>
+                    )}
+                  </div>
                   <div className="cc-module-totals" style={{ display: 'flex', gap: 16, fontSize: 12 }}>
                     <span style={{ color: '#94a3b8' }}>Себестойност <b style={{ color: '#0f172a' }}>{fmt(cost)} €</b></span>
                     <span style={{ color: '#94a3b8' }}>Продажна <b style={{ color: '#0f172a' }}>{fmt(sale)} €</b></span>
@@ -398,18 +589,7 @@ export default function CostCalculator({
                   >×</button>
                 </div>
 
-                {isOpen && (
-                  <div className="cc-module-body" style={{ borderTop: '1px solid #f1f5f9', padding: '12px 14px 16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                    <div>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>Материали</div>
-                      {materials.map(item => <QtyRow key={item.id} m={m} item={item} />)}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 6 }}>Обков и труд</div>
-                      {hardware.map(item => <QtyRow key={item.id} m={m} item={item} />)}
-                    </div>
-                  </div>
-                )}
+                {isOpen && <ModuleBody m={m} />}
               </div>
             );
           })}
@@ -428,16 +608,9 @@ export default function CostCalculator({
           .cc-section { padding-left: 16px !important; padding-right: 16px !important; }
           .cc-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .cc-pricelist-grid { grid-template-columns: 1fr !important; }
-          .cc-module-body { grid-template-columns: 1fr !important; }
           .cc-module-totals { display: none !important; }
         }
       `}</style>
     </div>
   );
 }
-
-const addBtnStyle: React.CSSProperties = {
-  width: '100%', marginTop: 6, padding: '8px 10px', border: '1px dashed #cbd5e1',
-  borderRadius: 8, background: 'transparent', color: '#64748b', fontSize: 12.5,
-  fontWeight: 600, cursor: 'pointer',
-};
