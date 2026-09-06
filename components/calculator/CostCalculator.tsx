@@ -503,8 +503,25 @@ export default function CostCalculator({
   function updateModuleName(id: string, name: string) {
     commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === id ? { ...m, name } : m) }));
   }
+  // Hardware/обков (m.qty) is shared across a product's color variants — enter it once,
+  // it applies to every color. Materials (m.materials) stay per-color on purpose, since
+  // that's exactly the thing that differs between color variants.
+  function colorSiblingIds(modules: ModuleRow[], moduleId: string): string[] {
+    const target = modules.find(m => m.id === moduleId);
+    if (!target || target.productId == null) return [];
+    return modules.filter(m => m.id !== moduleId && m.productId === target.productId).map(m => m.id);
+  }
+
   function updateModuleQty(moduleId: string, itemId: string, qty: number) {
-    commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === moduleId ? { ...m, qty: { ...m.qty, [itemId]: qty } } : m) }));
+    commit(prev => {
+      const siblings = new Set(colorSiblingIds(prev.modules, moduleId));
+      return {
+        ...prev,
+        modules: prev.modules.map(m => (m.id === moduleId || siblings.has(m.id))
+          ? { ...m, qty: { ...m.qty, [itemId]: qty } }
+          : m),
+      };
+    });
   }
   function updateModuleMaterial(moduleId: string, itemId: string, patch: Partial<MaterialPick>) {
     commit(prev => ({
@@ -521,19 +538,37 @@ export default function CostCalculator({
     if (item.category === 'material') {
       commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === moduleId ? { ...m, materials: { ...m.materials, [itemId]: { portion: 'whole', qty: 1 } } } : m) }));
     } else {
-      commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === moduleId ? { ...m, qty: { ...m.qty, [itemId]: 1 } } : m) }));
+      commit(prev => {
+        const siblings = new Set(colorSiblingIds(prev.modules, moduleId));
+        return {
+          ...prev,
+          modules: prev.modules.map(m => (m.id === moduleId || siblings.has(m.id))
+            ? { ...m, qty: { ...m.qty, [itemId]: 1 } }
+            : m),
+        };
+      });
     }
   }
   function removeModuleItem(moduleId: string, itemId: string) {
-    commit(prev => ({
-      ...prev,
-      modules: prev.modules.map(m => {
-        if (m.id !== moduleId) return m;
-        const qty = { ...m.qty }; delete qty[itemId];
-        const materials = { ...m.materials }; delete materials[itemId];
-        return { ...m, qty, materials };
-      }),
-    }));
+    const isHardware = priceById[itemId]?.category === 'hardware';
+    commit(prev => {
+      const siblings = isHardware ? new Set(colorSiblingIds(prev.modules, moduleId)) : new Set<string>();
+      return {
+        ...prev,
+        modules: prev.modules.map(m => {
+          if (m.id === moduleId) {
+            const qty = { ...m.qty }; delete qty[itemId];
+            const materials = { ...m.materials }; delete materials[itemId];
+            return { ...m, qty, materials };
+          }
+          if (siblings.has(m.id)) {
+            const qty = { ...m.qty }; delete qty[itemId];
+            return { ...m, qty };
+          }
+          return m;
+        }),
+      };
+    });
   }
   function toggleExpand(id: string) {
     setExpanded(e => { const n = new Set(e); n.has(id) ? n.delete(id) : n.add(id); return n; });
