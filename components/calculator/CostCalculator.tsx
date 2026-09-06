@@ -83,6 +83,19 @@ const addBtnStyle: React.CSSProperties = {
   fontWeight: 600, cursor: 'pointer',
 };
 
+const removeBtnStyle: React.CSSProperties = {
+  width: 24, height: 24, flexShrink: 0, border: 'none', background: 'transparent',
+  color: '#cbd5e1', cursor: 'pointer', fontSize: 15, lineHeight: 1, borderRadius: 5,
+};
+function onRemoveBtnEnter(e: React.MouseEvent<HTMLButtonElement>) { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }
+function onRemoveBtnLeave(e: React.MouseEvent<HTMLButtonElement>) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }
+
+// ── All the pieces below are declared OUTSIDE CostCalculator on purpose: a
+// component defined inside another component's body gets a brand new function
+// identity on every parent re-render, so React unmounts+remounts its whole
+// subtree (and any input inside loses focus) on every keystroke. Data flows
+// in purely through props instead of closures.
+
 // Free-typing numeric input: keeps its own text while focused so a decimal point
 // or a trailing "," (bg keyboards) never gets snapped away mid-type by the
 // parent re-rendering with the already-parsed number.
@@ -112,6 +125,211 @@ function NumberField({
         onChange(Number.isFinite(parsed) ? parsed : 0);
       }}
     />
+  );
+}
+
+function PriceRow({ item, onUpdate, onRemove }: {
+  item: CostItem;
+  onUpdate: (patch: Partial<CostItem>) => void;
+  onRemove: () => void;
+}) {
+  if (item.category === 'material') {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0', flexWrap: 'wrap' }}>
+        <input
+          value={item.name}
+          onChange={e => onUpdate({ name: e.target.value })}
+          placeholder="Име"
+          style={{ ...inputBase, flex: 1, minWidth: 200 }}
+        />
+        <input
+          value={item.unit}
+          onChange={e => onUpdate({ unit: e.target.value })}
+          placeholder="ед."
+          style={{ ...inputBase, width: 64, textAlign: 'center', flexShrink: 0 }}
+        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+          <span style={{ fontSize: 10, color: '#94a3b8' }}>Цяла</span>
+          <NumberField
+            value={item.priceWhole ?? 0}
+            onChange={n => onUpdate({ priceWhole: n })}
+            style={{ ...inputBase, width: 68, textAlign: 'right' }}
+          />
+          <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+          <span style={{ fontSize: 10, color: '#94a3b8' }}>Полов.</span>
+          <NumberField
+            value={item.priceHalf ?? 0}
+            onChange={n => onUpdate({ priceHalf: n })}
+            style={{ ...inputBase, width: 68, textAlign: 'right' }}
+          />
+          <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+        </div>
+        <button onClick={onRemove} title="Изтрий" style={removeBtnStyle} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+      </div>
+    );
+  }
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
+      <input
+        value={item.name}
+        onChange={e => onUpdate({ name: e.target.value })}
+        placeholder="Име"
+        style={{ ...inputBase, flex: 1, minWidth: 0 }}
+      />
+      <input
+        value={item.unit}
+        onChange={e => onUpdate({ unit: e.target.value })}
+        placeholder="ед."
+        style={{ ...inputBase, width: 52, textAlign: 'center', flexShrink: 0 }}
+      />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+        <NumberField
+          value={item.price ?? 0}
+          onChange={n => onUpdate({ price: n })}
+          style={{ ...inputBase, width: 74, textAlign: 'right' }}
+        />
+        <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+      </div>
+      <button onClick={onRemove} title="Изтрий" style={removeBtnStyle} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+    </div>
+  );
+}
+
+function QtyRow({ item, qty, onChange, onRemove }: {
+  item: CostItem; qty: number; onChange: (n: number) => void; onRemove: () => void;
+}) {
+  const line = qty * (item.price ?? 0);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
+      <span style={{ flex: 1, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
+        {item.name || <em style={{ color: '#cbd5e1' }}>—</em>}
+      </span>
+      <span style={{ fontSize: 10, color: '#94a3b8', width: 26, flexShrink: 0 }}>{item.unit}</span>
+      <NumberField value={qty} onChange={onChange} style={{ ...inputBase, width: 64, textAlign: 'right', flexShrink: 0 }} />
+      <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
+        {line > 0 ? `${fmt(line)} €` : '—'}
+      </span>
+      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 20, height: 20, fontSize: 13 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+    </div>
+  );
+}
+
+function MaterialQtyRow({ item, selection, onChange, onRemove }: {
+  item: CostItem; selection: MaterialPick; onChange: (patch: Partial<MaterialPick>) => void; onRemove: () => void;
+}) {
+  const unitPrice = selection.portion === 'half' ? (item.priceHalf ?? 0) : (item.priceWhole ?? 0);
+  const line = selection.qty * unitPrice;
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
+      <span style={{ flex: 1, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
+        {item.name || <em style={{ color: '#cbd5e1' }}>—</em>}
+      </span>
+      <select
+        value={selection.portion}
+        onChange={e => onChange({ portion: e.target.value as Portion })}
+        style={{ ...inputBase, width: 88, flexShrink: 0, padding: '5px 4px', fontSize: 11.5 }}
+      >
+        <option value="whole">Цяла</option>
+        <option value="half">Половин</option>
+      </select>
+      <NumberField value={selection.qty} onChange={n => onChange({ qty: n })} style={{ ...inputBase, width: 56, textAlign: 'right', flexShrink: 0 }} />
+      <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
+        {line > 0 ? `${fmt(line)} €` : '—'}
+      </span>
+      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 20, height: 20, fontSize: 13 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+    </div>
+  );
+}
+
+function ModuleBody({
+  m, materials, hardware, priceById, onAddItem, onQtyChange, onMaterialChange, onRemoveItem,
+}: {
+  m: ModuleRow; materials: CostItem[]; hardware: CostItem[]; priceById: Record<string, CostItem>;
+  onAddItem: (itemId: string) => void;
+  onQtyChange: (itemId: string, qty: number) => void;
+  onMaterialChange: (itemId: string, patch: Partial<MaterialPick>) => void;
+  onRemoveItem: (itemId: string) => void;
+}) {
+  const addedMaterials = Object.keys(m.materials).map(id => priceById[id]).filter((i): i is CostItem => !!i);
+  const addedHardware = Object.keys(m.qty).map(id => priceById[id]).filter((i): i is CostItem => !!i);
+  const availableMaterials = materials.filter(i => !(i.id in m.materials));
+  const availableHardware = hardware.filter(i => !(i.id in m.qty));
+
+  return (
+    <div className="cc-module-body" style={{ borderTop: '1px solid #f1f5f9', padding: '12px 14px 16px' }}>
+      {addedMaterials.length === 0 && addedHardware.length === 0 && (
+        <p style={{ fontSize: 12.5, color: '#94a3b8', margin: '0 0 10px' }}>Няма добавени позиции — избери отдолу какво влиза в тази мебел.</p>
+      )}
+      {addedMaterials.length > 0 && (
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 4 }}>Материали</div>
+          {addedMaterials.map(item => (
+            <MaterialQtyRow
+              key={item.id}
+              item={item}
+              selection={m.materials[item.id] ?? { portion: 'whole', qty: 0 }}
+              onChange={patch => onMaterialChange(item.id, patch)}
+              onRemove={() => onRemoveItem(item.id)}
+            />
+          ))}
+        </div>
+      )}
+      {addedHardware.length > 0 && (
+        <div style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 4 }}>Обков и труд</div>
+          {addedHardware.map(item => (
+            <QtyRow
+              key={item.id}
+              item={item}
+              qty={m.qty[item.id] || 0}
+              onChange={n => onQtyChange(item.id, n)}
+              onRemove={() => onRemoveItem(item.id)}
+            />
+          ))}
+        </div>
+      )}
+      {(availableMaterials.length > 0 || availableHardware.length > 0) && (
+        <select
+          value=""
+          onChange={e => onAddItem(e.target.value)}
+          style={{ ...inputBase, width: '100%', marginTop: 4 }}
+        >
+          <option value="">+ Добави позиция…</option>
+          {availableMaterials.length > 0 && (
+            <optgroup label="Материали">
+              {availableMaterials.map(i => <option key={i.id} value={i.id}>{i.name || '(без име)'}</option>)}
+            </optgroup>
+          )}
+          {availableHardware.length > 0 && (
+            <optgroup label="Обков и труд">
+              {availableHardware.map(i => <option key={i.id} value={i.id}>{i.name || '(без име)'}</option>)}
+            </optgroup>
+          )}
+        </select>
+      )}
+    </div>
+  );
+}
+
+function CollapsibleCard({
+  title, sub, accent, open, onToggle, children,
+}: { title: string; sub: string; accent: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+  return (
+    <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', borderTop: `3px solid ${accent}`, boxShadow: '0 1px 4px rgba(0,0,0,.06)', overflow: 'hidden' }}>
+      <div
+        onClick={onToggle}
+        style={{ padding: '11px 14px 9px', borderBottom: open ? '1px solid #f1f5f9' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
+      >
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>{title}</div>
+          <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, letterSpacing: '.1em', marginTop: 1 }}>{sub}</div>
+        </div>
+        <span style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s', color: '#94a3b8', fontSize: 12 }}>▾</span>
+      </div>
+      {open && <div style={{ padding: '8px 14px 14px' }}>{children}</div>}
+    </div>
   );
 }
 
@@ -350,213 +568,6 @@ export default function CostCalculator({
     idle: '', saving: 'Запазване…', saved: 'Запазено ✓', error: 'Грешка при запис',
   };
 
-  function PriceRow({ item }: { item: CostItem }) {
-    if (item.category === 'material') {
-      return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0', flexWrap: 'wrap' }}>
-          <input
-            value={item.name}
-            onChange={e => updatePriceItem(item.id, { name: e.target.value })}
-            placeholder="Име"
-            style={{ ...inputBase, flex: 1, minWidth: 200 }}
-          />
-          <input
-            value={item.unit}
-            onChange={e => updatePriceItem(item.id, { unit: e.target.value })}
-            placeholder="ед."
-            style={{ ...inputBase, width: 64, textAlign: 'center', flexShrink: 0 }}
-          />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-            <span style={{ fontSize: 10, color: '#94a3b8' }}>Цяла</span>
-            <NumberField
-              value={item.priceWhole ?? 0}
-              onChange={n => updatePriceItem(item.id, { priceWhole: n })}
-              style={{ ...inputBase, width: 68, textAlign: 'right' }}
-            />
-            <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-            <span style={{ fontSize: 10, color: '#94a3b8' }}>Полов.</span>
-            <NumberField
-              value={item.priceHalf ?? 0}
-              onChange={n => updatePriceItem(item.id, { priceHalf: n })}
-              style={{ ...inputBase, width: 68, textAlign: 'right' }}
-            />
-            <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
-          </div>
-          <button
-            onClick={() => removePriceItem(item.id)}
-            title="Изтрий"
-            style={{ width: 24, height: 24, flexShrink: 0, border: 'none', background: 'transparent', color: '#cbd5e1', cursor: 'pointer', fontSize: 15, lineHeight: 1, borderRadius: 5 }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }}
-          >×</button>
-        </div>
-      );
-    }
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
-        <input
-          value={item.name}
-          onChange={e => updatePriceItem(item.id, { name: e.target.value })}
-          placeholder="Име"
-          style={{ ...inputBase, flex: 1, minWidth: 0 }}
-        />
-        <input
-          value={item.unit}
-          onChange={e => updatePriceItem(item.id, { unit: e.target.value })}
-          placeholder="ед."
-          style={{ ...inputBase, width: 52, textAlign: 'center', flexShrink: 0 }}
-        />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-          <NumberField
-            value={item.price ?? 0}
-            onChange={n => updatePriceItem(item.id, { price: n })}
-            style={{ ...inputBase, width: 74, textAlign: 'right' }}
-          />
-          <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
-        </div>
-        <button
-          onClick={() => removePriceItem(item.id)}
-          title="Изтрий"
-          style={{ width: 24, height: 24, flexShrink: 0, border: 'none', background: 'transparent', color: '#cbd5e1', cursor: 'pointer', fontSize: 15, lineHeight: 1, borderRadius: 5 }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }}
-        >×</button>
-      </div>
-    );
-  }
-
-  function QtyRow({ m, item }: { m: ModuleRow; item: CostItem }) {
-    const q = m.qty[item.id] || 0;
-    const line = q * (item.price ?? 0);
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
-        <span style={{ flex: 1, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
-          {item.name || <em style={{ color: '#cbd5e1' }}>—</em>}
-        </span>
-        <span style={{ fontSize: 10, color: '#94a3b8', width: 26, flexShrink: 0 }}>{item.unit}</span>
-        <NumberField
-          value={q}
-          onChange={n => updateModuleQty(m.id, item.id, n)}
-          style={{ ...inputBase, width: 64, textAlign: 'right', flexShrink: 0 }}
-        />
-        <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
-          {line > 0 ? `${fmt(line)} €` : '—'}
-        </span>
-        <button
-          onClick={() => removeModuleItem(m.id, item.id)}
-          title="Премахни позицията"
-          style={{ width: 20, height: 20, flexShrink: 0, border: 'none', background: 'transparent', color: '#cbd5e1', cursor: 'pointer', fontSize: 13, lineHeight: 1, borderRadius: 5 }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }}
-        >×</button>
-      </div>
-    );
-  }
-
-  function MaterialQtyRow({ m, item }: { m: ModuleRow; item: CostItem }) {
-    const sel = m.materials[item.id] ?? { portion: 'whole' as Portion, qty: 0 };
-    const unitPrice = sel.portion === 'half' ? (item.priceHalf ?? 0) : (item.priceWhole ?? 0);
-    const line = sel.qty * unitPrice;
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
-        <span style={{ flex: 1, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
-          {item.name || <em style={{ color: '#cbd5e1' }}>—</em>}
-        </span>
-        <select
-          value={sel.portion}
-          onChange={e => updateModuleMaterial(m.id, item.id, { portion: e.target.value as Portion })}
-          style={{ ...inputBase, width: 88, flexShrink: 0, padding: '5px 4px', fontSize: 11.5 }}
-        >
-          <option value="whole">Цяла</option>
-          <option value="half">Половин</option>
-        </select>
-        <NumberField
-          value={sel.qty}
-          onChange={n => updateModuleMaterial(m.id, item.id, { qty: n })}
-          style={{ ...inputBase, width: 56, textAlign: 'right', flexShrink: 0 }}
-        />
-        <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
-          {line > 0 ? `${fmt(line)} €` : '—'}
-        </span>
-        <button
-          onClick={() => removeModuleItem(m.id, item.id)}
-          title="Премахни позицията"
-          style={{ width: 20, height: 20, flexShrink: 0, border: 'none', background: 'transparent', color: '#cbd5e1', cursor: 'pointer', fontSize: 13, lineHeight: 1, borderRadius: 5 }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }}
-        >×</button>
-      </div>
-    );
-  }
-
-  function ModuleBody({ m }: { m: ModuleRow }) {
-    const addedMaterials = Object.keys(m.materials).map(id => priceById[id]).filter((i): i is CostItem => !!i);
-    const addedHardware = Object.keys(m.qty).map(id => priceById[id]).filter((i): i is CostItem => !!i);
-    const availableMaterials = materials.filter(i => !(i.id in m.materials));
-    const availableHardware = hardware.filter(i => !(i.id in m.qty));
-
-    return (
-      <div className="cc-module-body" style={{ borderTop: '1px solid #f1f5f9', padding: '12px 14px 16px' }}>
-        {addedMaterials.length === 0 && addedHardware.length === 0 && (
-          <p style={{ fontSize: 12.5, color: '#94a3b8', margin: '0 0 10px' }}>Няма добавени позиции — избери отдолу какво влиза в тази мебел.</p>
-        )}
-        {addedMaterials.length > 0 && (
-          <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 4 }}>Материали</div>
-            {addedMaterials.map(item => <MaterialQtyRow key={item.id} m={m} item={item} />)}
-          </div>
-        )}
-        {addedHardware.length > 0 && (
-          <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 4 }}>Обков и труд</div>
-            {addedHardware.map(item => <QtyRow key={item.id} m={m} item={item} />)}
-          </div>
-        )}
-        {(availableMaterials.length > 0 || availableHardware.length > 0) && (
-          <select
-            value=""
-            onChange={e => addModuleItem(m.id, e.target.value)}
-            style={{ ...inputBase, width: '100%', marginTop: 4 }}
-          >
-            <option value="">+ Добави позиция…</option>
-            {availableMaterials.length > 0 && (
-              <optgroup label="Материали">
-                {availableMaterials.map(i => <option key={i.id} value={i.id}>{i.name || '(без име)'}</option>)}
-              </optgroup>
-            )}
-            {availableHardware.length > 0 && (
-              <optgroup label="Обков и труд">
-                {availableHardware.map(i => <option key={i.id} value={i.id}>{i.name || '(без име)'}</option>)}
-              </optgroup>
-            )}
-          </select>
-        )}
-      </div>
-    );
-  }
-
-  function CollapsibleCard({
-    title, sub, accent, open, onToggle, children,
-  }: { title: string; sub: string; accent: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
-    return (
-      <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', borderTop: `3px solid ${accent}`, boxShadow: '0 1px 4px rgba(0,0,0,.06)', overflow: 'hidden' }}>
-        <div
-          onClick={onToggle}
-          style={{ padding: '11px 14px 9px', borderBottom: open ? '1px solid #f1f5f9' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
-        >
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>{title}</div>
-            <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, letterSpacing: '.1em', marginTop: 1 }}>{sub}</div>
-          </div>
-          <span style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s', color: '#94a3b8', fontSize: 12 }}>▾</span>
-        </div>
-        {open && <div style={{ padding: '8px 14px 14px' }}>{children}</div>}
-      </div>
-    );
-  }
-
   return (
     <div style={{ minHeight: '100vh', background: '#f1f5f9', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
 
@@ -611,7 +622,14 @@ export default function CostCalculator({
             title="Материали" sub="ПО СЕРИИ / ЦВЯТ · ЦЕНА ЗА ЦЯЛА И ПОЛОВИН ПЛОЧА" accent="#3b82f6"
             open={materialsOpen} onToggle={() => setMaterialsOpen(o => !o)}
           >
-            {materials.map(item => <PriceRow key={item.id} item={item} />)}
+            {materials.map(item => (
+              <PriceRow
+                key={item.id}
+                item={item}
+                onUpdate={patch => updatePriceItem(item.id, patch)}
+                onRemove={() => removePriceItem(item.id)}
+              />
+            ))}
             <button onClick={() => addPriceItem('material')} style={addBtnStyle}>+ Добави материал</button>
           </CollapsibleCard>
 
@@ -619,7 +637,14 @@ export default function CostCalculator({
             title="Обков и труд" sub="ЦЕНА ЗА ЕДИНИЦА" accent="#f59e0b"
             open={hardwareOpen} onToggle={() => setHardwareOpen(o => !o)}
           >
-            {hardware.map(item => <PriceRow key={item.id} item={item} />)}
+            {hardware.map(item => (
+              <PriceRow
+                key={item.id}
+                item={item}
+                onUpdate={patch => updatePriceItem(item.id, patch)}
+                onRemove={() => removePriceItem(item.id)}
+              />
+            ))}
             <button onClick={() => addPriceItem('hardware')} style={addBtnStyle}>+ Добави позиция</button>
           </CollapsibleCard>
 
@@ -728,12 +753,23 @@ export default function CostCalculator({
                     onClick={e => { e.stopPropagation(); removeModule(m.id); }}
                     title="Изтрий модул"
                     style={{ width: 26, height: 26, border: 'none', background: 'transparent', borderRadius: 6, cursor: 'pointer', color: '#cbd5e1', fontSize: 15, flexShrink: 0 }}
-                    onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }}
+                    onMouseEnter={onRemoveBtnEnter}
+                    onMouseLeave={onRemoveBtnLeave}
                   >×</button>
                 </div>
 
-                {isOpen && <ModuleBody m={m} />}
+                {isOpen && (
+                  <ModuleBody
+                    m={m}
+                    materials={materials}
+                    hardware={hardware}
+                    priceById={priceById}
+                    onAddItem={itemId => addModuleItem(m.id, itemId)}
+                    onQtyChange={(itemId, qty) => updateModuleQty(m.id, itemId, qty)}
+                    onMaterialChange={(itemId, patch) => updateModuleMaterial(m.id, itemId, patch)}
+                    onRemoveItem={itemId => removeModuleItem(m.id, itemId)}
+                  />
+                )}
               </div>
             );
           })}
