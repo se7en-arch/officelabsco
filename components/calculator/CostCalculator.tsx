@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { reconcileModules, type ModuleSeed } from '@/lib/calculator-modules';
 
 type Category = 'material' | 'hardware';
 type Portion = 'whole' | 'half';
@@ -15,11 +16,10 @@ type ModuleRow = {
   id: string; name: string;
   qty: Record<string, number>;             // hardware: itemId -> quantity
   materials: Record<string, MaterialPick>;  // materials: itemId -> {portion, qty}
-  productId?: number; seriesName?: string; categoryName?: string;
+  productId?: number; colorName?: string; seriesName?: string; categoryName?: string;
 };
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
 type CalcState = { priceList: CostItem[]; modules: ModuleRow[]; markup: number; vat: number };
-type ProductRef = { id: number; name: string; seriesName: string; categoryName: string };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 const OTHER_GROUP = 'Други';
@@ -62,7 +62,7 @@ function defaultPriceList(seriesMaterials: Record<string, string[]>): CostItem[]
 
 function normalizeModule(m: Partial<ModuleRow> & { id: string; name: string }): ModuleRow {
   return {
-    id: m.id, name: m.name, productId: m.productId, seriesName: m.seriesName, categoryName: m.categoryName,
+    id: m.id, name: m.name, productId: m.productId, colorName: m.colorName, seriesName: m.seriesName, categoryName: m.categoryName,
     qty: m.qty ?? {}, materials: m.materials ?? {},
   };
 }
@@ -337,12 +337,12 @@ export default function CostCalculator({
   initial,
   seriesMaterials,
   defaultVat,
-  products,
+  moduleSeeds,
 }: {
   initial: Partial<CalcState> | null;
   seriesMaterials: Record<string, string[]>;
   defaultVat: number;
-  products: ProductRef[];
+  moduleSeeds: ModuleSeed[];
 }) {
   const [state, setState] = useState<CalcState>(() => ({
     priceList: initial?.priceList?.length ? initial.priceList : defaultPriceList(seriesMaterials),
@@ -397,18 +397,9 @@ export default function CostCalculator({
       }
     } catch { /* ignore */ }
 
-    if (products.length > 0) {
-      const existingIds = new Set(base.modules.filter(m => m.productId != null).map(m => m.productId));
-      const missing = products.filter(p => !existingIds.has(p.id));
-      if (missing.length > 0) {
-        base = {
-          ...base,
-          modules: [
-            ...base.modules,
-            ...missing.map(p => normalizeModule({ id: uid(), productId: p.id, name: p.name, seriesName: p.seriesName, categoryName: p.categoryName })),
-          ],
-        };
-      }
+    if (moduleSeeds.length > 0) {
+      const { modules, changed } = reconcileModules(base.modules, moduleSeeds);
+      if (changed) base = { ...base, modules: modules.map(normalizeModule) };
     }
 
     if (base !== state) {
