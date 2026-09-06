@@ -3,9 +3,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 type Category = 'material' | 'hardware';
-type CostItem = { id: string; name: string; unit: string; price: number; category: Category };
+type Portion = 'whole' | 'half';
+type CostItem = {
+  id: string; name: string; unit: string; category: Category;
+  price?: number;       // hardware: price per unit
+  priceWhole?: number;  // material: price for a whole sheet
+  priceHalf?: number;   // material: price for a half sheet
+};
+type MaterialPick = { portion: Portion; qty: number };
 type ModuleRow = {
-  id: string; name: string; qty: Record<string, number>;
+  id: string; name: string;
+  qty: Record<string, number>;             // hardware: itemId -> quantity
+  materials: Record<string, MaterialPick>;  // materials: itemId -> {portion, qty}
   productId?: number; seriesName?: string; categoryName?: string;
 };
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
@@ -29,6 +38,7 @@ const HARDWARE_DEFAULTS: [string, string][] = [
   ['Стъклени врати', 'бр.'],
   ['Пуш механизъм', 'бр.'],
   ['Дръжки', 'бр.'],
+  ['Проект', 'м²'],
   ['Труд / монтаж', 'час'],
   ['Опаковане', 'бр.'],
   ['Гръб (HDF)', 'м²'],
@@ -38,16 +48,23 @@ function defaultPriceList(seriesMaterials: Record<string, string[]>): CostItem[]
   const items: CostItem[] = [];
   for (const [series, mats] of Object.entries(seriesMaterials)) {
     for (const m of mats) {
-      if (m && m.trim()) items.push({ id: uid(), name: `${series} — ${m.trim()}`, unit: 'м²', price: 0, category: 'material' });
+      if (m && m.trim()) items.push({ id: uid(), name: `${series} — ${m.trim()}`, unit: 'плоча', priceWhole: 0, priceHalf: 0, category: 'material' });
     }
   }
   if (items.length === 0) {
-    items.push({ id: uid(), name: 'ПДЧ 18 mm, клас Е1', unit: 'м²', price: 0, category: 'material' });
+    items.push({ id: uid(), name: 'ПДЧ 18 mm, клас Е1', unit: 'плоча', priceWhole: 0, priceHalf: 0, category: 'material' });
   }
   for (const [name, unit] of HARDWARE_DEFAULTS) {
     items.push({ id: uid(), name, unit, price: 0, category: 'hardware' });
   }
   return items;
+}
+
+function normalizeModule(m: Partial<ModuleRow> & { id: string; name: string }): ModuleRow {
+  return {
+    id: m.id, name: m.name, productId: m.productId, seriesName: m.seriesName, categoryName: m.categoryName,
+    qty: m.qty ?? {}, materials: m.materials ?? {},
+  };
 }
 
 function fmt(n: number): string {
@@ -79,7 +96,7 @@ export default function CostCalculator({
 }) {
   const [state, setState] = useState<CalcState>(() => ({
     priceList: initial?.priceList?.length ? initial.priceList : defaultPriceList(seriesMaterials),
-    modules: initial?.modules ?? [],
+    modules: (initial?.modules ?? []).map(normalizeModule),
     markup: typeof initial?.markup === 'number' ? initial.markup : 30,
     vat: typeof initial?.vat === 'number' ? initial.vat : defaultVat,
   }));
@@ -123,7 +140,7 @@ export default function CostCalculator({
         const parsed = JSON.parse(cached) as Partial<CalcState>;
         base = {
           priceList: parsed.priceList ?? base.priceList,
-          modules: parsed.modules ?? base.modules,
+          modules: (parsed.modules ?? base.modules).map(normalizeModule),
           markup: typeof parsed.markup === 'number' ? parsed.markup : base.markup,
           vat: typeof parsed.vat === 'number' ? parsed.vat : base.vat,
         };
@@ -138,7 +155,7 @@ export default function CostCalculator({
           ...base,
           modules: [
             ...base.modules,
-            ...missing.map(p => ({ id: uid(), productId: p.id, name: p.name, seriesName: p.seriesName, categoryName: p.categoryName, qty: {} })),
+            ...missing.map(p => normalizeModule({ id: uid(), productId: p.id, name: p.name, seriesName: p.seriesName, categoryName: p.categoryName })),
           ],
         };
       }
@@ -180,7 +197,12 @@ export default function CostCalculator({
   function addPriceItem(category: Category) {
     commit(prev => ({
       ...prev,
-      priceList: [...prev.priceList, { id: uid(), name: '', unit: category === 'material' ? 'м²' : 'бр.', price: 0, category }],
+      priceList: [
+        ...prev.priceList,
+        category === 'material'
+          ? { id: uid(), name: '', unit: 'плоча', priceWhole: 0, priceHalf: 0, category }
+          : { id: uid(), name: '', unit: 'бр.', price: 0, category },
+      ],
     }));
   }
   function updatePriceItem(id: string, patch: Partial<CostItem>) {
@@ -191,10 +213,10 @@ export default function CostCalculator({
       ...prev,
       priceList: prev.priceList.filter(it => it.id !== id),
       modules: prev.modules.map(m => {
-        if (!(id in m.qty)) return m;
-        const qty = { ...m.qty };
-        delete qty[id];
-        return { ...m, qty };
+        if (!(id in m.qty) && !(id in m.materials)) return m;
+        const qty = { ...m.qty }; delete qty[id];
+        const materials = { ...m.materials }; delete materials[id];
+        return { ...m, qty, materials };
       }),
     }));
   }
@@ -202,7 +224,7 @@ export default function CostCalculator({
   // ── Module mutators ──────────────────────────────────────────────────
   function addModule() {
     const id = uid();
-    commit(prev => ({ ...prev, modules: [...prev.modules, { id, name: `Модул ${prev.modules.length + 1}`, qty: {} }] }));
+    commit(prev => ({ ...prev, modules: [...prev.modules, normalizeModule({ id, name: `Модул ${prev.modules.length + 1}` })] }));
     setExpanded(e => new Set(e).add(id));
   }
   function duplicateModule(src: ModuleRow) {
@@ -219,18 +241,32 @@ export default function CostCalculator({
   function updateModuleQty(moduleId: string, itemId: string, qty: number) {
     commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === moduleId ? { ...m, qty: { ...m.qty, [itemId]: qty } } : m) }));
   }
+  function updateModuleMaterial(moduleId: string, itemId: string, patch: Partial<MaterialPick>) {
+    commit(prev => ({
+      ...prev,
+      modules: prev.modules.map(m => m.id === moduleId
+        ? { ...m, materials: { ...m.materials, [itemId]: { ...(m.materials[itemId] ?? { portion: 'whole', qty: 1 }), ...patch } } }
+        : m),
+    }));
+  }
   function addModuleItem(moduleId: string, itemId: string) {
     if (!itemId) return;
-    commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === moduleId ? { ...m, qty: { ...m.qty, [itemId]: 1 } } : m) }));
+    const item = priceById[itemId];
+    if (!item) return;
+    if (item.category === 'material') {
+      commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === moduleId ? { ...m, materials: { ...m.materials, [itemId]: { portion: 'whole', qty: 1 } } } : m) }));
+    } else {
+      commit(prev => ({ ...prev, modules: prev.modules.map(m => m.id === moduleId ? { ...m, qty: { ...m.qty, [itemId]: 1 } } : m) }));
+    }
   }
   function removeModuleItem(moduleId: string, itemId: string) {
     commit(prev => ({
       ...prev,
       modules: prev.modules.map(m => {
         if (m.id !== moduleId) return m;
-        const qty = { ...m.qty };
-        delete qty[itemId];
-        return { ...m, qty };
+        const qty = { ...m.qty }; delete qty[itemId];
+        const materials = { ...m.materials }; delete materials[itemId];
+        return { ...m, qty, materials };
       }),
     }));
   }
@@ -245,7 +281,14 @@ export default function CostCalculator({
   }, [state.priceList]);
 
   function moduleCost(m: ModuleRow): number {
-    return Object.entries(m.qty).reduce((sum, [itemId, q]) => sum + (priceById[itemId]?.price ?? 0) * (q || 0), 0);
+    const hardwareCost = Object.entries(m.qty).reduce((sum, [itemId, q]) => sum + (priceById[itemId]?.price ?? 0) * (q || 0), 0);
+    const materialCost = Object.entries(m.materials).reduce((sum, [itemId, sel]) => {
+      const item = priceById[itemId];
+      if (!item) return sum;
+      const unitPrice = sel.portion === 'half' ? (item.priceHalf ?? 0) : (item.priceWhole ?? 0);
+      return sum + unitPrice * (sel.qty || 0);
+    }, 0);
+    return hardwareCost + materialCost;
   }
   function moduleSale(m: ModuleRow): number { return moduleCost(m) * (1 + state.markup / 100); }
   function moduleFinal(m: ModuleRow): number { return moduleSale(m) * (1 + state.vat / 100); }
@@ -276,6 +319,53 @@ export default function CostCalculator({
   };
 
   function PriceRow({ item }: { item: CostItem }) {
+    if (item.category === 'material') {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0', flexWrap: 'wrap' }}>
+          <input
+            value={item.name}
+            onChange={e => updatePriceItem(item.id, { name: e.target.value })}
+            placeholder="Име"
+            style={{ ...inputBase, flex: 1, minWidth: 200 }}
+          />
+          <input
+            value={item.unit}
+            onChange={e => updatePriceItem(item.id, { unit: e.target.value })}
+            placeholder="ед."
+            style={{ ...inputBase, width: 64, textAlign: 'center', flexShrink: 0 }}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+            <span style={{ fontSize: 10, color: '#94a3b8' }}>Цяла</span>
+            <input
+              type="number" step="any"
+              value={!item.priceWhole ? '' : item.priceWhole}
+              onChange={e => updatePriceItem(item.id, { priceWhole: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
+              placeholder="0"
+              style={{ ...inputBase, width: 68, textAlign: 'right' }}
+            />
+            <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+            <span style={{ fontSize: 10, color: '#94a3b8' }}>Полов.</span>
+            <input
+              type="number" step="any"
+              value={!item.priceHalf ? '' : item.priceHalf}
+              onChange={e => updatePriceItem(item.id, { priceHalf: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
+              placeholder="0"
+              style={{ ...inputBase, width: 68, textAlign: 'right' }}
+            />
+            <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+          </div>
+          <button
+            onClick={() => removePriceItem(item.id)}
+            title="Изтрий"
+            style={{ width: 24, height: 24, flexShrink: 0, border: 'none', background: 'transparent', color: '#cbd5e1', cursor: 'pointer', fontSize: 15, lineHeight: 1, borderRadius: 5 }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }}
+          >×</button>
+        </div>
+      );
+    }
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
         <input
@@ -293,7 +383,7 @@ export default function CostCalculator({
         <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
           <input
             type="number" step="any"
-            value={item.price === 0 ? '' : item.price}
+            value={!item.price ? '' : item.price}
             onChange={e => updatePriceItem(item.id, { price: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
             placeholder="0"
             style={{ ...inputBase, width: 74, textAlign: 'right' }}
@@ -303,10 +393,7 @@ export default function CostCalculator({
         <button
           onClick={() => removePriceItem(item.id)}
           title="Изтрий"
-          style={{
-            width: 24, height: 24, flexShrink: 0, border: 'none', background: 'transparent',
-            color: '#cbd5e1', cursor: 'pointer', fontSize: 15, lineHeight: 1, borderRadius: 5,
-          }}
+          style={{ width: 24, height: 24, flexShrink: 0, border: 'none', background: 'transparent', color: '#cbd5e1', cursor: 'pointer', fontSize: 15, lineHeight: 1, borderRadius: 5 }}
           onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }}
         >×</button>
@@ -316,7 +403,7 @@ export default function CostCalculator({
 
   function QtyRow({ m, item }: { m: ModuleRow; item: CostItem }) {
     const q = m.qty[item.id] || 0;
-    const line = q * item.price;
+    const line = q * (item.price ?? 0);
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
         <span style={{ flex: 1, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
@@ -344,11 +431,48 @@ export default function CostCalculator({
     );
   }
 
+  function MaterialQtyRow({ m, item }: { m: ModuleRow; item: CostItem }) {
+    const sel = m.materials[item.id] ?? { portion: 'whole' as Portion, qty: 0 };
+    const unitPrice = sel.portion === 'half' ? (item.priceHalf ?? 0) : (item.priceWhole ?? 0);
+    const line = sel.qty * unitPrice;
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
+        <span style={{ flex: 1, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
+          {item.name || <em style={{ color: '#cbd5e1' }}>—</em>}
+        </span>
+        <select
+          value={sel.portion}
+          onChange={e => updateModuleMaterial(m.id, item.id, { portion: e.target.value as Portion })}
+          style={{ ...inputBase, width: 88, flexShrink: 0, padding: '5px 4px', fontSize: 11.5 }}
+        >
+          <option value="whole">Цяла</option>
+          <option value="half">Половин</option>
+        </select>
+        <input
+          type="number" step="any" min={0}
+          value={sel.qty === 0 ? '' : sel.qty}
+          onChange={e => updateModuleMaterial(m.id, item.id, { qty: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
+          placeholder="0"
+          style={{ ...inputBase, width: 56, textAlign: 'right', flexShrink: 0 }}
+        />
+        <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
+          {line > 0 ? `${fmt(line)} €` : '—'}
+        </span>
+        <button
+          onClick={() => removeModuleItem(m.id, item.id)}
+          title="Премахни позицията"
+          style={{ width: 20, height: 20, flexShrink: 0, border: 'none', background: 'transparent', color: '#cbd5e1', cursor: 'pointer', fontSize: 13, lineHeight: 1, borderRadius: 5 }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }}
+        >×</button>
+      </div>
+    );
+  }
+
   function ModuleBody({ m }: { m: ModuleRow }) {
-    const addedIds = Object.keys(m.qty);
-    const addedMaterials = addedIds.map(id => priceById[id]).filter((i): i is CostItem => !!i && i.category === 'material');
-    const addedHardware = addedIds.map(id => priceById[id]).filter((i): i is CostItem => !!i && i.category === 'hardware');
-    const availableMaterials = materials.filter(i => !(i.id in m.qty));
+    const addedMaterials = Object.keys(m.materials).map(id => priceById[id]).filter((i): i is CostItem => !!i);
+    const addedHardware = Object.keys(m.qty).map(id => priceById[id]).filter((i): i is CostItem => !!i);
+    const availableMaterials = materials.filter(i => !(i.id in m.materials));
     const availableHardware = hardware.filter(i => !(i.id in m.qty));
 
     return (
@@ -359,7 +483,7 @@ export default function CostCalculator({
         {addedMaterials.length > 0 && (
           <div style={{ marginBottom: 10 }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 4 }}>Материали</div>
-            {addedMaterials.map(item => <QtyRow key={item.id} m={m} item={item} />)}
+            {addedMaterials.map(item => <MaterialQtyRow key={item.id} m={m} item={item} />)}
           </div>
         )}
         {addedHardware.length > 0 && (
@@ -459,10 +583,10 @@ export default function CostCalculator({
           <h2 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Ценоразпис</h2>
           <span style={{ fontSize: 12, color: '#94a3b8' }}>Запазва се автоматично</span>
         </div>
-        <div className="cc-pricelist-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           <CollapsibleCard
-            title="Материали" sub="ПО СЕРИИ / ЦВЯТ · ЦЕНА НА М²" accent="#3b82f6"
+            title="Материали" sub="ПО СЕРИИ / ЦВЯТ · ЦЕНА ЗА ЦЯЛА И ПОЛОВИН ПЛОЧА" accent="#3b82f6"
             open={materialsOpen} onToggle={() => setMaterialsOpen(o => !o)}
           >
             {materials.map(item => <PriceRow key={item.id} item={item} />)}
@@ -607,7 +731,6 @@ export default function CostCalculator({
           .cc-breadcrumb { padding: 0 16px !important; }
           .cc-section { padding-left: 16px !important; padding-right: 16px !important; }
           .cc-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .cc-pricelist-grid { grid-template-columns: 1fr !important; }
           .cc-module-totals { display: none !important; }
         }
       `}</style>
