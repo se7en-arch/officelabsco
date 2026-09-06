@@ -860,7 +860,7 @@ export default function CostCalculator({
         .cc-header { padding-top: 28px; padding-bottom: 22px; }
         .cc-h2 { font-size: 15px; font-weight: 700; color: ${COLORS.text}; margin: 0; }
 
-        .cc-pricelist-col { display: flex; flex-direction: column; gap: 14px; max-width: 980px; }
+        .cc-pricelist-col { display: flex; flex-direction: column; gap: 14px; }
 
         .cc-collapsible__head {
           padding: 13px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px;
