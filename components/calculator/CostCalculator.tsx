@@ -10,8 +10,9 @@ type CostItem = {
   price?: number;       // hardware: price per unit
   priceWhole?: number;  // material: price for a whole sheet
   priceHalf?: number;   // material: price for a half sheet
+  edgePrice?: number;   // material: price per meter of the matching кант (edge strip)
 };
-type MaterialPick = { portion: Portion; qty: number };
+type MaterialPick = { portion: Portion; qty: number; edgeMeters?: number };
 type ModuleRow = {
   id: string; name: string;
   qty: Record<string, number>;             // hardware: itemId -> quantity
@@ -23,6 +24,10 @@ type CalcState = { priceList: CostItem[]; modules: ModuleRow[]; markup: number; 
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 const OTHER_GROUP = 'Други';
+// Matched by name (not id) against the hardware price list — this is the one
+// "Кантиране" labor line whose €/m rate gets combined with each material's own
+// кант €/m whenever edge-banding meters are entered on that material.
+const KANTIRANE_NAME = 'кантиране';
 
 const HARDWARE_DEFAULTS: [string, string][] = [
   ['Рафтоносачи', 'бр.'],
@@ -48,11 +53,11 @@ function defaultPriceList(seriesMaterials: Record<string, string[]>): CostItem[]
   const items: CostItem[] = [];
   for (const [series, mats] of Object.entries(seriesMaterials)) {
     for (const m of mats) {
-      if (m && m.trim()) items.push({ id: uid(), name: `${series} — ${m.trim()}`, unit: 'плоча', priceWhole: 0, priceHalf: 0, category: 'material' });
+      if (m && m.trim()) items.push({ id: uid(), name: `${series} — ${m.trim()}`, unit: 'плоча', priceWhole: 0, priceHalf: 0, edgePrice: 0, category: 'material' });
     }
   }
   if (items.length === 0) {
-    items.push({ id: uid(), name: 'ПДЧ 18 mm, клас Е1', unit: 'плоча', priceWhole: 0, priceHalf: 0, category: 'material' });
+    items.push({ id: uid(), name: 'ПДЧ 18 mm, клас Е1', unit: 'плоча', priceWhole: 0, priceHalf: 0, edgePrice: 0, category: 'material' });
   }
   for (const [name, unit] of HARDWARE_DEFAULTS) {
     items.push({ id: uid(), name, unit, price: 0, category: 'hardware' });
@@ -166,6 +171,15 @@ function PriceRow({ item, onUpdate, onRemove }: {
           />
           <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
         </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+          <span style={{ fontSize: 10, color: '#94a3b8' }}>Кант/м</span>
+          <NumberField
+            value={item.edgePrice ?? 0}
+            onChange={n => onUpdate({ edgePrice: n })}
+            style={{ ...inputBase, width: 68, textAlign: 'right' }}
+          />
+          <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+        </div>
         <button onClick={onRemove} title="Изтрий" style={removeBtnStyle} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
       </div>
     );
@@ -216,14 +230,18 @@ function QtyRow({ item, qty, onChange, onRemove }: {
   );
 }
 
-function MaterialQtyRow({ item, selection, onChange, onRemove }: {
-  item: CostItem; selection: MaterialPick; onChange: (patch: Partial<MaterialPick>) => void; onRemove: () => void;
+function MaterialQtyRow({ item, selection, kantiraneLaborPrice, onChange, onRemove }: {
+  item: CostItem; selection: MaterialPick; kantiraneLaborPrice: number;
+  onChange: (patch: Partial<MaterialPick>) => void; onRemove: () => void;
 }) {
-  const unitPrice = selection.portion === 'half' ? (item.priceHalf ?? 0) : (item.priceWhole ?? 0);
-  const line = selection.qty * unitPrice;
+  const sheetPrice = selection.portion === 'half' ? (item.priceHalf ?? 0) : (item.priceWhole ?? 0);
+  const edgeMeters = selection.edgeMeters ?? 0;
+  const sheetCost = selection.qty * sheetPrice;
+  const edgeCost = edgeMeters * ((item.edgePrice ?? 0) + kantiraneLaborPrice);
+  const line = sheetCost + edgeCost;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
-      <span style={{ flex: 1, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', flexWrap: 'wrap' }}>
+      <span style={{ flex: 1, minWidth: 140, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
         {item.name || <em style={{ color: '#cbd5e1' }}>—</em>}
       </span>
       <select
@@ -235,6 +253,10 @@ function MaterialQtyRow({ item, selection, onChange, onRemove }: {
         <option value="half">Половин</option>
       </select>
       <NumberField value={selection.qty} onChange={n => onChange({ qty: n })} style={{ ...inputBase, width: 56, textAlign: 'right', flexShrink: 0 }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+        <span style={{ fontSize: 10, color: '#94a3b8' }}>Кант м</span>
+        <NumberField value={edgeMeters} onChange={n => onChange({ edgeMeters: n })} style={{ ...inputBase, width: 52, textAlign: 'right' }} />
+      </div>
       <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
         {line > 0 ? `${fmt(line)} €` : '—'}
       </span>
@@ -256,6 +278,7 @@ function ModuleBody({
   const addedHardware = Object.keys(m.qty).map(id => priceById[id]).filter((i): i is CostItem => !!i);
   const availableMaterials = materials.filter(i => !(i.id in m.materials));
   const availableHardware = hardware.filter(i => !(i.id in m.qty));
+  const kantiraneLaborPrice = hardware.find(h => h.name.trim().toLowerCase() === KANTIRANE_NAME)?.price ?? 0;
 
   return (
     <div className="cc-module-body" style={{ borderTop: '1px solid #f1f5f9', padding: '12px 14px 16px' }}>
@@ -270,6 +293,7 @@ function ModuleBody({
               key={item.id}
               item={item}
               selection={m.materials[item.id] ?? { portion: 'whole', qty: 0 }}
+              kantiraneLaborPrice={kantiraneLaborPrice}
               onChange={patch => onMaterialChange(item.id, patch)}
               onRemove={() => onRemoveItem(item.id)}
             />
@@ -441,7 +465,7 @@ export default function CostCalculator({
       priceList: [
         ...prev.priceList,
         category === 'material'
-          ? { id: uid(), name: '', unit: 'плоча', priceWhole: 0, priceHalf: 0, category }
+          ? { id: uid(), name: '', unit: 'плоча', priceWhole: 0, priceHalf: 0, edgePrice: 0, category }
           : { id: uid(), name: '', unit: 'бр.', price: 0, category },
       ],
     }));
@@ -521,21 +545,25 @@ export default function CostCalculator({
     return map;
   }, [state.priceList]);
 
+  const materials = state.priceList.filter(i => i.category === 'material');
+  const hardware = state.priceList.filter(i => i.category === 'hardware');
+  const kantiraneLaborPrice = hardware.find(h => h.name.trim().toLowerCase() === KANTIRANE_NAME)?.price ?? 0;
+
   function moduleCost(m: ModuleRow): number {
     const hardwareCost = Object.entries(m.qty).reduce((sum, [itemId, q]) => sum + (priceById[itemId]?.price ?? 0) * (q || 0), 0);
     const materialCost = Object.entries(m.materials).reduce((sum, [itemId, sel]) => {
       const item = priceById[itemId];
       if (!item) return sum;
-      const unitPrice = sel.portion === 'half' ? (item.priceHalf ?? 0) : (item.priceWhole ?? 0);
-      return sum + unitPrice * (sel.qty || 0);
+      const sheetPrice = sel.portion === 'half' ? (item.priceHalf ?? 0) : (item.priceWhole ?? 0);
+      const sheetCost = sheetPrice * (sel.qty || 0);
+      const edgeMeters = sel.edgeMeters || 0;
+      const edgeCost = edgeMeters * ((item.edgePrice ?? 0) + kantiraneLaborPrice);
+      return sum + sheetCost + edgeCost;
     }, 0);
     return hardwareCost + materialCost;
   }
   function moduleSale(m: ModuleRow): number { return moduleCost(m) * (1 + state.markup / 100); }
   function moduleFinal(m: ModuleRow): number { return moduleSale(m) * (1 + state.vat / 100); }
-
-  const materials = state.priceList.filter(i => i.category === 'material');
-  const hardware = state.priceList.filter(i => i.category === 'hardware');
 
   const allSeriesNames = useMemo(() => {
     const set = new Set(state.modules.map(m => m.seriesName || OTHER_GROUP));
@@ -610,7 +638,7 @@ export default function CostCalculator({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           <CollapsibleCard
-            title="Материали" sub="ПО СЕРИИ / ЦВЯТ · ЦЕНА ЗА ЦЯЛА И ПОЛОВИН ПЛОЧА" accent="#3b82f6"
+            title="Материали" sub="ПО СЕРИИ / ЦВЯТ · ЦЯЛА / ПОЛОВИН ПЛОЧА + КАНТ НА МЕТЪР" accent="#3b82f6"
             open={materialsOpen} onToggle={() => setMaterialsOpen(o => !o)}
           >
             {materials.map(item => (
