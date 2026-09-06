@@ -652,7 +652,7 @@ export default function CostCalculator({
           <h2 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Ценоразпис</h2>
           <span style={{ fontSize: 12, color: '#94a3b8' }}>Запазва се автоматично</span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 720 }}>
 
           <CollapsibleCard
             title="Материали" sub="ПО СЕРИИ / ЦВЯТ · ЦЯЛА / ПОЛОВИН ПЛОЧА + КАНТ НА МЕТЪР" accent="#3b82f6"
