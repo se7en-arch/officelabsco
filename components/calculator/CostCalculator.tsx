@@ -78,24 +78,47 @@ function fmt(n: number): string {
   return n.toLocaleString('bg-BG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+// ── Shared visual tokens ────────────────────────────────────────────────────
+const COLORS = {
+  bg: '#f1f5f9', card: '#fff', border: '#e2e8f0', borderSoft: '#f1f5f9',
+  text: '#0f172a', text2: '#374151', muted: '#64748b', faint: '#94a3b8', ghost: '#cbd5e1',
+  blue: '#3b82f6', amber: '#f59e0b', green: '#16a34a', red: '#dc2626', redBg: '#fee2e2',
+};
+
 const inputBase: React.CSSProperties = {
-  padding: '6px 9px', border: '1px solid #e2e8f0', borderRadius: 6,
-  fontSize: 13, outline: 'none', fontFamily: 'inherit', background: '#fafafa',
-  color: '#111827',
+  padding: '7px 10px', border: `1px solid ${COLORS.border}`, borderRadius: 7,
+  fontSize: 13, outline: 'none', fontFamily: 'inherit', background: '#fafbfc',
+  color: COLORS.text, transition: 'border-color .15s, background .15s',
+};
+
+const cardStyle: React.CSSProperties = {
+  background: COLORS.card, borderRadius: 14, border: `1px solid ${COLORS.border}`,
+  boxShadow: '0 1px 3px rgba(15,23,42,.05)',
 };
 
 const addBtnStyle: React.CSSProperties = {
-  width: '100%', marginTop: 6, padding: '8px 10px', border: '1px dashed #cbd5e1',
-  borderRadius: 8, background: 'transparent', color: '#64748b', fontSize: 12.5,
-  fontWeight: 600, cursor: 'pointer',
+  width: '100%', marginTop: 8, padding: '9px 10px', border: `1.5px dashed ${COLORS.ghost}`,
+  borderRadius: 9, background: 'transparent', color: COLORS.muted, fontSize: 12.5,
+  fontWeight: 700, cursor: 'pointer', transition: 'border-color .15s, color .15s, background .15s',
+};
+function onAddBtnEnter(e: React.MouseEvent<HTMLButtonElement>) { e.currentTarget.style.borderColor = COLORS.blue; e.currentTarget.style.color = COLORS.blue; e.currentTarget.style.background = '#eff6ff'; }
+function onAddBtnLeave(e: React.MouseEvent<HTMLButtonElement>) { e.currentTarget.style.borderColor = COLORS.ghost; e.currentTarget.style.color = COLORS.muted; e.currentTarget.style.background = 'transparent'; }
+
+const pillBtnStyle: React.CSSProperties = {
+  padding: '7px 13px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+  border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.muted,
 };
 
 const removeBtnStyle: React.CSSProperties = {
-  width: 24, height: 24, flexShrink: 0, border: 'none', background: 'transparent',
-  color: '#cbd5e1', cursor: 'pointer', fontSize: 15, lineHeight: 1, borderRadius: 5,
+  width: 26, height: 26, flexShrink: 0, border: 'none', background: 'transparent',
+  color: COLORS.ghost, cursor: 'pointer', fontSize: 16, lineHeight: 1, borderRadius: 7,
+  display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background .12s, color .12s',
 };
-function onRemoveBtnEnter(e: React.MouseEvent<HTMLButtonElement>) { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.color = '#dc2626'; }
-function onRemoveBtnLeave(e: React.MouseEvent<HTMLButtonElement>) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#cbd5e1'; }
+function onRemoveBtnEnter(e: React.MouseEvent<HTMLButtonElement>) { e.currentTarget.style.background = COLORS.redBg; e.currentTarget.style.color = COLORS.red; }
+function onRemoveBtnLeave(e: React.MouseEvent<HTMLButtonElement>) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = COLORS.ghost; }
+
+function priceFieldFocus(e: React.FocusEvent<HTMLInputElement>) { e.currentTarget.style.borderColor = COLORS.blue; e.currentTarget.style.background = '#fff'; }
+function priceFieldBlur(e: React.FocusEvent<HTMLInputElement>) { e.currentTarget.style.borderColor = COLORS.border; e.currentTarget.style.background = '#fafbfc'; }
 
 // ── All the pieces below are declared OUTSIDE CostCalculator on purpose: a
 // component defined inside another component's body gets a brand new function
@@ -122,8 +145,8 @@ function NumberField({
       value={text}
       placeholder={placeholder}
       style={style}
-      onFocus={() => { focused.current = true; }}
-      onBlur={() => { focused.current = false; setText(value === 0 ? '' : String(value)); }}
+      onFocus={e => { focused.current = true; priceFieldFocus(e); }}
+      onBlur={e => { focused.current = false; setText(value === 0 ? '' : String(value)); priceFieldBlur(e); }}
       onChange={e => {
         const raw = e.target.value;
         if (!/^-?\d*[.,]?\d*$/.test(raw)) return;
@@ -142,73 +165,65 @@ function PriceRow({ item, onUpdate, onRemove }: {
 }) {
   if (item.category === 'material') {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0', flexWrap: 'wrap' }}>
+      <div className="cc-price-row cc-price-row--material">
         <input
           value={item.name}
           onChange={e => onUpdate({ name: e.target.value })}
-          placeholder="Име"
-          style={{ ...inputBase, flex: 1, minWidth: 200 }}
+          placeholder="Име на материала"
+          style={{ ...inputBase }}
+          className="cc-price-row__name"
+          onFocus={priceFieldFocus} onBlur={priceFieldBlur}
         />
         <input
           value={item.unit}
           onChange={e => onUpdate({ unit: e.target.value })}
           placeholder="ед."
-          style={{ ...inputBase, width: 64, textAlign: 'center', flexShrink: 0 }}
+          style={{ ...inputBase, textAlign: 'center' }}
+          className="cc-price-row__unit"
+          onFocus={priceFieldFocus} onBlur={priceFieldBlur}
         />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-          <span style={{ fontSize: 10, color: '#94a3b8' }}>Цяла</span>
-          <NumberField
-            value={item.priceWhole ?? 0}
-            onChange={n => onUpdate({ priceWhole: n })}
-            style={{ ...inputBase, width: 68, textAlign: 'right' }}
-          />
-          <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+        <div className="cc-price-group">
+          <span className="cc-price-group__label">Цяла</span>
+          <NumberField value={item.priceWhole ?? 0} onChange={n => onUpdate({ priceWhole: n })} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
+          <span className="cc-price-group__unit">€</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-          <span style={{ fontSize: 10, color: '#94a3b8' }}>Полов.</span>
-          <NumberField
-            value={item.priceHalf ?? 0}
-            onChange={n => onUpdate({ priceHalf: n })}
-            style={{ ...inputBase, width: 68, textAlign: 'right' }}
-          />
-          <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+        <div className="cc-price-group">
+          <span className="cc-price-group__label">Полов.</span>
+          <NumberField value={item.priceHalf ?? 0} onChange={n => onUpdate({ priceHalf: n })} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
+          <span className="cc-price-group__unit">€</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-          <span style={{ fontSize: 10, color: '#94a3b8' }}>Кант/м</span>
-          <NumberField
-            value={item.edgePrice ?? 0}
-            onChange={n => onUpdate({ edgePrice: n })}
-            style={{ ...inputBase, width: 68, textAlign: 'right' }}
-          />
-          <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+        <div className="cc-price-group">
+          <span className="cc-price-group__label">Кант/м</span>
+          <NumberField value={item.edgePrice ?? 0} onChange={n => onUpdate({ edgePrice: n })} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
+          <span className="cc-price-group__unit">€</span>
         </div>
-        <button onClick={onRemove} title="Изтрий" style={removeBtnStyle} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+        <button onClick={onRemove} title="Изтрий" style={removeBtnStyle} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave} className="cc-price-row__remove">×</button>
       </div>
     );
   }
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 0' }}>
+    <div className="cc-price-row cc-price-row--hardware">
       <input
         value={item.name}
         onChange={e => onUpdate({ name: e.target.value })}
         placeholder="Име"
-        style={{ ...inputBase, flex: 1, minWidth: 0 }}
+        style={{ ...inputBase }}
+        className="cc-price-row__name"
+        onFocus={priceFieldFocus} onBlur={priceFieldBlur}
       />
       <input
         value={item.unit}
         onChange={e => onUpdate({ unit: e.target.value })}
         placeholder="ед."
-        style={{ ...inputBase, width: 52, textAlign: 'center', flexShrink: 0 }}
+        style={{ ...inputBase, textAlign: 'center' }}
+        className="cc-price-row__unit"
+        onFocus={priceFieldFocus} onBlur={priceFieldBlur}
       />
-      <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-        <NumberField
-          value={item.price ?? 0}
-          onChange={n => onUpdate({ price: n })}
-          style={{ ...inputBase, width: 74, textAlign: 'right' }}
-        />
-        <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
+      <div className="cc-price-group">
+        <NumberField value={item.price ?? 0} onChange={n => onUpdate({ price: n })} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
+        <span className="cc-price-group__unit">€</span>
       </div>
-      <button onClick={onRemove} title="Изтрий" style={removeBtnStyle} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+      <button onClick={onRemove} title="Изтрий" style={removeBtnStyle} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave} className="cc-price-row__remove">×</button>
     </div>
   );
 }
@@ -218,16 +233,16 @@ function QtyRow({ item, qty, onChange, onRemove }: {
 }) {
   const line = qty * (item.price ?? 0);
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
-      <span style={{ flex: 1, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
-        {item.name || <em style={{ color: '#cbd5e1' }}>—</em>}
+    <div className="cc-qty-row">
+      <span className="cc-qty-row__name" title={item.name}>
+        {item.name || <em style={{ color: COLORS.ghost, fontStyle: 'normal' }}>—</em>}
       </span>
-      <span style={{ fontSize: 10, color: '#94a3b8', width: 26, flexShrink: 0 }}>{item.unit}</span>
-      <NumberField value={qty} onChange={onChange} style={{ ...inputBase, width: 64, textAlign: 'right', flexShrink: 0 }} />
-      <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
+      <span className="cc-qty-row__unit">{item.unit}</span>
+      <NumberField value={qty} onChange={onChange} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
+      <span className="cc-qty-row__total" style={{ color: line > 0 ? COLORS.text2 : COLORS.ghost }}>
         {line > 0 ? `${fmt(line)} €` : '—'}
       </span>
-      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 20, height: 20, fontSize: 13 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 22, height: 22, fontSize: 14 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
     </div>
   );
 }
@@ -242,27 +257,28 @@ function MaterialQtyRow({ item, selection, kantiraneLaborPrice, onChange, onRemo
   const edgeCost = edgeMeters * ((item.edgePrice ?? 0) + kantiraneLaborPrice);
   const line = sheetCost + edgeCost;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', flexWrap: 'wrap' }}>
-      <span style={{ flex: 1, minWidth: 140, fontSize: 12.5, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.name}>
-        {item.name || <em style={{ color: '#cbd5e1' }}>—</em>}
+    <div className="cc-mat-row">
+      <span className="cc-mat-row__name" title={item.name}>
+        {item.name || <em style={{ color: COLORS.ghost, fontStyle: 'normal' }}>—</em>}
       </span>
       <select
         value={selection.portion}
         onChange={e => onChange({ portion: e.target.value as Portion })}
-        style={{ ...inputBase, width: 88, flexShrink: 0, padding: '5px 4px', fontSize: 11.5 }}
+        style={{ ...inputBase, padding: '6px 6px', fontSize: 11.5 }}
+        className="cc-mat-row__portion"
       >
         <option value="whole">Цяла</option>
         <option value="half">Половин</option>
       </select>
-      <NumberField value={selection.qty} onChange={n => onChange({ qty: n })} style={{ ...inputBase, width: 56, textAlign: 'right', flexShrink: 0 }} />
-      <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: '#94a3b8' }}>Кант м</span>
-        <NumberField value={edgeMeters} onChange={n => onChange({ edgeMeters: n })} style={{ ...inputBase, width: 52, textAlign: 'right' }} />
+      <NumberField value={selection.qty} onChange={n => onChange({ qty: n })} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
+      <div className="cc-price-group cc-mat-row__edge">
+        <span className="cc-price-group__label">Кант м</span>
+        <NumberField value={edgeMeters} onChange={n => onChange({ edgeMeters: n })} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
       </div>
-      <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
+      <span className="cc-mat-row__total" style={{ color: line > 0 ? COLORS.text2 : COLORS.ghost }}>
         {line > 0 ? `${fmt(line)} €` : '—'}
       </span>
-      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 20, height: 20, fontSize: 13 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 22, height: 22, fontSize: 14 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
     </div>
   );
 }
@@ -283,44 +299,48 @@ function ModuleBody({
   const kantiraneLaborPrice = hardware.find(h => h.name.trim().toLowerCase() === KANTIRANE_NAME)?.price ?? 0;
 
   return (
-    <div className="cc-module-body" style={{ borderTop: '1px solid #f1f5f9', padding: '12px 14px 16px' }}>
+    <div className="cc-module-body">
       {addedMaterials.length === 0 && addedHardware.length === 0 && (
-        <p style={{ fontSize: 12.5, color: '#94a3b8', margin: '0 0 10px' }}>Няма добавени позиции — избери отдолу какво влиза в тази мебел.</p>
+        <p style={{ fontSize: 12.5, color: COLORS.faint, margin: '0 0 12px' }}>Няма добавени позиции — избери отдолу какво влиза в тази мебел.</p>
       )}
       {addedMaterials.length > 0 && (
-        <div style={{ marginBottom: 10 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 4 }}>Материали</div>
-          {addedMaterials.map(item => (
-            <MaterialQtyRow
-              key={item.id}
-              item={item}
-              selection={m.materials[item.id] ?? { portion: 'whole', qty: 0 }}
-              kantiraneLaborPrice={kantiraneLaborPrice}
-              onChange={patch => onMaterialChange(item.id, patch)}
-              onRemove={() => onRemoveItem(item.id)}
-            />
-          ))}
+        <div style={{ marginBottom: 14 }}>
+          <div className="cc-module-body__label">Материали</div>
+          <div className="cc-module-body__rows">
+            {addedMaterials.map(item => (
+              <MaterialQtyRow
+                key={item.id}
+                item={item}
+                selection={m.materials[item.id] ?? { portion: 'whole', qty: 0 }}
+                kantiraneLaborPrice={kantiraneLaborPrice}
+                onChange={patch => onMaterialChange(item.id, patch)}
+                onRemove={() => onRemoveItem(item.id)}
+              />
+            ))}
+          </div>
         </div>
       )}
       {addedHardware.length > 0 && (
-        <div style={{ marginBottom: 10 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 4 }}>Обков и труд</div>
-          {addedHardware.map(item => (
-            <QtyRow
-              key={item.id}
-              item={item}
-              qty={m.qty[item.id] || 0}
-              onChange={n => onQtyChange(item.id, n)}
-              onRemove={() => onRemoveItem(item.id)}
-            />
-          ))}
+        <div style={{ marginBottom: 14 }}>
+          <div className="cc-module-body__label">Обков и труд</div>
+          <div className="cc-module-body__rows">
+            {addedHardware.map(item => (
+              <QtyRow
+                key={item.id}
+                item={item}
+                qty={m.qty[item.id] || 0}
+                onChange={n => onQtyChange(item.id, n)}
+                onRemove={() => onRemoveItem(item.id)}
+              />
+            ))}
+          </div>
         </div>
       )}
       {(availableMaterials.length > 0 || availableHardware.length > 0) && (
         <select
           value=""
           onChange={e => onAddItem(e.target.value)}
-          style={{ ...inputBase, width: '100%', marginTop: 4 }}
+          style={{ ...inputBase, width: '100%', marginTop: 2 }}
         >
           <option value="">+ Добави позиция…</option>
           {availableMaterials.length > 0 && (
@@ -343,18 +363,22 @@ function CollapsibleCard({
   title, sub, accent, open, onToggle, children,
 }: { title: string; sub: string; accent: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
   return (
-    <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', borderTop: `3px solid ${accent}`, boxShadow: '0 1px 4px rgba(0,0,0,.06)', overflow: 'hidden' }}>
+    <div style={{ ...cardStyle, borderTop: `3px solid ${accent}`, overflow: 'hidden' }}>
       <div
         onClick={onToggle}
-        style={{ padding: '11px 14px 9px', borderBottom: open ? '1px solid #f1f5f9' : 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}
+        className="cc-collapsible__head"
+        style={{ borderBottom: open ? `1px solid ${COLORS.borderSoft}` : 'none' }}
       >
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: '#0f172a' }}>{title}</div>
-          <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, letterSpacing: '.1em', marginTop: 1 }}>{sub}</div>
+          <div style={{ fontSize: 13.5, fontWeight: 800, color: COLORS.text }}>{title}</div>
+          <div style={{ fontSize: 10, color: COLORS.faint, fontWeight: 600, letterSpacing: '.08em', marginTop: 2 }}>{sub}</div>
         </div>
-        <span style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s', color: '#94a3b8', fontSize: 12 }}>▾</span>
+        <span style={{
+          transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .18s', color: COLORS.faint, fontSize: 12,
+          width: 22, height: 22, borderRadius: 6, background: COLORS.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>▾</span>
       </div>
-      {open && <div style={{ padding: '8px 14px 14px' }}>{children}</div>}
+      {open && <div style={{ padding: '10px 16px 16px' }}>{children}</div>}
     </div>
   );
 }
@@ -620,42 +644,47 @@ export default function CostCalculator({
   const SAVE_LABEL: Record<SaveState, string> = {
     idle: '', saving: 'Запазване…', saved: 'Запазено ✓', error: 'Грешка при запис',
   };
+  const SAVE_DOT: Record<SaveState, string> = {
+    idle: 'transparent', saving: COLORS.amber, saved: COLORS.green, error: COLORS.red,
+  };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f1f5f9', fontFamily: 'system-ui,-apple-system,sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: COLORS.bg, fontFamily: 'system-ui,-apple-system,sans-serif' }}>
 
       {/* Breadcrumb bar */}
-      <div className="cc-breadcrumb" style={{
-        background: '#fff', borderBottom: '1px solid #e5e7eb',
-        padding: '0 32px', display: 'flex', alignItems: 'center', gap: 8, height: 44,
-      }}>
-        <span style={{ fontSize: 12, color: '#9ca3af' }}>OfficeLabs Co</span>
-        <span style={{ color: '#d1d5db', fontSize: 14 }}>›</span>
-        <span style={{ fontSize: 12, color: '#374151', fontWeight: 600 }}>Калкулатор на себестойност</span>
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: saveState === 'error' ? '#dc2626' : '#9ca3af' }}>
-          {saveState !== 'idle' && SAVE_LABEL[saveState]}
+      <div className="cc-breadcrumb">
+        <span style={{ fontSize: 12, color: COLORS.faint }}>OfficeLabs Co</span>
+        <span style={{ color: COLORS.ghost, fontSize: 14 }}>›</span>
+        <span style={{ fontSize: 12, color: COLORS.text2, fontWeight: 600 }}>Калкулатор на себестойност</span>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 7, fontSize: 11, color: saveState === 'error' ? COLORS.red : COLORS.faint }}>
+          {saveState !== 'idle' && (
+            <>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: SAVE_DOT[saveState] }} />
+              {SAVE_LABEL[saveState]}
+            </>
+          )}
         </div>
       </div>
 
-      <div className="cc-section" style={{ padding: '28px 32px 0' }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-.4px' }}>
+      <div className="cc-section cc-header">
+        <h1 style={{ fontSize: 25, fontWeight: 800, color: COLORS.text, margin: 0, letterSpacing: '-.4px' }}>
           Калкулатор на себестойност
         </h1>
-        <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 20px' }}>
+        <p style={{ fontSize: 13, color: COLORS.muted, margin: '5px 0 0', lineHeight: 1.5 }}>
           Задай цени на материали и обков → отвори мебел → избери какво влиза в нея → цената излиза автоматично
         </p>
       </div>
 
       {/* ── Price list: materials + hardware (collapsible) ── */}
-      <div className="cc-section" style={{ padding: '0 32px 24px' }}>
+      <div className="cc-section" style={{ paddingBottom: 24 }}>
         <div style={{ marginBottom: 12, display: 'flex', alignItems: 'baseline', gap: 10 }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Ценоразпис</h2>
-          <span style={{ fontSize: 12, color: '#94a3b8' }}>Запазва се автоматично</span>
+          <h2 className="cc-h2">Ценоразпис</h2>
+          <span style={{ fontSize: 11.5, color: COLORS.faint }}>Запазва се автоматично</span>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 720 }}>
+        <div className="cc-pricelist-col">
 
           <CollapsibleCard
-            title="Материали" sub="ПО СЕРИИ / ЦВЯТ · ЦЯЛА / ПОЛОВИН ПЛОЧА + КАНТ НА МЕТЪР" accent="#3b82f6"
+            title="Материали" sub="ПО СЕРИИ / ЦВЯТ · ЦЯЛА / ПОЛОВИН ПЛОЧА + КАНТ НА МЕТЪР" accent={COLORS.blue}
             open={materialsOpen} onToggle={() => setMaterialsOpen(o => !o)}
           >
             {materials.map(item => (
@@ -666,11 +695,11 @@ export default function CostCalculator({
                 onRemove={() => removePriceItem(item.id)}
               />
             ))}
-            <button onClick={() => addPriceItem('material')} style={addBtnStyle}>+ Добави материал</button>
+            <button onClick={() => addPriceItem('material')} style={addBtnStyle} onMouseEnter={onAddBtnEnter} onMouseLeave={onAddBtnLeave}>+ Добави материал</button>
           </CollapsibleCard>
 
           <CollapsibleCard
-            title="Обков и труд" sub="ЦЕНА ЗА ЕДИНИЦА" accent="#f59e0b"
+            title="Обков и труд" sub="ЦЕНА ЗА ЕДИНИЦА" accent={COLORS.amber}
             open={hardwareOpen} onToggle={() => setHardwareOpen(o => !o)}
           >
             {hardware.map(item => (
@@ -681,55 +710,50 @@ export default function CostCalculator({
                 onRemove={() => removePriceItem(item.id)}
               />
             ))}
-            <button onClick={() => addPriceItem('hardware')} style={addBtnStyle}>+ Добави позиция</button>
+            <button onClick={() => addPriceItem('hardware')} style={addBtnStyle} onMouseEnter={onAddBtnEnter} onMouseLeave={onAddBtnLeave}>+ Добави позиция</button>
           </CollapsibleCard>
 
         </div>
 
         {/* Markup / VAT */}
-        <div style={{ display: 'flex', gap: 12, marginTop: 16, flexWrap: 'wrap' }}>
-          <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>Надценка</span>
-            <NumberField
-              value={state.markup}
-              onChange={n => commit(prev => ({ ...prev, markup: n }))}
-              style={{ ...inputBase, width: 64, textAlign: 'right' }}
-            />
-            <span style={{ fontSize: 12, color: '#94a3b8' }}>%</span>
+        <div className="cc-rate-row">
+          <div className="cc-rate-card">
+            <span style={{ fontSize: 12, fontWeight: 700, color: COLORS.text2 }}>Надценка</span>
+            <NumberField value={state.markup} onChange={n => commit(prev => ({ ...prev, markup: n }))} style={{ ...inputBase, width: 68, textAlign: 'right' }} />
+            <span style={{ fontSize: 12, color: COLORS.faint }}>%</span>
           </div>
-          <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>ДДС</span>
-            <NumberField
-              value={state.vat}
-              onChange={n => commit(prev => ({ ...prev, vat: n }))}
-              style={{ ...inputBase, width: 64, textAlign: 'right' }}
-            />
-            <span style={{ fontSize: 12, color: '#94a3b8' }}>%</span>
+          <div className="cc-rate-card">
+            <span style={{ fontSize: 12, fontWeight: 700, color: COLORS.text2 }}>ДДС</span>
+            <NumberField value={state.vat} onChange={n => commit(prev => ({ ...prev, vat: n }))} style={{ ...inputBase, width: 68, textAlign: 'right' }} />
+            <span style={{ fontSize: 12, color: COLORS.faint }}>%</span>
           </div>
         </div>
       </div>
 
       {/* ── Modules ── */}
-      <div className="cc-section" style={{ padding: '0 32px 60px' }}>
-        <div style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <h2 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', margin: 0 }}>Модули (мебели)</h2>
-          <span style={{ fontSize: 12, color: '#94a3b8' }}>{filteredModules.length} / {state.modules.length}</span>
-          <button onClick={() => setExpanded(new Set(filteredModules.map(m => m.id)))} style={{ ...addBtnStyle, width: 'auto', marginTop: 0, padding: '6px 12px' }}>Разгъни всички</button>
-          <button onClick={() => setExpanded(new Set())} style={{ ...addBtnStyle, width: 'auto', marginTop: 0, padding: '6px 12px' }}>Свий всички</button>
-          <button onClick={addModule} style={{ ...addBtnStyle, marginLeft: 'auto', width: 'auto', marginTop: 0, padding: '7px 16px', background: '#111827', color: '#fff', border: 'none' }}>
-            + Нов модул
-          </button>
+      <div className="cc-section" style={{ paddingBottom: 60 }}>
+        <div className="cc-modules-head">
+          <h2 className="cc-h2">Модули (мебели)</h2>
+          <span style={{ fontSize: 12, color: COLORS.faint }}>{filteredModules.length} / {state.modules.length}</span>
+          <div className="cc-modules-head__actions">
+            <button onClick={() => setExpanded(new Set(filteredModules.map(m => m.id)))} style={pillBtnStyle}>Разгъни всички</button>
+            <button onClick={() => setExpanded(new Set())} style={pillBtnStyle}>Свий всички</button>
+            <button onClick={addModule} style={{ ...pillBtnStyle, background: COLORS.text, color: '#fff', border: 'none', marginLeft: 'auto' }}>
+              + Нов модул
+            </button>
+          </div>
         </div>
 
-        <div className="cc-toolbar" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
-          <div style={{ display: 'flex', background: '#e2e8f0', borderRadius: 8, padding: 3, gap: 2, flexWrap: 'wrap' }}>
+        <div className="cc-toolbar">
+          <div className="cc-series-tabs">
             {['all', ...allSeriesNames].map(s => {
               const active = filterSeries === s;
               return (
                 <button key={s} onClick={() => setFilterSeries(s)} style={{
-                  padding: '5px 14px', border: 'none', borderRadius: 6, fontSize: 12,
+                  padding: '6px 14px', border: 'none', borderRadius: 7, fontSize: 12,
                   fontWeight: 600, cursor: 'pointer', background: active ? '#fff' : 'transparent',
-                  color: active ? '#0f172a' : '#64748b', boxShadow: active ? '0 1px 2px rgba(0,0,0,.08)' : 'none',
+                  color: active ? COLORS.text : COLORS.muted, boxShadow: active ? '0 1px 2px rgba(0,0,0,.08)' : 'none',
+                  whiteSpace: 'nowrap', transition: 'background .15s, color .15s',
                 }}>
                   {s === 'all' ? 'Всички' : s}
                 </button>
@@ -740,12 +764,13 @@ export default function CostCalculator({
             value={moduleSearch}
             onChange={e => setModuleSearch(e.target.value)}
             placeholder="Търси модул…"
-            style={{ ...inputBase, minWidth: 200 }}
+            style={{ ...inputBase, flex: 1, minWidth: 160 }}
+            onFocus={priceFieldFocus} onBlur={priceFieldBlur}
           />
         </div>
 
         {filteredModules.length === 0 && (
-          <div style={{ background: '#fff', border: '1px dashed #cbd5e1', borderRadius: 12, padding: '40px 20px', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>
+          <div style={{ ...cardStyle, border: `1px dashed ${COLORS.ghost}`, boxShadow: 'none', padding: '40px 20px', textAlign: 'center', color: COLORS.faint, fontSize: 13 }}>
             Няма модули за показване.
           </div>
         )}
@@ -757,41 +782,48 @@ export default function CostCalculator({
             const sale = moduleSale(m);
             const final = moduleFinal(m);
             return (
-              <div key={m.id} style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,.06)', overflow: 'hidden' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', cursor: 'pointer' }} onClick={() => toggleExpand(m.id)}>
-                  <span style={{ transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'transform .15s', color: '#94a3b8', fontSize: 12 }}>▶</span>
-                  <div style={{ flex: 1, minWidth: 120 }}>
+              <div key={m.id} style={{ ...cardStyle, overflow: 'hidden' }}>
+                <div className="cc-module-head" onClick={() => toggleExpand(m.id)}>
+                  <span className="cc-module-head__chevron" style={{ transform: isOpen ? 'rotate(90deg)' : 'none' }}>▶</span>
+                  <div className="cc-module-head__name">
                     <input
                       value={m.name}
                       onChange={e => updateModuleName(m.id, e.target.value)}
                       onClick={e => e.stopPropagation()}
                       style={{ ...inputBase, width: '100%', fontWeight: 700, fontSize: 14, background: '#fff', border: '1px solid transparent', padding: '4px 6px' }}
-                      onFocus={e => { e.currentTarget.style.borderColor = '#3b82f6'; }}
+                      onFocus={e => { e.currentTarget.style.borderColor = COLORS.blue; }}
                       onBlur={e => { e.currentTarget.style.borderColor = 'transparent'; }}
                     />
                     {(m.seriesName || m.categoryName) && (
-                      <div style={{ fontSize: 10.5, color: '#94a3b8', padding: '0 6px', marginTop: 1 }}>
+                      <div style={{ fontSize: 10.5, color: COLORS.faint, padding: '0 6px', marginTop: 2 }}>
                         {[m.seriesName, m.categoryName].filter(Boolean).join(' · ')}
                       </div>
                     )}
                   </div>
-                  <div className="cc-module-totals" style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-                    <span style={{ color: '#94a3b8' }}>Себестойност <b style={{ color: '#0f172a' }}>{fmt(cost)} €</b></span>
-                    <span style={{ color: '#94a3b8' }}>Продажна <b style={{ color: '#0f172a' }}>{fmt(sale)} €</b></span>
-                    <span style={{ color: '#94a3b8' }}>С ДДС <b style={{ color: '#16a34a' }}>{fmt(final)} €</b></span>
+
+                  {/* Desktop: full cost breakdown */}
+                  <div className="cc-module-totals">
+                    <span style={{ color: COLORS.faint }}>Себестойност <b style={{ color: COLORS.text }}>{fmt(cost)} €</b></span>
+                    <span style={{ color: COLORS.faint }}>Продажна <b style={{ color: COLORS.text }}>{fmt(sale)} €</b></span>
+                    <span style={{ color: COLORS.faint }}>С ДДС <b style={{ color: COLORS.green }}>{fmt(final)} €</b></span>
                   </div>
-                  <button
-                    onClick={e => { e.stopPropagation(); duplicateModule(m); }}
-                    title="Дублирай"
-                    style={{ width: 26, height: 26, border: '1px solid #e2e8f0', background: '#fff', borderRadius: 6, cursor: 'pointer', color: '#64748b', fontSize: 12, flexShrink: 0 }}
-                  >⧉</button>
-                  <button
-                    onClick={e => { e.stopPropagation(); removeModule(m.id); }}
-                    title="Изтрий модул"
-                    style={{ width: 26, height: 26, border: 'none', background: 'transparent', borderRadius: 6, cursor: 'pointer', color: '#cbd5e1', fontSize: 15, flexShrink: 0 }}
-                    onMouseEnter={onRemoveBtnEnter}
-                    onMouseLeave={onRemoveBtnLeave}
-                  >×</button>
+                  {/* Mobile: compact single badge */}
+                  <span className="cc-module-totals-compact">{fmt(final)} €</span>
+
+                  <div className="cc-module-head__actions">
+                    <button
+                      onClick={e => { e.stopPropagation(); duplicateModule(m); }}
+                      title="Дублирай"
+                      style={{ width: 28, height: 28, border: `1px solid ${COLORS.border}`, background: '#fff', borderRadius: 7, cursor: 'pointer', color: COLORS.muted, fontSize: 12, flexShrink: 0 }}
+                    >⧉</button>
+                    <button
+                      onClick={e => { e.stopPropagation(); removeModule(m.id); }}
+                      title="Изтрий модул"
+                      style={{ width: 28, height: 28, border: 'none', background: 'transparent', borderRadius: 7, cursor: 'pointer', color: COLORS.ghost, fontSize: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      onMouseEnter={onRemoveBtnEnter}
+                      onMouseLeave={onRemoveBtnLeave}
+                    >×</button>
+                  </div>
                 </div>
 
                 {isOpen && (
@@ -815,14 +847,117 @@ export default function CostCalculator({
       <style>{`
         *, *::before, *::after { box-sizing: border-box; }
         input[type=number]::-webkit-inner-spin-button { opacity: .5; }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: ${COLORS.bg}; }
+        ::-webkit-scrollbar-thumb { background: ${COLORS.ghost}; border-radius: 3px; }
+        select { cursor: pointer; }
 
+        .cc-breadcrumb {
+          background: #fff; border-bottom: 1px solid #e5e7eb;
+          padding: 0 32px; display: flex; align-items: center; gap: 8px; height: 46px;
+        }
+        .cc-section { padding-left: 32px; padding-right: 32px; }
+        .cc-header { padding-top: 28px; padding-bottom: 22px; }
+        .cc-h2 { font-size: 15px; font-weight: 700; color: ${COLORS.text}; margin: 0; }
+
+        .cc-pricelist-col { display: flex; flex-direction: column; gap: 14px; max-width: 760px; }
+
+        .cc-collapsible__head {
+          padding: 13px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+          transition: background .12s;
+        }
+        .cc-collapsible__head:hover { background: #fafbfc; }
+
+        /* ── price rows ── */
+        .cc-price-row {
+          display: grid; align-items: center; gap: 8px; padding: 7px 0;
+          border-bottom: 1px solid #f8fafc;
+        }
+        .cc-price-row:last-of-type { border-bottom: none; }
+        .cc-price-row--hardware { grid-template-columns: 1fr 56px 110px 30px; }
+        .cc-price-row--material { grid-template-columns: minmax(140px,1.6fr) 60px 96px 96px 96px 30px; }
+        .cc-price-row__name { width: 100%; }
+        .cc-price-row__unit { width: 100%; }
+        .cc-price-row__remove { justify-self: end; }
+
+        .cc-price-group {
+          display: flex; align-items: center; gap: 5px; background: #f8fafc;
+          border-radius: 7px; padding: 3px 6px 3px 8px; min-width: 0;
+        }
+        .cc-price-group__label { font-size: 9.5px; color: ${COLORS.faint}; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; flex-shrink: 0; }
+        .cc-price-group__unit { font-size: 11px; color: ${COLORS.faint}; flex-shrink: 0; }
+
+        /* ── module body rows ── */
+        .cc-module-body { border-top: 1px solid ${COLORS.borderSoft}; padding: 14px 16px 18px; }
+        .cc-module-body__label {
+          font-size: 10px; font-weight: 700; color: ${COLORS.faint}; text-transform: uppercase;
+          letter-spacing: .08em; margin-bottom: 6px;
+        }
+        .cc-module-body__rows { display: flex; flex-direction: column; gap: 2px; }
+
+        .cc-qty-row {
+          display: grid; grid-template-columns: 1fr 30px 72px 76px 26px; align-items: center; gap: 8px; padding: 5px 0;
+        }
+        .cc-qty-row__name { font-size: 12.5px; color: ${COLORS.text2}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cc-qty-row__unit { font-size: 10px; color: ${COLORS.faint}; }
+        .cc-qty-row__total { font-size: 11px; text-align: right; }
+
+        .cc-mat-row {
+          display: grid; grid-template-columns: minmax(120px,1.4fr) 84px 64px 108px 76px 26px;
+          align-items: center; gap: 8px; padding: 5px 0;
+        }
+        .cc-mat-row__name { font-size: 12.5px; color: ${COLORS.text2}; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cc-mat-row__total { font-size: 11px; text-align: right; }
+
+        /* ── modules toolbar / list ── */
+        .cc-modules-head { margin-bottom: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .cc-modules-head__actions { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .cc-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+        .cc-series-tabs { display: flex; background: #e2e8f0; border-radius: 9px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+
+        .cc-module-head {
+          display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer;
+          transition: background .12s;
+        }
+        .cc-module-head:hover { background: #fafbfc; }
+        .cc-module-head__chevron { color: ${COLORS.faint}; font-size: 11px; transition: transform .15s; flex-shrink: 0; }
+        .cc-module-head__name { flex: 1; min-width: 100px; }
+        .cc-module-totals { display: flex; gap: 16px; font-size: 12px; flex-shrink: 0; }
+        .cc-module-totals-compact { display: none; }
+        .cc-module-head__actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+        /* ── Mobile / Tablet responsive ── */
         @media (max-width: 900px) {
-          .cc-breadcrumb { padding: 0 16px !important; }
-          .cc-section { padding-left: 16px !important; padding-right: 16px !important; }
-          .cc-module-totals { display: none !important; }
+          .cc-breadcrumb { padding: 0 16px; height: 42px; }
+          .cc-section { padding-left: 16px; padding-right: 16px; }
+          .cc-header { padding-top: 20px; padding-bottom: 16px; }
+          .cc-module-totals { display: none; }
+          .cc-module-totals-compact {
+            display: inline-flex; font-size: 12px; font-weight: 800; color: ${COLORS.green};
+            background: #f0fdf4; padding: 4px 9px; border-radius: 7px; flex-shrink: 0; white-space: nowrap;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .cc-price-row--hardware { grid-template-columns: 1fr; row-gap: 6px; }
+          .cc-price-row--material { grid-template-columns: 1fr 1fr; row-gap: 6px; }
+          .cc-price-row--material .cc-price-row__name { grid-column: 1 / -1; }
+          .cc-price-row__remove { grid-row: 1; align-self: start; }
+          .cc-price-row--material .cc-price-row__remove { grid-column: 2; grid-row: 1; }
+
+          .cc-qty-row { grid-template-columns: 1fr 60px 26px; row-gap: 4px; }
+          .cc-qty-row__unit { order: 3; }
+          .cc-qty-row__total { grid-column: 1 / 3; text-align: left; order: 4; }
+
+          .cc-mat-row { grid-template-columns: 1fr 1fr 26px; row-gap: 6px; }
+          .cc-mat-row__name { grid-column: 1 / -1; }
+          .cc-mat-row__total { grid-column: 1 / 3; text-align: left; }
+
+          .cc-modules-head__actions { width: 100%; }
+          .cc-modules-head__actions button { flex: 1; }
+          .cc-modules-head__actions button:last-child { flex: 1 1 100%; order: -1; margin-bottom: 6px; }
+
+          .cc-series-tabs { width: 100%; }
         }
       `}</style>
     </div>
