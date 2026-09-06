@@ -83,6 +83,38 @@ const addBtnStyle: React.CSSProperties = {
   fontWeight: 600, cursor: 'pointer',
 };
 
+// Free-typing numeric input: keeps its own text while focused so a decimal point
+// or a trailing "," (bg keyboards) never gets snapped away mid-type by the
+// parent re-rendering with the already-parsed number.
+function NumberField({
+  value, onChange, placeholder = '0', style,
+}: { value: number; onChange: (n: number) => void; placeholder?: string; style?: React.CSSProperties }) {
+  const [text, setText] = useState(value === 0 ? '' : String(value));
+  const focused = useRef(false);
+
+  useEffect(() => {
+    if (!focused.current) setText(value === 0 ? '' : String(value));
+  }, [value]);
+
+  return (
+    <input
+      type="text" inputMode="decimal"
+      value={text}
+      placeholder={placeholder}
+      style={style}
+      onFocus={() => { focused.current = true; }}
+      onBlur={() => { focused.current = false; setText(value === 0 ? '' : String(value)); }}
+      onChange={e => {
+        const raw = e.target.value;
+        if (!/^-?\d*[.,]?\d*$/.test(raw)) return;
+        setText(raw);
+        const parsed = parseFloat(raw.replace(',', '.'));
+        onChange(Number.isFinite(parsed) ? parsed : 0);
+      }}
+    />
+  );
+}
+
 export default function CostCalculator({
   initial,
   seriesMaterials,
@@ -336,22 +368,18 @@ export default function CostCalculator({
           />
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
             <span style={{ fontSize: 10, color: '#94a3b8' }}>Цяла</span>
-            <input
-              type="number" step="any"
-              value={!item.priceWhole ? '' : item.priceWhole}
-              onChange={e => updatePriceItem(item.id, { priceWhole: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
-              placeholder="0"
+            <NumberField
+              value={item.priceWhole ?? 0}
+              onChange={n => updatePriceItem(item.id, { priceWhole: n })}
               style={{ ...inputBase, width: 68, textAlign: 'right' }}
             />
             <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
             <span style={{ fontSize: 10, color: '#94a3b8' }}>Полов.</span>
-            <input
-              type="number" step="any"
-              value={!item.priceHalf ? '' : item.priceHalf}
-              onChange={e => updatePriceItem(item.id, { priceHalf: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
-              placeholder="0"
+            <NumberField
+              value={item.priceHalf ?? 0}
+              onChange={n => updatePriceItem(item.id, { priceHalf: n })}
               style={{ ...inputBase, width: 68, textAlign: 'right' }}
             />
             <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
@@ -381,11 +409,9 @@ export default function CostCalculator({
           style={{ ...inputBase, width: 52, textAlign: 'center', flexShrink: 0 }}
         />
         <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
-          <input
-            type="number" step="any"
-            value={!item.price ? '' : item.price}
-            onChange={e => updatePriceItem(item.id, { price: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
-            placeholder="0"
+          <NumberField
+            value={item.price ?? 0}
+            onChange={n => updatePriceItem(item.id, { price: n })}
             style={{ ...inputBase, width: 74, textAlign: 'right' }}
           />
           <span style={{ fontSize: 12, color: '#94a3b8' }}>€</span>
@@ -410,11 +436,9 @@ export default function CostCalculator({
           {item.name || <em style={{ color: '#cbd5e1' }}>—</em>}
         </span>
         <span style={{ fontSize: 10, color: '#94a3b8', width: 26, flexShrink: 0 }}>{item.unit}</span>
-        <input
-          type="number" step="any" min={0}
-          value={q === 0 ? '' : q}
-          onChange={e => updateModuleQty(m.id, item.id, e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
-          placeholder="0"
+        <NumberField
+          value={q}
+          onChange={n => updateModuleQty(m.id, item.id, n)}
           style={{ ...inputBase, width: 64, textAlign: 'right', flexShrink: 0 }}
         />
         <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
@@ -448,11 +472,9 @@ export default function CostCalculator({
           <option value="whole">Цяла</option>
           <option value="half">Половин</option>
         </select>
-        <input
-          type="number" step="any" min={0}
-          value={sel.qty === 0 ? '' : sel.qty}
-          onChange={e => updateModuleMaterial(m.id, item.id, { qty: e.target.value === '' ? 0 : parseFloat(e.target.value) || 0 })}
-          placeholder="0"
+        <NumberField
+          value={sel.qty}
+          onChange={n => updateModuleMaterial(m.id, item.id, { qty: n })}
           style={{ ...inputBase, width: 56, textAlign: 'right', flexShrink: 0 }}
         />
         <span style={{ fontSize: 11, color: line > 0 ? '#475569' : '#d1d5db', width: 62, textAlign: 'right', flexShrink: 0 }}>
@@ -607,20 +629,18 @@ export default function CostCalculator({
         <div style={{ display: 'flex', gap: 12, marginTop: 16, flexWrap: 'wrap' }}>
           <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>Надценка</span>
-            <input
-              type="number" step="any"
+            <NumberField
               value={state.markup}
-              onChange={e => commit(prev => ({ ...prev, markup: parseFloat(e.target.value) || 0 }))}
+              onChange={n => commit(prev => ({ ...prev, markup: n }))}
               style={{ ...inputBase, width: 64, textAlign: 'right' }}
             />
             <span style={{ fontSize: 12, color: '#94a3b8' }}>%</span>
           </div>
           <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>ДДС</span>
-            <input
-              type="number" step="any"
+            <NumberField
               value={state.vat}
-              onChange={e => commit(prev => ({ ...prev, vat: parseFloat(e.target.value) || 0 }))}
+              onChange={n => commit(prev => ({ ...prev, vat: n }))}
               style={{ ...inputBase, width: 64, textAlign: 'right' }}
             />
             <span style={{ fontSize: 12, color: '#94a3b8' }}>%</span>
