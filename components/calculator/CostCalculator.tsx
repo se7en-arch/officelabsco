@@ -617,9 +617,6 @@ export default function CostCalculator({
     return list;
   }, [state.modules, filterSeries, moduleSearch]);
 
-  const grandCost = state.modules.reduce((s, m) => s + moduleCost(m), 0);
-  const grandSale = state.modules.reduce((s, m) => s + moduleSale(m), 0);
-
   const SAVE_LABEL: Record<SaveState, string> = {
     idle: '', saving: 'Запазване…', saved: 'Запазено ✓', error: 'Грешка при запис',
   };
@@ -641,29 +638,12 @@ export default function CostCalculator({
       </div>
 
       <div className="cc-section" style={{ padding: '28px 32px 0' }}>
-        <div style={{ marginBottom: 20 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-.4px' }}>
-            Калкулатор на себестойност
-          </h1>
-          <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 0' }}>
-            Задай цени на материали и обков → отвори мебел → избери какво влиза в нея → цената излиза автоматично
-          </p>
-        </div>
-
-        {/* Summary stats */}
-        <div className="cc-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
-          {[
-            { label: 'Модули', value: String(state.modules.length) },
-            { label: 'Обща себестойност', value: `${fmt(grandCost)} €` },
-            { label: 'Обща продажна цена', value: `${fmt(grandSale)} €` },
-            { label: 'Надценка / ДДС', value: `${state.markup}% / ${state.vat}%` },
-          ].map(s => (
-            <div key={s.label} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '14px 16px', boxShadow: '0 1px 4px rgba(0,0,0,.06)' }}>
-              <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em' }}>{s.label}</div>
-              <div style={{ fontSize: 19, fontWeight: 800, color: '#0f172a', marginTop: 3 }}>{s.value}</div>
-            </div>
-          ))}
-        </div>
+        <h1 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: 0, letterSpacing: '-.4px' }}>
+          Калкулатор на себестойност
+        </h1>
+        <p style={{ fontSize: 13, color: '#64748b', margin: '4px 0 20px' }}>
+          Задай цени на материали и обков → отвори мебел → избери какво влиза в нея → цената излиза автоматично
+        </p>
       </div>
 
       {/* ── Price list: materials + hardware (collapsible) ── */}
@@ -842,7 +822,6 @@ export default function CostCalculator({
         @media (max-width: 900px) {
           .cc-breadcrumb { padding: 0 16px !important; }
           .cc-section { padding-left: 16px !important; padding-right: 16px !important; }
-          .cc-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .cc-module-totals { display: none !important; }
         }
       `}</style>
