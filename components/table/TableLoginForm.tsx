@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 
-export default function TableLoginForm() {
+export default function TableLoginForm({ title = 'Продуктова Таблица' }: { title?: string }) {
   const [u, setU] = useState('');
   const [p, setP] = useState('');
   const [err, setErr] = useState('');
@@ -40,7 +40,7 @@ export default function TableLoginForm() {
           </span>
         </div>
         <h1 style={{ fontSize: 22, fontWeight: 800, color: '#111827', marginBottom: 4 }}>
-          Продуктова Таблица
+          {title}
         </h1>
         <p style={{ fontSize: 13, color: '#6b7280', marginBottom: 28 }}>
           Въведете данни за достъп

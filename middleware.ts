@@ -52,7 +52,8 @@ export default function middleware(req: NextRequest) {
     pathname.startsWith('/api') ||
     pathname.startsWith('/adminpanel') ||
     pathname.startsWith('/table') ||
-    pathname.startsWith('/catalog')
+    pathname.startsWith('/catalog') ||
+    pathname.startsWith('/calculator')
   ) {
     return NextResponse.next();
   }
