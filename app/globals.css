@@ -1838,6 +1838,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 .series-page {
   background: #fff;
   min-height: 100vh;
+  padding-top: 32px;
   padding-bottom: 80px;
 }
 
@@ -1848,7 +1849,6 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
   aspect-ratio: 16 / 9;
   border-radius: 20px;
   overflow: hidden;
-  margin-top: 32px;
   background: var(--line-2);
 }
 .series-hero__placeholder {
@@ -1952,7 +1952,8 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
-  .series-hero { margin-top: 20px; border-radius: 16px; }
+  .series-page { padding-top: 20px; }
+  .series-hero { border-radius: 16px; }
   .series-intro { padding: 36px 0 16px; }
   .series-features { gap: 56px; padding: 36px 0 16px; }
   .series-feature { grid-template-columns: 1fr; gap: 24px; }
