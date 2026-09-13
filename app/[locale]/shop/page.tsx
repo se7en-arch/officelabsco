@@ -133,6 +133,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
             <div className="shop-hero-apple__content">
               <h1 className="shop-hero-apple__heading">{t('heroTitle')}</h1>
               <p className="shop-hero-apple__tagline">{t('heroTagline')}</p>
+              <p className="shop-hero-apple__vat">{t('vatNote')}</p>
             </div>
           </div>
         </div>

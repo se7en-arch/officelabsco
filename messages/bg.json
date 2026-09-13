@@ -124,6 +124,7 @@
     "related": "Подобни продукти",
     "fromSeries": "От серия {series}",
     "priceHint": "или {monthly} €/мес. за 12 мес.",
+    "vatNote": "Цената е с включен ДДС.",
     "addShort": "Добави",
     "addedShort": "Добавено!",
     "breadHome": "Начало",
@@ -167,6 +168,7 @@
   "shop": {
     "heroTitle": "Разгледайте разнообразната колекция на OfficeLabs Co",
     "heroTagline": "Не пропускайте нашата колекция! Няма да съжалявате.",
+    "vatNote": "Всички цени са с включен ДДС.",
     "furniture": "Мебели",
     "productsCount": "{count} продукта",
     "noResults": "Няма намерени продукти",

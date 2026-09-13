@@ -163,6 +163,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
             <span className="product-info__price-val">{product.price} €</span>{' '}
             {t('priceHint', { monthly: (product.price / 12).toFixed(2) })}
           </p>
+          <p className="product-info__vat-note">{t('vatNote')}</p>
           <AddToCartButton
             stock={product.stock}
             variants={COLOR_VARIANTS[product.slug]}
