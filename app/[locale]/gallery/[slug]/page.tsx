@@ -24,7 +24,7 @@ const series: Record<string, SeriesData> = {
     tag: 'ASTRA СЕРИЯ',
     title: 'ASTRA',
     accent: '#3b82f6',
-    heroImage: null,
+    heroImage: '/images/gallery-hero-astra.webp',
     headline: 'Минимализъм, който говори с присъствие.',
     intro: [
       'ASTRA е доказателство, че по-малкото наистина може да бъде по-смело. Всяка форма в колекцията е сведена до най-важното — права линия, чист ъгъл, прецизна пропорция — без нищо излишно, което да отвлича вниманието от работата.',
@@ -75,7 +75,7 @@ const series: Record<string, SeriesData> = {
     tag: 'LOFT СЕРИЯ',
     title: 'LOFT',
     accent: '#2D5A45',
-    heroImage: null,
+    heroImage: '/images/gallery-hero-loft.webp',
     headline: 'Автентичност вместо перфекция.',
     intro: [
       'LOFT не крие материалите си — показва ги. Суров метал и масивно дърво се срещат в контраст, който не се извинява за характера си. Това е серия за пространства, в които индустриалният дух е част от идентичността, не компромис.',
