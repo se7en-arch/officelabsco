@@ -1863,7 +1863,6 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 
 /* ── Intro ── */
 .series-intro {
-  max-width: 760px;
   padding: 56px 0 24px;
 }
 .series-intro__title {
