@@ -24,10 +24,10 @@ export default async function AboutPage() {
   ];
 
   const seriesList = [
-    { slug: 'astra', name: 'ASTRA', image: '/images/about-astra.jpg', headline: t('astraHeadline'), text: t('astraText') },
-    { slug: 'terra', name: 'TERRA', image: '/images/about-terra.jpg', headline: t('terraHeadline'), text: t('terraText') },
-    { slug: 'nova',  name: 'NOVA',  image: '/images/about-nova.jpg',  headline: t('novaHeadline'),  text: t('novaText') },
-    { slug: 'loft',  name: 'LOFT',  image: '/images/about-loft.jpg',  headline: t('loftHeadline'),  text: t('loftText') },
+    { slug: 'astra', name: 'ASTRA', image: '/images/gallery-hero-astra.webp', headline: t('astraHeadline'), text: t('astraText') },
+    { slug: 'terra', name: 'TERRA', image: '/images/gallery-hero-terra.webp', headline: t('terraHeadline'), text: t('terraText') },
+    { slug: 'nova',  name: 'NOVA',  image: '/images/gallery-hero-nova.webp',  headline: t('novaHeadline'),  text: t('novaText') },
+    { slug: 'loft',  name: 'LOFT',  image: '/images/gallery-hero-loft.webp',  headline: t('loftHeadline'),  text: t('loftText') },
   ];
 
   return (

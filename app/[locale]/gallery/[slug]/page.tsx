@@ -44,7 +44,7 @@ const series: Record<string, SeriesData> = {
     tag: 'TERRA СЕРИЯ',
     title: 'TERRA',
     accent: '#7A9E87',
-    heroImage: null,
+    heroImage: '/images/gallery-hero-terra.webp',
     headline: 'Топлина, която променя начина, по който работиш.',
     intro: [
       'TERRA е отговорът на въпроса какво се случва, когато офисът престане да имитира дом и просто стане такъв. Природни текстури, заоблени форми и мека светлина изграждат пространство, в което работата и почивката не се конкурират.',
@@ -64,7 +64,7 @@ const series: Record<string, SeriesData> = {
     tag: 'NOVA СЕРИЯ',
     title: 'NOVA',
     accent: '#8a6d4f',
-    heroImage: null,
+    heroImage: '/images/gallery-hero-nova.webp',
     headline: 'Занаят, който устоява на времето.',
     intro: [
       'NOVA е серия за хората, за които историята на един предмет има значение точно толкова, колкото и функцията му. Наситени тонове, автентични текстури и детайли, които издават ръчна изработка в свят на масово производство.',
