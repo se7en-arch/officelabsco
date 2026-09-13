@@ -59,7 +59,7 @@ export default function ProductCard({
             className={`card__buy-btn${added ? ' card__buy-btn--added' : ''}`}
             onClick={handleAdd}
           >
-            <span className="card__buy-btn__default">{t('addShort')} +</span>
+            <span className="card__buy-btn__default">{t('addShort')}</span>
             <span className="card__buy-btn__success">{t('addedShort')}</span>
           </button>
         </div>
