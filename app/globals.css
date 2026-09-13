@@ -1457,7 +1457,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 .about-series-card {
   position: relative; display: block;
   border-radius: var(--r-lg); overflow: hidden;
-  aspect-ratio: 4/3;
+  aspect-ratio: 2/3;
   cursor: pointer;
   transition: transform .35s ease, box-shadow .35s ease;
 }
@@ -1669,7 +1669,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
   .about-belief { padding: 28px 22px; }
   .about-series-sec { padding: 56px 0; }
   .about-series-grid { grid-template-columns: 1fr; gap: 12px; }
-  .about-series-card { aspect-ratio: 4/3; }
+  .about-series-card { aspect-ratio: 2/3; }
   .about-cta { padding: 56px 0; }
   .about-cta__title { letter-spacing: -.8px; }
   .about-cta__br { display: inline; }
