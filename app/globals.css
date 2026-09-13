@@ -1335,7 +1335,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 }
 .about-hero__bg-img {
   position: absolute; inset: 0;
-  background: url('/images/Hero AboutUs.webp') center center / cover no-repeat;
+  background: url('/images/about-hero-bg.webp') center center / cover no-repeat;
   opacity: .65;
   z-index: 0;
 }
@@ -1407,7 +1407,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 }
 .about-beliefs__bg-img {
   position: absolute; inset: 0;
-  background: url('/images/Hero AboutUs 2.webp') center center / cover no-repeat;
+  background: url('/images/about-beliefs-bg.webp') center center / cover no-repeat;
   opacity: .65;
   z-index: 0;
 }
@@ -1512,7 +1512,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 }
 .about-cta__bg-img {
   position: absolute; inset: 0;
-  background: url('/images/Hero AboutUs 3.webp') center center / cover no-repeat;
+  background: url('/images/about-cta-bg.webp') center center / cover no-repeat;
   opacity: .65;
   z-index: 0;
 }
