@@ -9,7 +9,10 @@ type Props = {
   variants?: { name: string; color: string }[];
 };
 
-export default function AddToCartButton({ product, stock = 99, variants }: Props) {
+// Made-to-order: every product is produced and delivered after the order is
+// placed, so purchasing is never gated on `stock` — that field is kept only
+// for the admin panel's own optional record-keeping.
+export default function AddToCartButton({ product, variants }: Props) {
   const t = useTranslations('product');
   const addItem = useCart((s) => s.addItem);
   const [qty, setQty] = useState(1);
@@ -28,24 +31,10 @@ export default function AddToCartButton({ product, stock = 99, variants }: Props
     return () => window.removeEventListener('colorVariantChange', onVariantChange);
   }, [variants]);
 
-  const outOfStock = stock === 0;
-  const maxQty = Math.max(1, stock);
-
   function handleAdd() {
-    if (outOfStock) return;
     for (let i = 0; i < qty; i++) addItem({ ...product, selectedColor });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
-  }
-
-  if (outOfStock) {
-    return (
-      <div className="qty-row">
-        <button className="btn-add-cart btn-add-cart--out" disabled>
-          {t('outOfStock')}
-        </button>
-      </div>
-    );
   }
 
   return (
@@ -54,15 +43,12 @@ export default function AddToCartButton({ product, stock = 99, variants }: Props
         <div className="qty">
           <button className="qty__btn" onClick={() => setQty((q) => Math.max(1, q - 1))}>−</button>
           <span className="qty__val">{qty}</span>
-          <button className="qty__btn" onClick={() => setQty((q) => Math.min(maxQty, q + 1))}>+</button>
+          <button className="qty__btn" onClick={() => setQty((q) => Math.min(99, q + 1))}>+</button>
         </div>
         <button className="btn-add-cart" onClick={handleAdd}>
           {added ? t('added') : t('addToCart')}
         </button>
       </div>
-      {stock <= 3 && (
-        <p className="stock-warning">Остават само {stock} бр.</p>
-      )}
     </div>
   );
 }

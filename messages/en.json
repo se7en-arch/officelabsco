@@ -110,7 +110,7 @@
     "continueShopping": "Continue shopping"
   },
   "product": {
-    "addToCart": "Add to cart",
+    "addToCart": "Order",
     "added": "✓ Added!",
     "inStock": "In stock",
     "outOfStock": "Out of stock",
@@ -125,7 +125,7 @@
     "fromSeries": "From {series} series",
     "priceHint": "or {monthly} €/mo. for 12 mo.",
     "vatNote": "Price includes VAT.",
-    "addShort": "Add",
+    "addShort": "Order",
     "addedShort": "Added!",
     "breadHome": "Home",
     "breadShop": "Shop",

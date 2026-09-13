@@ -199,12 +199,6 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
               <span className="spec-label">{t('category')}</span>
               <span className="spec-value">{displayCategoryName}</span>
             </div>
-            <div className="spec-row">
-              <span className="spec-label">{t('availability')}</span>
-              <span className="spec-value" style={{ color: product.stock === 0 ? '#ef4444' : product.stock <= 3 ? '#D97706' : '#16a34a' }}>
-                {product.stock === 0 ? t('outOfStock') : product.stock <= 3 ? t('limitedStock') : t('stockCount', { count: product.stock })}
-              </span>
-            </div>
           </div>
         </div>
       </div>

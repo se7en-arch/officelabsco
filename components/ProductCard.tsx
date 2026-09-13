@@ -20,17 +20,14 @@ type Props = {
 };
 
 export default function ProductCard({
-  id, name, slug, price, originalPrice, image, badge, seriesName, categoryName, description, stock = 1,
+  id, name, slug, price, image, seriesName, categoryName, description,
 }: Props) {
   const t = useTranslations('product');
   const addItem = useCart((s) => s.addItem);
   const [added, setAdded] = useState(false);
 
-  const outOfStock = stock === 0;
-
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault();
-    if (outOfStock) return;
     addItem({ id, name, slug, price, image, seriesName, categoryName });
     setAdded(true);
     setTimeout(() => setAdded(false), 1400);
@@ -47,11 +44,6 @@ export default function ProductCard({
           sizes="(max-width: 600px) 100vw, (max-width: 1100px) 50vw, 33vw"
         />
         <span className="card__badge-series">{seriesName}</span>
-        {badge && (
-          <span className={`card__badge-promo${badge === 'SALE' ? '' : ' card__badge-new'}`}>
-            {badge}
-          </span>
-        )}
       </div>
 
       <div className="card__body">
@@ -59,25 +51,15 @@ export default function ProductCard({
         <div className="card__cat">{categoryName}</div>
         {description && <p className="card__desc">{description}</p>}
 
-        <div className={`card__stock${stock === 0 ? ' card__stock--out' : stock <= 3 ? ' card__stock--limited' : ''}`}>
-          <span className="card__stock-dot" />
-          {stock === 0 ? t('outOfStock') : stock <= 3 ? t('limitedStock') : t('inStock')}
-        </div>
-
         <div className="card__footer">
           <div className="card__price-pill">
             {price} €
-            {originalPrice && (
-              <span className="card__price-orig">{originalPrice} €</span>
-            )}
           </div>
           <button
-            className={`card__buy-btn${added ? ' card__buy-btn--added' : ''}${outOfStock ? ' card__buy-btn--out' : ''}`}
+            className={`card__buy-btn${added ? ' card__buy-btn--added' : ''}`}
             onClick={handleAdd}
-            disabled={outOfStock}
-            aria-disabled={outOfStock}
           >
-            <span className="card__buy-btn__default">{outOfStock ? t('outOfStock') : `${t('addShort')} +`}</span>
+            <span className="card__buy-btn__default">{t('addShort')} +</span>
             <span className="card__buy-btn__success">{t('addedShort')}</span>
           </button>
         </div>

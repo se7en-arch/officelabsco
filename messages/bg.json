@@ -110,7 +110,7 @@
     "continueShopping": "Продължи пазаруването"
   },
   "product": {
-    "addToCart": "Добави в количката",
+    "addToCart": "Поръчай",
     "added": "✓ Добавено!",
     "inStock": "В наличност",
     "outOfStock": "Изчерпано",
@@ -125,7 +125,7 @@
     "fromSeries": "От серия {series}",
     "priceHint": "или {monthly} €/мес. за 12 мес.",
     "vatNote": "Цената е с включен ДДС.",
-    "addShort": "Добави",
+    "addShort": "Поръчай",
     "addedShort": "Добавено!",
     "breadHome": "Начало",
     "breadShop": "Магазин",
