@@ -85,6 +85,16 @@ const COLORS = {
   blue: '#3b82f6', amber: '#f59e0b', green: '#16a34a', red: '#dc2626', redBg: '#fee2e2',
 };
 
+// Same per-series accent palette used on the public series (gallery) pages —
+// reused here so a module card visually ties back to its series at a glance.
+const SERIES_ACCENTS: Record<string, string> = {
+  astra: '#3b82f6', terra: '#7A9E87', nova: '#8a6d4f', loft: '#2D5A45',
+};
+function seriesAccent(name?: string): string {
+  if (!name) return COLORS.ghost;
+  return SERIES_ACCENTS[name.trim().toLowerCase()] ?? COLORS.blue;
+}
+
 const inputBase: React.CSSProperties = {
   padding: '7px 10px', border: `1px solid ${COLORS.border}`, borderRadius: 7,
   fontSize: 13, outline: 'none', fontFamily: 'inherit', background: '#fafbfc',
@@ -302,11 +312,11 @@ function ModuleBody({
   return (
     <div className="cc-module-body">
       {addedMaterials.length === 0 && addedHardware.length === 0 && (
-        <p style={{ fontSize: 12.5, color: COLORS.faint, margin: '0 0 12px' }}>Няма добавени позиции — избери отдолу какво влиза в тази мебел.</p>
+        <div className="cc-module-body__empty">Няма добавени позиции — избери отдолу какво влиза в тази мебел.</div>
       )}
       {addedMaterials.length > 0 && (
-        <div style={{ marginBottom: 14 }}>
-          <div className="cc-module-body__label">Материали</div>
+        <div style={{ marginBottom: 16 }}>
+          <div className="cc-module-body__label" style={{ color: COLORS.blue, background: `${COLORS.blue}12` }}>Материали</div>
           <div className="cc-module-body__rows">
             {addedMaterials.map(item => (
               <MaterialQtyRow
@@ -322,8 +332,8 @@ function ModuleBody({
         </div>
       )}
       {addedHardware.length > 0 && (
-        <div style={{ marginBottom: 14 }}>
-          <div className="cc-module-body__label">Обков и труд</div>
+        <div style={{ marginBottom: 16 }}>
+          <div className="cc-module-body__label" style={{ color: COLORS.amber, background: `${COLORS.amber}14` }}>Обков и труд</div>
           <div className="cc-module-body__rows">
             {addedHardware.map(item => (
               <QtyRow
@@ -341,6 +351,7 @@ function ModuleBody({
         <select
           value=""
           onChange={e => onAddItem(e.target.value)}
+          className="cc-module-add-select"
           style={{ ...inputBase, width: '100%', marginTop: 2 }}
         >
           <option value="">+ Добави позиция…</option>
@@ -776,53 +787,63 @@ export default function CostCalculator({
           </div>
         )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {filteredModules.map(m => {
             const isOpen = expanded.has(m.id);
             const cost = moduleCost(m);
             const sale = moduleSale(m);
             const final = moduleFinal(m);
+            const accent = seriesAccent(m.seriesName);
             return (
-              <div key={m.id} style={{ ...cardStyle, overflow: 'hidden' }}>
+              <div key={m.id} className={`cc-module-card${isOpen ? ' cc-module-card--open' : ''}`} style={{ borderTopColor: accent }}>
                 <div className="cc-module-head" onClick={() => toggleExpand(m.id)}>
-                  <span className="cc-module-head__chevron" style={{ transform: isOpen ? 'rotate(90deg)' : 'none' }}>▶</span>
+                  <span className="cc-module-head__chevron-wrap">
+                    <span className="cc-module-head__chevron" style={{ transform: isOpen ? 'rotate(90deg)' : 'none' }}>▶</span>
+                  </span>
                   <div className="cc-module-head__name">
                     <input
                       value={m.name}
                       onChange={e => updateModuleName(m.id, e.target.value)}
                       onClick={e => e.stopPropagation()}
-                      style={{ ...inputBase, width: '100%', fontWeight: 700, fontSize: 14, background: '#fff', border: '1px solid transparent', padding: '4px 6px' }}
-                      onFocus={e => { e.currentTarget.style.borderColor = COLORS.blue; }}
-                      onBlur={e => { e.currentTarget.style.borderColor = 'transparent'; }}
+                      style={{ ...inputBase, width: '100%', fontWeight: 700, fontSize: 14.5, background: 'transparent', border: '1px solid transparent', padding: '4px 6px', letterSpacing: '-.1px' }}
+                      onFocus={e => { e.currentTarget.style.borderColor = COLORS.blue; e.currentTarget.style.background = '#fff'; }}
+                      onBlur={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'transparent'; }}
                     />
                     {(m.seriesName || m.categoryName) && (
-                      <div style={{ fontSize: 10.5, color: COLORS.faint, padding: '0 6px', marginTop: 2 }}>
-                        {[m.seriesName, m.categoryName].filter(Boolean).join(' · ')}
+                      <div className="cc-module-head__meta">
+                        {m.seriesName && (
+                          <span className="cc-module-tag" style={{ color: accent, background: `${accent}14` }}>{m.seriesName}</span>
+                        )}
+                        {m.categoryName && <span className="cc-module-head__cat">{m.categoryName}</span>}
                       </div>
                     )}
                   </div>
 
-                  {/* Desktop: full cost breakdown */}
                   <div className="cc-module-totals">
-                    <span style={{ color: COLORS.faint }}>Себестойност <b style={{ color: COLORS.text }}>{fmt(cost)} €</b></span>
-                    <span style={{ color: COLORS.faint }}>Продажна <b style={{ color: COLORS.text }}>{fmt(sale)} €</b></span>
-                    <span style={{ color: COLORS.faint }}>С ДДС <b style={{ color: COLORS.green }}>{fmt(final)} €</b></span>
+                    <div className="cc-stat">
+                      <span className="cc-stat__label">Себестойност</span>
+                      <span className="cc-stat__value">{fmt(cost)} €</span>
+                    </div>
+                    <div className="cc-stat">
+                      <span className="cc-stat__label">Продажна</span>
+                      <span className="cc-stat__value">{fmt(sale)} €</span>
+                    </div>
+                    <div className="cc-stat cc-stat--accent">
+                      <span className="cc-stat__label">С ДДС</span>
+                      <span className="cc-stat__value">{fmt(final)} €</span>
+                    </div>
                   </div>
-                  {/* Mobile: compact single badge */}
-                  <span className="cc-module-totals-compact">{fmt(final)} €</span>
 
                   <div className="cc-module-head__actions">
                     <button
                       onClick={e => { e.stopPropagation(); duplicateModule(m); }}
                       title="Дублирай"
-                      style={{ width: 28, height: 28, border: `1px solid ${COLORS.border}`, background: '#fff', borderRadius: 7, cursor: 'pointer', color: COLORS.muted, fontSize: 12, flexShrink: 0 }}
+                      className="cc-icon-btn"
                     >⧉</button>
                     <button
                       onClick={e => { e.stopPropagation(); removeModule(m.id); }}
                       title="Изтрий модул"
-                      style={{ width: 28, height: 28, border: 'none', background: 'transparent', borderRadius: 7, cursor: 'pointer', color: COLORS.ghost, fontSize: 16, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      onMouseEnter={onRemoveBtnEnter}
-                      onMouseLeave={onRemoveBtnLeave}
+                      className="cc-icon-btn cc-icon-btn--danger"
                     >×</button>
                   </div>
                 </div>
@@ -896,12 +917,17 @@ export default function CostCalculator({
         .cc-price-group__unit { font-size: 11px; color: ${COLORS.faint}; flex-shrink: 0; }
 
         /* ── module body rows ── */
-        .cc-module-body { border-top: 1px solid ${COLORS.borderSoft}; padding: 14px 16px 18px; }
+        .cc-module-body { border-top: 1px solid ${COLORS.borderSoft}; padding: 16px 18px 20px; background: #fbfcfd; }
         .cc-module-body__label {
-          font-size: 10px; font-weight: 700; color: ${COLORS.faint}; text-transform: uppercase;
-          letter-spacing: .08em; margin-bottom: 6px;
+          display: inline-block; font-size: 9.5px; font-weight: 800; text-transform: uppercase;
+          letter-spacing: .07em; margin-bottom: 8px; padding: 3px 9px; border-radius: 999px;
         }
         .cc-module-body__rows { display: flex; flex-direction: column; gap: 2px; }
+        .cc-module-body__empty {
+          font-size: 12.5px; color: ${COLORS.faint}; text-align: center; padding: 18px 12px;
+          border: 1.5px dashed ${COLORS.border}; border-radius: 12px; margin-bottom: 12px;
+        }
+        .cc-module-add-select { cursor: pointer; }
 
         .cc-qty-row {
           display: grid; grid-template-columns: 1fr 30px 72px 76px 26px; align-items: center; gap: 8px; padding: 5px 0;
@@ -923,16 +949,55 @@ export default function CostCalculator({
         .cc-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
         .cc-series-tabs { display: flex; background: #e2e8f0; border-radius: 9px; padding: 3px; gap: 2px; flex-wrap: wrap; }
 
+        /* ── module card (Apple-style: soft elevation, colored series accent, grouped stats) ── */
+        .cc-module-card {
+          background: ${COLORS.card}; border-radius: 18px; border: 1px solid ${COLORS.border};
+          border-top: 3px solid ${COLORS.ghost}; overflow: hidden;
+          box-shadow: 0 1px 2px rgba(15,23,42,.04);
+          transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
+        }
+        .cc-module-card:hover { box-shadow: 0 6px 20px rgba(15,23,42,.08); }
+        .cc-module-card--open { box-shadow: 0 6px 24px rgba(15,23,42,.09); }
+
         .cc-module-head {
-          display: flex; align-items: center; gap: 10px; padding: 12px 16px; cursor: pointer;
+          display: flex; align-items: center; gap: 14px; padding: 14px 18px; cursor: pointer;
           transition: background .12s;
         }
         .cc-module-head:hover { background: #fafbfc; }
-        .cc-module-head__chevron { color: ${COLORS.faint}; font-size: 11px; transition: transform .15s; flex-shrink: 0; }
+        .cc-module-head__chevron-wrap {
+          width: 26px; height: 26px; border-radius: 999px; background: ${COLORS.bg};
+          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+          transition: background .15s;
+        }
+        .cc-module-head:hover .cc-module-head__chevron-wrap { background: #e8edf3; }
+        .cc-module-head__chevron { color: ${COLORS.muted}; font-size: 10px; transition: transform .18s; flex-shrink: 0; }
         .cc-module-head__name { flex: 1; min-width: 100px; }
-        .cc-module-totals { display: flex; gap: 16px; font-size: 12px; flex-shrink: 0; }
+        .cc-module-head__meta { display: flex; align-items: center; gap: 7px; padding: 0 6px; margin-top: 3px; flex-wrap: wrap; }
+        .cc-module-tag {
+          font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+          padding: 2.5px 8px; border-radius: 999px; line-height: 1.5;
+        }
+        .cc-module-head__cat { font-size: 10.5px; color: ${COLORS.faint}; }
+
+        .cc-module-totals { display: flex; gap: 18px; flex-shrink: 0; }
+        .cc-stat { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .cc-stat__label { font-size: 9px; font-weight: 700; color: ${COLORS.faint}; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+        .cc-stat__value { font-size: 13.5px; font-weight: 700; color: ${COLORS.text}; white-space: nowrap; }
+        .cc-stat--accent { padding: 3px 10px 4px; border-radius: 10px; background: #f0fdf4; }
+        .cc-stat--accent .cc-stat__label { color: #4c9a6a; }
+        .cc-stat--accent .cc-stat__value { color: ${COLORS.green}; }
         .cc-module-totals-compact { display: none; }
+
         .cc-module-head__actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .cc-icon-btn {
+          width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; border: 1px solid ${COLORS.border};
+          background: #fff; color: ${COLORS.muted}; font-size: 12.5px; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          transition: background .15s, color .15s, border-color .15s;
+        }
+        .cc-icon-btn:hover { background: ${COLORS.bg}; border-color: ${COLORS.ghost}; }
+        .cc-icon-btn--danger { border-color: transparent; background: transparent; font-size: 16px; }
+        .cc-icon-btn--danger:hover { background: ${COLORS.redBg}; color: ${COLORS.red}; }
 
         /* ── Mobile / Tablet responsive ── */
         html, body { max-width: 100%; overflow-x: hidden; }
@@ -947,15 +1012,16 @@ export default function CostCalculator({
              stay on line 1, and the full cost/sale/VAT breakdown (all three
              prices, not just a single compact figure) drops to its own
              full-width line 2 underneath. */
-          .cc-module-head { padding: 12px; gap: 6px 8px; flex-wrap: wrap; }
-          .cc-module-head__chevron { order: 1; }
+          .cc-module-head { padding: 12px 14px; gap: 6px 8px; flex-wrap: wrap; }
+          .cc-module-head__chevron-wrap { order: 1; }
           .cc-module-head__name { order: 2; min-width: 60px; }
           .cc-module-head__actions { order: 3; }
           .cc-module-totals {
             order: 4; flex: 1 1 100%; display: flex; flex-wrap: wrap;
-            gap: 4px 14px; font-size: 11.5px; padding-left: 19px;
+            gap: 6px 10px; padding-left: 34px;
           }
-          .cc-module-totals-compact { display: none; }
+          .cc-stat { flex-direction: row; align-items: baseline; gap: 5px; }
+          .cc-stat__value { font-size: 12.5px; }
         }
 
         /* Below 640px the dense multi-column price/qty/material rows become
