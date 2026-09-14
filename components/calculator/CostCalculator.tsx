@@ -942,13 +942,20 @@ export default function CostCalculator({
           .cc-breadcrumb > span:first-child, .cc-breadcrumb > span:nth-child(2) { display: none; }
           .cc-section { padding-left: 16px; padding-right: 16px; }
           .cc-header { padding-top: 20px; padding-bottom: 16px; }
-          .cc-module-totals { display: none; }
-          .cc-module-totals-compact {
-            display: inline-flex; font-size: 12px; font-weight: 800; color: ${COLORS.green};
-            background: #f0fdf4; padding: 4px 9px; border-radius: 7px; flex-shrink: 0; white-space: nowrap;
+
+          /* Module header wraps onto two lines on mobile: chevron/name/actions
+             stay on line 1, and the full cost/sale/VAT breakdown (all three
+             prices, not just a single compact figure) drops to its own
+             full-width line 2 underneath. */
+          .cc-module-head { padding: 12px; gap: 6px 8px; flex-wrap: wrap; }
+          .cc-module-head__chevron { order: 1; }
+          .cc-module-head__name { order: 2; min-width: 60px; }
+          .cc-module-head__actions { order: 3; }
+          .cc-module-totals {
+            order: 4; flex: 1 1 100%; display: flex; flex-wrap: wrap;
+            gap: 4px 14px; font-size: 11.5px; padding-left: 19px;
           }
-          .cc-module-head { padding: 12px; gap: 8px; }
-          .cc-module-head__name { min-width: 60px; }
+          .cc-module-totals-compact { display: none; }
         }
 
         /* Below 640px the dense multi-column price/qty/material rows become
