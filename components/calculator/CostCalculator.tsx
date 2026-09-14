@@ -130,8 +130,8 @@ function priceFieldBlur(e: React.FocusEvent<HTMLInputElement>) { e.currentTarget
 // or a trailing "," (bg keyboards) never gets snapped away mid-type by the
 // parent re-rendering with the already-parsed number.
 function NumberField({
-  value, onChange, placeholder = '0', style,
-}: { value: number; onChange: (n: number) => void; placeholder?: string; style?: React.CSSProperties }) {
+  value, onChange, placeholder = '0', style, className,
+}: { value: number; onChange: (n: number) => void; placeholder?: string; style?: React.CSSProperties; className?: string }) {
   const [text, setText] = useState(value === 0 ? '' : String(value));
   const focused = useRef(false);
 
@@ -145,6 +145,7 @@ function NumberField({
       value={text}
       placeholder={placeholder}
       style={style}
+      className={className}
       onFocus={e => { focused.current = true; priceFieldFocus(e); }}
       onBlur={e => { focused.current = false; setText(value === 0 ? '' : String(value)); priceFieldBlur(e); }}
       onChange={e => {
@@ -238,11 +239,11 @@ function QtyRow({ item, qty, onChange, onRemove }: {
         {item.name || <em style={{ color: COLORS.ghost, fontStyle: 'normal' }}>—</em>}
       </span>
       <span className="cc-qty-row__unit">{item.unit}</span>
-      <NumberField value={qty} onChange={onChange} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
+      <NumberField value={qty} onChange={onChange} style={{ ...inputBase, width: '100%', textAlign: 'right' }} className="cc-qty-row__input" />
       <span className="cc-qty-row__total" style={{ color: line > 0 ? COLORS.text2 : COLORS.ghost }}>
         {line > 0 ? `${fmt(line)} €` : '—'}
       </span>
-      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 22, height: 22, fontSize: 14 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 22, height: 22, fontSize: 14 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave} className="cc-qty-row__remove">×</button>
     </div>
   );
 }
@@ -270,7 +271,7 @@ function MaterialQtyRow({ item, selection, kantiraneLaborPrice, onChange, onRemo
         <option value="whole">Цяла</option>
         <option value="half">Половин</option>
       </select>
-      <NumberField value={selection.qty} onChange={n => onChange({ qty: n })} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
+      <NumberField value={selection.qty} onChange={n => onChange({ qty: n })} style={{ ...inputBase, width: '100%', textAlign: 'right' }} className="cc-mat-row__qty" />
       <div className="cc-price-group cc-mat-row__edge">
         <span className="cc-price-group__label">Кант м</span>
         <NumberField value={edgeMeters} onChange={n => onChange({ edgeMeters: n })} style={{ ...inputBase, width: '100%', textAlign: 'right' }} />
@@ -278,7 +279,7 @@ function MaterialQtyRow({ item, selection, kantiraneLaborPrice, onChange, onRemo
       <span className="cc-mat-row__total" style={{ color: line > 0 ? COLORS.text2 : COLORS.ghost }}>
         {line > 0 ? `${fmt(line)} €` : '—'}
       </span>
-      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 22, height: 22, fontSize: 14 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave}>×</button>
+      <button onClick={onRemove} title="Премахни позицията" style={{ ...removeBtnStyle, width: 22, height: 22, fontSize: 14 }} onMouseEnter={onRemoveBtnEnter} onMouseLeave={onRemoveBtnLeave} className="cc-mat-row__remove">×</button>
     </div>
   );
 }
@@ -934,8 +935,11 @@ export default function CostCalculator({
         .cc-module-head__actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
 
         /* ── Mobile / Tablet responsive ── */
+        html, body { max-width: 100%; overflow-x: hidden; }
+
         @media (max-width: 900px) {
           .cc-breadcrumb { padding: 0 16px; height: 42px; }
+          .cc-breadcrumb > span:first-child, .cc-breadcrumb > span:nth-child(2) { display: none; }
           .cc-section { padding-left: 16px; padding-right: 16px; }
           .cc-header { padding-top: 20px; padding-bottom: 16px; }
           .cc-module-totals { display: none; }
@@ -943,22 +947,52 @@ export default function CostCalculator({
             display: inline-flex; font-size: 12px; font-weight: 800; color: ${COLORS.green};
             background: #f0fdf4; padding: 4px 9px; border-radius: 7px; flex-shrink: 0; white-space: nowrap;
           }
+          .cc-module-head { padding: 12px; gap: 8px; }
+          .cc-module-head__name { min-width: 60px; }
         }
 
+        /* Below 640px the dense multi-column price/qty/material rows become
+           unreliable as CSS grids (fixed narrow tracks force their content to
+           overflow, which drags the whole page into horizontal scroll — that
+           was the root cause of "everything looks broken" on phones). Switch
+           them to a wrapping flex column instead: nothing has a fixed minimum
+           track width, so nothing can force an overflow. */
         @media (max-width: 640px) {
-          .cc-price-row--hardware { grid-template-columns: 1fr; row-gap: 6px; }
-          .cc-price-row--material { grid-template-columns: 1fr 1fr; row-gap: 6px; }
-          .cc-price-row--material .cc-price-row__name { grid-column: 1 / -1; }
-          .cc-price-row__remove { grid-row: 1; align-self: start; }
-          .cc-price-row--material .cc-price-row__remove { grid-column: 2; grid-row: 1; }
+          .cc-price-row--hardware,
+          .cc-price-row--material {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 0;
+          }
+          .cc-price-row--hardware .cc-price-row__name,
+          .cc-price-row--material .cc-price-row__name { flex: 1 1 100%; order: 1; width: auto; }
+          .cc-price-row--hardware .cc-price-row__unit,
+          .cc-price-row--material .cc-price-row__unit { flex: 1 1 auto; min-width: 0; order: 2; width: auto; }
+          .cc-price-row--hardware .cc-price-row__remove,
+          .cc-price-row--material .cc-price-row__remove { order: 2; flex-shrink: 0; justify-self: auto; }
+          .cc-price-row--hardware .cc-price-group,
+          .cc-price-row--material .cc-price-group { flex: 1 1 100%; order: 3; min-width: 0; }
 
-          .cc-qty-row { grid-template-columns: 1fr 60px 26px; row-gap: 4px; }
-          .cc-qty-row__unit { order: 3; }
-          .cc-qty-row__total { grid-column: 1 / 3; text-align: left; order: 4; }
+          .cc-qty-row {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 7px 0;
+          }
+          .cc-qty-row__name {
+            flex: 1 1 100%; order: 1; white-space: normal; overflow: visible; text-overflow: clip;
+          }
+          .cc-qty-row__unit { order: 2; }
+          .cc-qty-row__input { order: 3; width: 68px; flex-shrink: 0; }
+          .cc-qty-row__total { order: 4; margin-left: auto; text-align: right; }
+          .cc-qty-row__remove { order: 5; flex-shrink: 0; }
 
-          .cc-mat-row { grid-template-columns: 1fr 1fr 26px; row-gap: 6px; }
-          .cc-mat-row__name { grid-column: 1 / -1; }
-          .cc-mat-row__total { grid-column: 1 / 3; text-align: left; }
+          .cc-mat-row {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 7px 0;
+          }
+          .cc-mat-row__name {
+            flex: 1 1 100%; order: 1; white-space: normal; overflow: visible; text-overflow: clip;
+          }
+          .cc-mat-row__portion { order: 2; flex: 1 1 90px; min-width: 0; }
+          .cc-mat-row__qty { order: 3; width: 60px; flex-shrink: 0; }
+          .cc-mat-row__edge { order: 4; flex: 1 1 100%; min-width: 0; }
+          .cc-mat-row__total { order: 5; margin-left: auto; text-align: right; }
+          .cc-mat-row__remove { order: 6; flex-shrink: 0; }
 
           .cc-modules-head__actions { width: 100%; }
           .cc-modules-head__actions button { flex: 1; }
