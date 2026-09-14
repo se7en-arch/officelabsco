@@ -1031,39 +1031,47 @@ export default function CostCalculator({
            them to a wrapping flex column instead: nothing has a fixed minimum
            track width, so nothing can force an overflow. */
         @media (max-width: 640px) {
+          /* Dense, compact rows: the item name gets its own full line (it can
+             run long), everything else — unit, price chip(s), qty, total,
+             remove — packs onto a tight second line instead of each control
+             claiming a full-width row of its own. Nothing here is forced to
+             100% width, so short controls stay short. */
           .cc-price-row--hardware,
           .cc-price-row--material {
-            display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 10px 0;
+            display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 9px 0;
           }
           .cc-price-row--hardware .cc-price-row__name,
-          .cc-price-row--material .cc-price-row__name { flex: 1 1 100%; order: 1; width: auto; }
+          .cc-price-row--material .cc-price-row__name { flex: 1 1 100%; order: 1; width: auto; font-weight: 600; }
           .cc-price-row--hardware .cc-price-row__unit,
-          .cc-price-row--material .cc-price-row__unit { flex: 1 1 auto; min-width: 0; order: 2; width: auto; }
-          .cc-price-row--hardware .cc-price-row__remove,
-          .cc-price-row--material .cc-price-row__remove { order: 2; flex-shrink: 0; justify-self: auto; }
+          .cc-price-row--material .cc-price-row__unit { flex: 0 0 54px; min-width: 0; order: 2; width: auto; }
           .cc-price-row--hardware .cc-price-group,
-          .cc-price-row--material .cc-price-group { flex: 1 1 100%; order: 3; min-width: 0; }
+          .cc-price-row--material .cc-price-group { order: 3; flex: 0 1 auto; min-width: 0; padding: 3px 6px 3px 8px; gap: 4px; }
+          .cc-price-row--hardware .cc-price-group input,
+          .cc-price-row--material .cc-price-group input { width: 46px !important; }
+          .cc-price-row--hardware .cc-price-row__remove,
+          .cc-price-row--material .cc-price-row__remove { order: 9; flex-shrink: 0; justify-self: auto; margin-left: auto; }
 
           .cc-qty-row {
-            display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 7px 0;
+            display: flex; flex-wrap: wrap; align-items: center; gap: 5px 8px; padding: 6px 0;
           }
           .cc-qty-row__name {
-            flex: 1 1 100%; order: 1; white-space: normal; overflow: visible; text-overflow: clip;
+            flex: 1 1 100%; order: 1; white-space: normal; overflow: visible; text-overflow: clip; font-weight: 500;
           }
           .cc-qty-row__unit { order: 2; }
-          .cc-qty-row__input { order: 3; width: 68px; flex-shrink: 0; }
+          .cc-qty-row__input { order: 3; width: 54px; flex-shrink: 0; }
           .cc-qty-row__total { order: 4; margin-left: auto; text-align: right; }
           .cc-qty-row__remove { order: 5; flex-shrink: 0; }
 
           .cc-mat-row {
-            display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 7px 0;
+            display: flex; flex-wrap: wrap; align-items: center; gap: 5px 8px; padding: 6px 0;
           }
           .cc-mat-row__name {
-            flex: 1 1 100%; order: 1; white-space: normal; overflow: visible; text-overflow: clip;
+            flex: 1 1 100%; order: 1; white-space: normal; overflow: visible; text-overflow: clip; font-weight: 500;
           }
-          .cc-mat-row__portion { order: 2; flex: 1 1 90px; min-width: 0; }
-          .cc-mat-row__qty { order: 3; width: 60px; flex-shrink: 0; }
-          .cc-mat-row__edge { order: 4; flex: 1 1 100%; min-width: 0; }
+          .cc-mat-row__portion { order: 2; flex: 0 1 76px; min-width: 0; }
+          .cc-mat-row__qty { order: 3; width: 48px; flex-shrink: 0; }
+          .cc-mat-row__edge { order: 4; flex: 0 1 auto; min-width: 0; padding: 3px 6px 3px 8px; gap: 4px; }
+          .cc-mat-row__edge input { width: 40px !important; }
           .cc-mat-row__total { order: 5; margin-left: auto; text-align: right; }
           .cc-mat-row__remove { order: 6; flex-shrink: 0; }
 
