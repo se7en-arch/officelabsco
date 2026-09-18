@@ -51,6 +51,7 @@ interface OrderBody {
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
+  promoCode?: string | null;
 }
 
 function isValidEmail(email: string) {
@@ -130,7 +131,23 @@ export async function POST(req: NextRequest) {
     // Some products not found — still allow (product may have been added without ID)
   }
 
-  const serverTotal = +serverItems.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2);
+  const itemsTotal = +serverItems.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2);
+
+  // Promo code, like item prices above, is validated and applied server-side —
+  // the discount percent is never taken from the client.
+  let promoCode: string | null = null;
+  let discountPercent = 0;
+  if (typeof body.promoCode === 'string' && body.promoCode.trim()) {
+    const promo = await prisma.promoCode.findFirst({
+      where: { code: body.promoCode.trim().toUpperCase().slice(0, 50), active: true },
+      select: { code: true, discount: true },
+    });
+    if (promo) {
+      promoCode = promo.code;
+      discountPercent = promo.discount;
+    }
+  }
+  const serverTotal = +(itemsTotal * (1 - discountPercent / 100)).toFixed(2);
   // ──────────────────────────────────────────────────────────────────
 
   const ua        = req.headers.get('user-agent') ?? null;
@@ -164,6 +181,8 @@ export async function POST(req: NextRequest) {
       postcode:    body.postcode ? body.postcode.slice(0, 10)   : null,
       payment:     body.payment.slice(0, 20),
       total:       serverTotal,          // server-calculated, not client value
+      promoCode,
+      discountPercent,
       ipAddress:   ip,
       userAgent:   ua,
       referer:     referer,

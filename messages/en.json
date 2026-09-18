@@ -95,6 +95,9 @@
     "reviewVat": "VAT #",
     "reviewCourier": "Courier",
     "reviewDelivery": "Delivery",
+    "reviewSubtotal": "Subtotal",
+    "reviewDiscount": "Promo code {code} (−{discount}%)",
+    "reviewTotal": "Total to pay",
     "toOfficeCity": "To office in {city}",
     "back": "← Back",
     "next": "Continue →",
@@ -362,5 +365,14 @@
     "a11": "14 days from the date of receipt, provided the product is intact in its original packaging.",
     "q12": "Who pays for return shipping?",
     "a12": "For standard returns — costs are the customer's responsibility. For defective or incorrect products — we cover all costs."
+  },
+  "bundlePopup": {
+    "eyebrow": "{series} SERIES · FULL SET",
+    "title": "{discount}% off the whole set",
+    "sub": "Get all {count} pieces from the {series} series with {discount}% off the combined price.",
+    "priceNote": "{original} € → {discounted} €",
+    "cta": "Add whole set (-{discount}%)",
+    "later": "Not now",
+    "close": "Close"
   }
 }

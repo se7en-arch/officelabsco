@@ -150,6 +150,12 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   <div className="admin-order-item__total">{(item.price * item.quantity).toFixed(2)} €</div>
                 </div>
               ))}
+              {order.promoCode && order.discountPercent > 0 && (
+                <div className="admin-order-total" style={{ color: '#16a34a', fontSize: 13, fontWeight: 600 }}>
+                  <span>Промо код {order.promoCode}</span>
+                  <span>−{order.discountPercent}%</span>
+                </div>
+              )}
               <div className="admin-order-total">
                 <span>Общо</span>
                 <strong>{order.total.toFixed(2)} €</strong>

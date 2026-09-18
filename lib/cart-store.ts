@@ -16,11 +16,16 @@ export type CartItem = {
 
 type CartStore = {
   items: CartItem[];
+  promoCode: string | null;
+  discountPercent: number;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: number) => void;
   updateQty: (id: number, quantity: number) => void;
   clear: () => void;
+  setPromo: (code: string, discountPercent: number) => void;
+  clearPromo: () => void;
   total: () => number;
+  discountedTotal: () => number;
   count: () => number;
 };
 
@@ -28,6 +33,8 @@ export const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
+      promoCode: null,
+      discountPercent: 0,
 
       addItem: (item) =>
         set((state) => {
@@ -57,9 +64,19 @@ export const useCart = create<CartStore>()(
               : state.items.map((i) => (i.id === id ? { ...i, quantity } : i)),
         })),
 
-      clear: () => set({ items: [] }),
+      clear: () => set({ items: [], promoCode: null, discountPercent: 0 }),
+
+      setPromo: (code, discountPercent) => set({ promoCode: code, discountPercent }),
+
+      clearPromo: () => set({ promoCode: null, discountPercent: 0 }),
 
       total: () => get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
+
+      discountedTotal: () => {
+        const { discountPercent } = get();
+        const raw = get().items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        return +(raw * (1 - discountPercent / 100)).toFixed(2);
+      },
 
       count: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
     }),

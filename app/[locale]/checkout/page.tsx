@@ -12,8 +12,10 @@ const CARRIERS = [
 
 export default function CheckoutPage() {
   const t = useTranslations('checkout');
-  const { items, total, clear } = useCart();
+  const { items, total, clear, promoCode, discountPercent } = useCart();
   const rawTotal = total();
+  const discountAmount = parseFloat(((rawTotal * discountPercent) / 100).toFixed(2));
+  const finalTotal = parseFloat((rawTotal - discountAmount).toFixed(2));
 
   const STEPS = [t('stepData'), t('stepDelivery'), t('stepPayment')];
 
@@ -161,7 +163,8 @@ export default function CheckoutPage() {
           address: delivType === 'address' ? address : null,
           postcode: delivType === 'address' ? postcode : null,
           payment,
-          total: rawTotal,
+          total: finalTotal,
+          promoCode: promoCode || null,
           items: items.map(i => ({
             id: i.id, name: i.name, slug: i.slug,
             price: i.price, quantity: i.quantity, image: i.image,
@@ -530,6 +533,22 @@ export default function CheckoutPage() {
                 <div className="co-review__row">
                   <span>{t('reviewDelivery')}</span>
                   <span>{delivType === 'address' ? `${city}, ${address}` : t('toOfficeCity', { city })}</span>
+                </div>
+                {discountPercent > 0 && (
+                  <>
+                    <div className="co-review__row">
+                      <span>{t('reviewSubtotal')}</span>
+                      <span>{rawTotal.toFixed(2)} €</span>
+                    </div>
+                    <div className="co-review__row" style={{ color: '#16a34a' }}>
+                      <span>{t('reviewDiscount', { code: promoCode ?? '', discount: discountPercent })}</span>
+                      <span>−{discountAmount.toFixed(2)} €</span>
+                    </div>
+                  </>
+                )}
+                <div className="co-review__row" style={{ fontWeight: 800 }}>
+                  <span>{t('reviewTotal')}</span>
+                  <span>{finalTotal.toFixed(2)} €</span>
                 </div>
               </div>
             </div>

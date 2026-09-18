@@ -89,6 +89,8 @@ model Order {
   postcode  String?
   payment     String
   total       Float
+  promoCode       String?
+  discountPercent Int     @default(0)
   ipAddress   String?
   userAgent   String?
   referer     String?

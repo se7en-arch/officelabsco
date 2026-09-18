@@ -7,14 +7,14 @@ import { useTranslations } from 'next-intl';
 
 export default function CartPage() {
   const t = useTranslations('cart');
-  const { items, removeItem, updateQty, total, count } = useCart();
+  const { items, removeItem, updateQty, total, count, promoCode, discountPercent, setPromo, clearPromo } = useCart();
   const [promoInput, setPromoInput] = useState('');
-  const [appliedPromo, setAppliedPromo] = useState('');
-  const [discount, setDiscount] = useState(0);
   const [promoError, setPromoError] = useState('');
   const [promoLoading, setPromoLoading] = useState(false);
 
   const rawTotal = total();
+  const discount = discountPercent;
+  const appliedPromo = promoCode ?? '';
   const discountAmount = parseFloat(((rawTotal * discount) / 100).toFixed(2));
   const finalTotal = parseFloat((rawTotal - discountAmount).toFixed(2));
 
@@ -36,14 +36,12 @@ export default function CartPage() {
       return;
     }
     const { discount: pct } = await res.json();
-    setAppliedPromo(promoInput.trim().toUpperCase());
-    setDiscount(pct);
+    setPromo(promoInput.trim().toUpperCase(), pct);
     setPromoError('');
   }
 
   function removePromo() {
-    setAppliedPromo('');
-    setDiscount(0);
+    clearPromo();
     setPromoInput('');
     setPromoError('');
   }
