@@ -1906,7 +1906,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 .series-feature--reverse .series-feature__text { order: 1; }
 .series-feature__media {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 5 / 4;
   border-radius: 20px;
   background: var(--line-2);
   overflow: hidden;
@@ -1967,7 +1967,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
   .series-feature { grid-template-columns: 1fr; gap: 24px; }
   .series-feature--reverse .series-feature__media,
   .series-feature--reverse .series-feature__text { order: initial; }
-  .series-feature__media { aspect-ratio: 4 / 3; }
+  .series-feature__media { aspect-ratio: 5 / 4; }
   .series-feature__text { padding: 0; }
   .series-feature__body { max-width: 100%; }
 }
