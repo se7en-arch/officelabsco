@@ -1842,7 +1842,15 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
   padding-bottom: 80px;
 }
 
-/* ── Hero: 16:9, real photo swapped in later — placeholder keeps the spot ── */
+/* ── Hero: 16:9, real photo swapped in later — placeholder keeps the spot ──
+   The wrap mirrors .page-wrap's max-width/padding on desktop so the hero
+   lines up with the rest of the page; on phones the padding collapses to 0
+   so the hero image goes fully edge-to-edge (see mobile breakpoint below). */
+.series-hero-wrap {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
 .series-hero {
   position: relative;
   width: 100%;
@@ -1952,6 +1960,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .series-page { padding-top: 20px; }
+  .series-hero-wrap { padding: 0 20px; }
   .series-hero { border-radius: 16px; }
   .series-intro { padding: 36px 0 16px; }
   .series-features { gap: 56px; padding: 36px 0 16px; }
@@ -1961,6 +1970,20 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
   .series-feature__media { aspect-ratio: 4 / 3; }
   .series-feature__text { padding: 0; }
   .series-feature__body { max-width: 100%; }
+}
+
+/* ── Phone: full-bleed, full-screen hero (edge to edge, fills the viewport
+   the moment the page loads) — dvh avoids the classic 100vh-too-tall bug
+   caused by mobile browser chrome (address bar) resizing the viewport. ── */
+@media (max-width: 600px) {
+  .series-page { padding-top: 0; }
+  .series-hero-wrap { padding: 0; max-width: 100%; }
+  .series-hero {
+    aspect-ratio: auto;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════

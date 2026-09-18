@@ -124,9 +124,11 @@ export default async function SeriesPage({
 
   return (
     <main className="series-page">
-      <div className="page-wrap">
-
-        {/* ── Hero: 16:9, real photo to be swapped in later ── */}
+      {/* ── Hero: 16:9 on desktop, full-bleed full-screen on mobile.
+          Lives outside .page-wrap so it can break out to the full
+          viewport width/height on phones without fighting the page
+          padding — see .series-hero-wrap in globals.css. ── */}
+      <div className="series-hero-wrap">
         <div className="series-hero">
           {s.heroImage ? (
             <Image src={s.heroImage} alt={s.title} fill priority sizes="100vw" style={{ objectFit: 'cover' }} />
@@ -136,6 +138,9 @@ export default async function SeriesPage({
             </div>
           )}
         </div>
+      </div>
+
+      <div className="page-wrap">
 
         {/* ── Intro ── */}
         <div className="series-intro">
