@@ -23,6 +23,7 @@ import SortSelect from '@/components/SortSelect';
 import AnimatedGrid from '@/components/AnimatedGrid';
 import CategoryDropdown from '@/components/CategoryDropdown';
 import ShopScrollReset from '@/components/ShopScrollReset';
+import BundlePopup from '@/components/BundlePopup';
 
 const PER_PAGE = 6;
 
@@ -125,6 +126,8 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
 
   return (
     <main style={{ background: '#F5F5F5' }}>
+      <BundlePopup />
+
       {/* ── SHOP HERO ── */}
       <section className="shop-hero-apple">
         <div className="shop-hero-apple__wrap">
