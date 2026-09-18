@@ -45,7 +45,10 @@ export default function AnnouncementBanner() {
   return (
     <div style={{
       background: 'linear-gradient(90deg, #7a0000 0%, #a00000 50%, #7a0000 100%)',
-      borderBottom: '1px solid rgba(255,100,100,.25)',
+      border: '1px solid rgba(255,100,100,.25)',
+      borderRadius: 12,
+      marginBottom: 24,
+      overflow: 'hidden',
     }}>
       <button
         onClick={() => setOpen(o => !o)}
@@ -54,9 +57,7 @@ export default function AnnouncementBanner() {
           alignItems: 'center',
           gap: 10,
           width: '100%',
-          maxWidth: 1200,
-          margin: '0 auto',
-          padding: '9px 20px',
+          padding: '11px 18px',
           background: 'none',
           border: 'none',
           cursor: 'pointer',
@@ -84,9 +85,7 @@ export default function AnnouncementBanner() {
 
       {open && (
         <div style={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          padding: '0 16px 14px',
+          padding: '0 14px 14px',
           display: 'flex',
           flexDirection: 'column',
           gap: 8,

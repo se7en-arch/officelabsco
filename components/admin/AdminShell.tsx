@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import AdminSidebar from './AdminSidebar';
+import AnnouncementBanner from '@/components/AnnouncementBanner';
 
 export default function AdminShell({ children }: { children: ReactNode }) {
   return (
@@ -20,7 +21,10 @@ export default function AdminShell({ children }: { children: ReactNode }) {
       {/* ── Normal desktop layout ── */}
       <div className="admin-layout">
         <AdminSidebar />
-        <main className="admin-main">{children}</main>
+        <main className="admin-main">
+          <AnnouncementBanner />
+          {children}
+        </main>
       </div>
     </>
   );
