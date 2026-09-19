@@ -19,7 +19,15 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: var(--font-inter), 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+html { height: 100%; }
+body {
+  font-family: var(--font-inter), 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.5;
+  min-height: 100%; display: flex; flex-direction: column;
+}
+/* Sticky footer: grows to fill any leftover viewport height on short pages
+   (e.g. an empty cart) so the footer always sits at the bottom of the
+   screen instead of right after a short page's content. */
+.ol-page-content { flex: 1 0 auto; }
 a { text-decoration: none; color: inherit; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; }
 img { display: block; max-width: 100%; }

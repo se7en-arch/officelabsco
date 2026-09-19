@@ -62,7 +62,7 @@ export default async function LocaleLayout({
           <CartInitializer />
           <UTMCapture />
           <Navbar />
-          {children}
+          <div className="ol-page-content">{children}</div>
           <Footer />
         </NextIntlClientProvider>
       </body>
