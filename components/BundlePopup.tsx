@@ -215,7 +215,7 @@ export default function BundlePopup() {
           </p>
 
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 28 }}>
-            <span style={{ fontSize: 16, color: 'var(--muted, #5f5f5f)', textDecoration: 'line-through' }}>
+            <span style={{ fontSize: 28, fontWeight: 800, color: accent, textDecoration: 'line-through' }}>
               {data.bundleTotal} €
             </span>
             <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--text, #1C1C1C)' }}>
