@@ -3,6 +3,11 @@ import { useState } from 'react';
 
 const ITEMS = [
   {
+    icon: '🎁',
+    title: 'Bundle popup — връщане към 7-дневен режим',
+    desc: 'В components/BundlePopup.tsx константата TEMP_ALWAYS_SHOW е с временна стойност true за тестване — попъпът излиза на всяко зареждане на /shop. Смени я на false, за да се върне нормалният режим (не се показва пак 7 дни след затваряне/добавяне).',
+  },
+  {
     icon: '💳',
     title: 'Stripe плащане',
     desc: 'Плащане с карта не е имплементирано. Създай акаунт на stripe.com, вземи publishable + secret ключове, добави @stripe/stripe-js и @stripe/react-stripe-js, направи /api/checkout-session и замени бутона "Плащане с карта" с Stripe Elements форма.',
