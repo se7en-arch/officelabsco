@@ -15,19 +15,24 @@ async function findQualifyingSeries(itemIds: number[]) {
     },
   });
 
-  return seriesList.filter(
-    (s) => s.products.length > 0 && s.products.every((p) => cartIds.has(p.id))
-  );
+  // Exact match only: the cart's unique product ids must be precisely one
+  // series' complete lineup, no more and no fewer. A superset (bundle plus
+  // some unrelated extra item, or leftovers from a previously-broken bundle
+  // sitting alongside a freshly-added different one) does NOT qualify —
+  // the discount is for buying exactly the set, not "at least the set".
+  return seriesList.filter((s) => {
+    if (s.products.length === 0) return false;
+    const seriesIds = s.products.map((p) => p.id);
+    return seriesIds.length === cartIds.size && seriesIds.every((id) => cartIds.has(id));
+  });
 }
 
 // Whether a cart made up of these product ids qualifies for
-// BUNDLE_PROMO_CODE: it must fully contain exactly one series' complete
-// active product lineup — not zero, and not two-or-more. Without this
-// check, anyone could type "BUNDLE10" into the cart's promo field with an
-// arbitrary/partial cart and get the same discount the popup's "add whole
-// set" flow is meant to reward; requiring exactly one (rather than "at
-// least one") also stops a second series' bundle from being added on top
-// of an already-discounted cart to get 10% off both combined.
+// BUNDLE_PROMO_CODE: it must be exactly one series' complete active product
+// lineup — not a partial set, not that set plus something else, and not
+// two full series at once. Without this check, anyone could type
+// "BUNDLE10" into the cart's promo field with an arbitrary cart and get the
+// same discount the popup's "add whole set" flow is meant to reward.
 export async function cartQualifiesForBundle(itemIds: number[]): Promise<boolean> {
   const qualifying = await findQualifyingSeries(itemIds);
   return qualifying.length === 1;

@@ -91,6 +91,15 @@ export default function BundlePopup() {
   const bundleAlreadyApplied =
     cartPromoCode === data.promoCode &&
     bundles.some((b) => b.products.every((p) => cartIds.has(p.id)));
+  // The discount only actually applies once the cart ends up containing
+  // EXACTLY this bundle's products and nothing else (see
+  // lib/bundle-check.ts) — so if there's already something in the cart
+  // that isn't part of this series (leftovers from a different/broken
+  // bundle, or an unrelated product), adding this set would still add the
+  // items but the -10% would not apply. Warn about that upfront rather
+  // than let it silently not apply after the fact.
+  const bundleIds = new Set(data.products.map((p) => p.id));
+  const cartHasForeignItems = cartItems.some((i) => !bundleIds.has(i.id));
   const accent = ACCENT;
 
   function dismiss() {
@@ -119,7 +128,12 @@ export default function BundlePopup() {
         slug: p.slug,
       });
     }
-    setPromo(data.promoCode, data.discountPercent, data.products.map((p) => p.id));
+    // Only grant the discount if the cart will end up being exactly this
+    // bundle — if other items are already in there, skip setPromo so the
+    // items get added but no discount is falsely implied.
+    if (!cartHasForeignItems) {
+      setPromo(data.promoCode, data.discountPercent, data.products.map((p) => p.id));
+    }
     try { localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS)); } catch { /* ignore */ }
     router.push('/cart');
   }
@@ -243,6 +257,11 @@ export default function BundlePopup() {
             {bundleAlreadyApplied && (
               <p style={{ fontSize: 12.5, color: 'var(--muted, #5f5f5f)', margin: '10px 0 0' }}>
                 {t('alreadyApplied')}
+              </p>
+            )}
+            {!bundleAlreadyApplied && cartHasForeignItems && (
+              <p style={{ fontSize: 12.5, color: 'var(--muted, #5f5f5f)', margin: '10px 0 0' }}>
+                {t('discountBlocked')}
               </p>
             )}
           </div>
