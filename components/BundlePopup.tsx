@@ -109,7 +109,7 @@ export default function BundlePopup() {
       >
         <div className="bundle-popup__media" style={{ position: 'relative', minHeight: 480, background: 'var(--line-2, #F2F2F2)' }}>
           <Image
-            src={`/images/gallery-hero-${data.series.slug}.webp`}
+            src={`/images/bundle-popup-${data.series.slug}.webp`}
             alt={data.series.name}
             fill
             style={{ objectFit: 'cover' }}
