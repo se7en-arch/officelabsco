@@ -147,6 +147,7 @@ export default function BundlePopup() {
             src={`/images/bundle-popup-${data.series.slug}.webp`}
             alt={data.series.name}
             fill
+            className="bundle-fade"
             style={{ objectFit: 'cover' }}
             unoptimized
             priority
@@ -204,43 +205,45 @@ export default function BundlePopup() {
             ✕
           </button>
 
-          <p style={{ fontSize: 12.5, fontWeight: 800, letterSpacing: '.1em', color: accent, margin: '0 0 14px', textTransform: 'uppercase' }}>
-            {t('eyebrow', { series: data.series.name })}
-          </p>
-          <h2 style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-1.4px', lineHeight: 1.1, margin: '0 0 18px', color: 'var(--text, #1C1C1C)' }}>
-            {t('title', { discount: data.discountPercent })}
-          </h2>
-          <p style={{ fontSize: 16.5, lineHeight: 1.65, color: 'var(--text-2, #555)', margin: '0 0 28px', maxWidth: 420 }}>
-            {t('sub', { count: data.products.length, series: data.series.name })}
-          </p>
-
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 28 }}>
-            <span style={{ fontSize: 28, fontWeight: 800, color: accent, textDecoration: 'line-through' }}>
-              {data.bundleTotal} €
-            </span>
-            <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--text, #1C1C1C)' }}>
-              {data.discountedTotal} €
-            </span>
-          </div>
-
-          <button
-            onClick={addBundle}
-            disabled={adding || bundleAlreadyApplied}
-            style={{
-              width: '100%', maxWidth: 340, padding: '18px', borderRadius: 100, border: 'none',
-              cursor: bundleAlreadyApplied ? 'not-allowed' : 'pointer',
-              background: accent, color: '#fff',
-              fontSize: 15.5, fontWeight: 700,
-              transition: 'opacity .15s', opacity: bundleAlreadyApplied ? 0.4 : (adding ? 0.7 : 1),
-            }}
-          >
-            {t('cta')}
-          </button>
-          {bundleAlreadyApplied && (
-            <p style={{ fontSize: 12.5, color: 'var(--muted, #5f5f5f)', margin: '10px 0 0' }}>
-              {t('alreadyApplied')}
+          <div key={data.series.slug} className="bundle-fade">
+            <p style={{ fontSize: 12.5, fontWeight: 800, letterSpacing: '.1em', color: accent, margin: '0 0 14px', textTransform: 'uppercase' }}>
+              {t('eyebrow', { series: data.series.name })}
             </p>
-          )}
+            <h2 style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-1.4px', lineHeight: 1.1, margin: '0 0 18px', color: 'var(--text, #1C1C1C)' }}>
+              {t('title', { discount: data.discountPercent })}
+            </h2>
+            <p style={{ fontSize: 16.5, lineHeight: 1.65, color: 'var(--text-2, #555)', margin: '0 0 28px', maxWidth: 420 }}>
+              {t('sub', { count: data.products.length, series: data.series.name })}
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 28 }}>
+              <span style={{ fontSize: 28, fontWeight: 800, color: accent, textDecoration: 'line-through' }}>
+                {data.bundleTotal} €
+              </span>
+              <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--text, #1C1C1C)' }}>
+                {data.discountedTotal} €
+              </span>
+            </div>
+
+            <button
+              onClick={addBundle}
+              disabled={adding || bundleAlreadyApplied}
+              style={{
+                width: '100%', maxWidth: 340, padding: '18px', borderRadius: 100, border: 'none',
+                cursor: bundleAlreadyApplied ? 'not-allowed' : 'pointer',
+                background: accent, color: '#fff',
+                fontSize: 15.5, fontWeight: 700,
+                transition: 'opacity .15s', opacity: bundleAlreadyApplied ? 0.4 : (adding ? 0.7 : 1),
+              }}
+            >
+              {t('cta')}
+            </button>
+            {bundleAlreadyApplied && (
+              <p style={{ fontSize: 12.5, color: 'var(--muted, #5f5f5f)', margin: '10px 0 0' }}>
+                {t('alreadyApplied')}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -255,6 +258,8 @@ export default function BundlePopup() {
           transition: background .15s;
         }
         .bundle-popup__arrow:hover { background: #fff; }
+        @keyframes bundleFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .bundle-fade { animation: bundleFadeIn .35s ease; }
         @media (max-width: 800px) {
           .bundle-popup { grid-template-columns: 1fr !important; max-width: 480px !important; }
           .bundle-popup__media { min-height: 260px !important; }
