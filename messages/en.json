@@ -372,6 +372,9 @@
     "sub": "Get all {count} pieces from the {series} series with a discount on the combined price.",
     "priceNote": "{original} € → {discounted} €",
     "cta": "Add whole set",
+    "alreadyApplied": "You already added a set with this discount",
+    "prevSeries": "Previous series",
+    "nextSeries": "Next series",
     "close": "Close"
   }
 }

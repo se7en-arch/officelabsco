@@ -9,10 +9,10 @@ const DISMISS_KEY = 'officelabsco-bundle-popup-dismissed-until';
 const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 const SHOW_DELAY_MS = 1200;
 
-// One fixed accent (Astra's blue) for every series in this popup, regardless
-// of which series' bundle is shown — kept intentionally different from the
+// One fixed accent for every series in this popup, regardless of which
+// series' bundle is shown — kept intentionally different from the
 // per-series accents used on the gallery pages / cost calculator.
-const ACCENT = '#3b82f6';
+const ACCENT = '#FF5733';
 
 type BundleProduct = {
   id: number; name: string; nameEn: string | null; slug: string; price: number; image: string;
@@ -27,6 +27,12 @@ type BundleData = {
   discountedTotal: number;
 };
 
+const ArrowIcon = ({ flip }: { flip?: boolean }) => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={flip ? { transform: 'scaleX(-1)' } : undefined}>
+    <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export default function BundlePopup() {
   const t = useTranslations('bundlePopup');
   const locale = useLocale();
@@ -34,8 +40,10 @@ export default function BundlePopup() {
   const router = useRouter();
   const addItem = useCart((s) => s.addItem);
   const setPromo = useCart((s) => s.setPromo);
+  const cartPromoCode = useCart((s) => s.promoCode);
 
-  const [data, setData] = useState<BundleData | null>(null);
+  const [bundles, setBundles] = useState<BundleData[] | null>(null);
+  const [index, setIndex] = useState(0);
   const [open, setOpen] = useState(false);
   const [adding, setAdding] = useState(false);
 
@@ -50,9 +58,9 @@ export default function BundlePopup() {
 
     fetch('/api/bundle-deal')
       .then((r) => (r.ok ? r.json() : null))
-      .then((json: BundleData | null) => {
-        if (cancelled || !json) return;
-        setData(json);
+      .then((json: { bundles: BundleData[] } | null) => {
+        if (cancelled || !json || json.bundles.length === 0) return;
+        setBundles(json.bundles);
         showTimer = setTimeout(() => { if (!cancelled) setOpen(true); }, SHOW_DELAY_MS);
       })
       .catch(() => {});
@@ -60,13 +68,30 @@ export default function BundlePopup() {
     return () => { cancelled = true; clearTimeout(showTimer); };
   }, []);
 
+  if (!open || !bundles) return null;
+
+  const data = bundles[index];
+  // The popup's discount is meant for exactly one series' bundle per cart —
+  // once BUNDLE10 is already applied (from a previous "Add whole set"),
+  // adding a second series' bundle on top is blocked rather than letting
+  // the flat cart-wide discount silently cover two full series.
+  const bundleAlreadyApplied = cartPromoCode === data.promoCode;
+  const accent = ACCENT;
+
   function dismiss() {
     setOpen(false);
     try { localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS)); } catch { /* ignore */ }
   }
 
+  function prev() {
+    setIndex((i) => (i - 1 + bundles!.length) % bundles!.length);
+  }
+  function next() {
+    setIndex((i) => (i + 1) % bundles!.length);
+  }
+
   function addBundle() {
-    if (!data || adding) return;
+    if (adding || bundleAlreadyApplied) return;
     setAdding(true);
     for (const p of data.products) {
       addItem({
@@ -83,10 +108,6 @@ export default function BundlePopup() {
     try { localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS)); } catch { /* ignore */ }
     router.push('/cart');
   }
-
-  if (!open || !data) return null;
-
-  const accent = ACCENT;
 
   return (
     <div
@@ -109,6 +130,7 @@ export default function BundlePopup() {
       >
         <div className="bundle-popup__media" style={{ position: 'relative', minHeight: 480, background: 'var(--line-2, #F2F2F2)' }}>
           <Image
+            key={data.series.slug}
             src={`/images/bundle-popup-${data.series.slug}.webp`}
             alt={data.series.name}
             fill
@@ -117,6 +139,43 @@ export default function BundlePopup() {
             quality={95}
             priority
           />
+
+          {bundles.length > 1 && (
+            <>
+              <button
+                onClick={prev}
+                aria-label={t('prevSeries')}
+                className="bundle-popup__arrow"
+                style={{ left: 16 }}
+              >
+                <ArrowIcon flip />
+              </button>
+              <button
+                onClick={next}
+                aria-label={t('nextSeries')}
+                className="bundle-popup__arrow"
+                style={{ right: 16 }}
+              >
+                <ArrowIcon />
+              </button>
+
+              <div style={{
+                position: 'absolute', bottom: 18, left: '50%', transform: 'translateX(-50%)',
+                display: 'flex', gap: 6,
+              }}>
+                {bundles.map((b, i) => (
+                  <span
+                    key={b.series.slug}
+                    style={{
+                      width: 6, height: 6, borderRadius: '50%',
+                      background: i === index ? '#fff' : 'rgba(255,255,255,.45)',
+                      transition: 'background .15s',
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <div style={{ padding: '48px 52px 44px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
@@ -154,20 +213,32 @@ export default function BundlePopup() {
 
           <button
             onClick={addBundle}
-            disabled={adding}
+            disabled={adding || bundleAlreadyApplied}
             style={{
-              width: '100%', maxWidth: 340, padding: '18px', borderRadius: 100, border: 'none', cursor: 'pointer',
-              background: accent, color: '#fff', fontSize: 15.5, fontWeight: 700,
+              width: '100%', maxWidth: 340, padding: '18px', borderRadius: 100, border: 'none',
+              cursor: bundleAlreadyApplied ? 'default' : 'pointer',
+              background: bundleAlreadyApplied ? 'var(--line-2, #F2F2F2)' : accent,
+              color: bundleAlreadyApplied ? 'var(--muted, #5f5f5f)' : '#fff',
+              fontSize: 15.5, fontWeight: 700,
               transition: 'opacity .15s', opacity: adding ? 0.7 : 1,
             }}
           >
-            {t('cta')}
+            {bundleAlreadyApplied ? t('alreadyApplied') : t('cta')}
           </button>
         </div>
       </div>
 
       <style>{`
         .bundle-popup { position: relative; }
+        .bundle-popup__arrow {
+          position: absolute; top: 50%; transform: translateY(-50%);
+          width: 40px; height: 40px; border-radius: 50%; border: none;
+          background: rgba(255,255,255,.85); color: #1C1C1C; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 2px 10px rgba(0,0,0,.18);
+          transition: background .15s;
+        }
+        .bundle-popup__arrow:hover { background: #fff; }
         @media (max-width: 800px) {
           .bundle-popup { grid-template-columns: 1fr !important; max-width: 480px !important; }
           .bundle-popup__media { min-height: 260px !important; }
