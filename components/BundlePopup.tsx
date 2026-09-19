@@ -140,7 +140,7 @@ export default function BundlePopup() {
             {t('title', { discount: data.discountPercent })}
           </h2>
           <p style={{ fontSize: 16.5, lineHeight: 1.65, color: 'var(--text-2, #555)', margin: '0 0 28px', maxWidth: 420 }}>
-            {t('sub', { count: data.products.length, series: data.series.name, discount: data.discountPercent })}
+            {t('sub', { count: data.products.length, series: data.series.name })}
           </p>
 
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 28 }}>
@@ -161,17 +161,7 @@ export default function BundlePopup() {
               transition: 'opacity .15s', opacity: adding ? 0.7 : 1,
             }}
           >
-            {t('cta', { discount: data.discountPercent })}
-          </button>
-
-          <button
-            onClick={dismiss}
-            style={{
-              marginTop: 14, background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 13, color: 'var(--muted, #5f5f5f)', textAlign: 'left',
-            }}
-          >
-            {t('later')}
+            {t('cta')}
           </button>
         </div>
       </div>

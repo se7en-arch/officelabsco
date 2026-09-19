@@ -369,10 +369,9 @@
   "bundlePopup": {
     "eyebrow": "{series} СЕРИЯ · ПЪЛЕН СЕТ",
     "title": "-{discount}% на целия сет",
-    "sub": "Вземи всички {count} модела от серия {series} с {discount}% отстъпка на общата сума.",
+    "sub": "Вземи всички {count} модела от серия {series} с отстъпка на общата сума.",
     "priceNote": "{original} € → {discounted} €",
-    "cta": "Добави целия сет (-{discount}%)",
-    "later": "Не сега",
+    "cta": "Добави целия сет",
     "close": "Затвори"
   }
 }
