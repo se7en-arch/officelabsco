@@ -5,12 +5,14 @@ import { prisma } from '@/lib/prisma';
 // references the same constant instead of a hardcoded string.
 export const BUNDLE_PROMO_CODE = 'BUNDLE10';
 
-// Whether a cart made up of these product ids fully contains at least one
-// series' complete active product lineup — the only condition under which
-// BUNDLE_PROMO_CODE is allowed to apply. Without this check, anyone could
-// type "BUNDLE10" into the cart's promo field with an arbitrary/partial cart
-// and get the same discount the popup's "add whole set" flow is meant to
-// reward.
+// Whether a cart made up of these product ids qualifies for
+// BUNDLE_PROMO_CODE: it must fully contain exactly one series' complete
+// active product lineup — not zero, and not two-or-more. Without this
+// check, anyone could type "BUNDLE10" into the cart's promo field with an
+// arbitrary/partial cart and get the same discount the popup's "add whole
+// set" flow is meant to reward; requiring exactly one (rather than "at
+// least one") also stops a second series' bundle from being added on top
+// of an already-discounted cart to get 10% off both combined.
 export async function cartQualifiesForBundle(itemIds: number[]): Promise<boolean> {
   if (itemIds.length === 0) return false;
   const cartIds = new Set(itemIds);
@@ -21,7 +23,9 @@ export async function cartQualifiesForBundle(itemIds: number[]): Promise<boolean
     },
   });
 
-  return seriesList.some(
+  const qualifyingSeries = seriesList.filter(
     (s) => s.products.length > 0 && s.products.every((p) => cartIds.has(p.id))
   );
+
+  return qualifyingSeries.length === 1;
 }

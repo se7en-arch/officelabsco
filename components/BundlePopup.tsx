@@ -78,17 +78,19 @@ export default function BundlePopup() {
   if (!open || !bundles) return null;
 
   const data = bundles[index];
-  // The popup's discount is meant for exactly one series' bundle per cart —
-  // once BUNDLE10 is already applied (from a previous "Add whole set"),
-  // adding a second series' bundle on top is blocked rather than letting
-  // the flat cart-wide discount silently cover two full series. Checking
-  // the promo code alone isn't enough though: it stays set on the cart
-  // store even after someone manually removes the bundle's items, so we
-  // also require every product of this bundle to still actually be in the
-  // cart before calling it "already applied".
+  // The popup's discount is meant for exactly one series' bundle per cart.
+  // Once BUNDLE10 is already applied for ANY series, adding a different
+  // series' bundle on top is blocked too — not just re-adding the same one
+  // — otherwise browsing to another series with the arrows and clicking
+  // "Add whole set" there would stack a second full bundle under the same
+  // flat discount. Checking the promo code alone isn't enough either: it
+  // stays set on the cart store even after someone manually removes the
+  // bundle's items, so we also require the cart to still actually contain a
+  // complete bundle of at least one series before calling it "applied".
   const cartIds = new Set(cartItems.map((i) => i.id));
   const bundleAlreadyApplied =
-    cartPromoCode === data.promoCode && data.products.every((p) => cartIds.has(p.id));
+    cartPromoCode === data.promoCode &&
+    bundles.some((b) => b.products.every((p) => cartIds.has(p.id)));
   const accent = ACCENT;
 
   function dismiss() {
