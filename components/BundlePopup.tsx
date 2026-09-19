@@ -9,6 +9,10 @@ const DISMISS_KEY = 'officelabsco-bundle-popup-dismissed-until';
 const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 const SHOW_DELAY_MS = 1200;
 
+// TEMP (testing only): ignore the 7-day dismiss suppression so the popup
+// shows on every /shop load. Set back to false to restore normal behavior.
+const TEMP_ALWAYS_SHOW = true;
+
 // One fixed accent for every series in this popup, regardless of which
 // series' bundle is shown — kept intentionally different from the
 // per-series accents used on the gallery pages / cost calculator.
@@ -48,10 +52,12 @@ export default function BundlePopup() {
   const [adding, setAdding] = useState(false);
 
   useEffect(() => {
-    try {
-      const until = localStorage.getItem(DISMISS_KEY);
-      if (until && Date.now() < parseInt(until, 10)) return;
-    } catch { /* ignore */ }
+    if (!TEMP_ALWAYS_SHOW) {
+      try {
+        const until = localStorage.getItem(DISMISS_KEY);
+        if (until && Date.now() < parseInt(until, 10)) return;
+      } catch { /* ignore */ }
+    }
 
     let cancelled = false;
     let showTimer: ReturnType<typeof setTimeout>;
