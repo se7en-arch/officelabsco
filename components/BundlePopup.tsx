@@ -45,6 +45,7 @@ export default function BundlePopup() {
   const addItem = useCart((s) => s.addItem);
   const setPromo = useCart((s) => s.setPromo);
   const cartPromoCode = useCart((s) => s.promoCode);
+  const cartItems = useCart((s) => s.items);
 
   const [bundles, setBundles] = useState<BundleData[] | null>(null);
   const [index, setIndex] = useState(0);
@@ -80,8 +81,14 @@ export default function BundlePopup() {
   // The popup's discount is meant for exactly one series' bundle per cart —
   // once BUNDLE10 is already applied (from a previous "Add whole set"),
   // adding a second series' bundle on top is blocked rather than letting
-  // the flat cart-wide discount silently cover two full series.
-  const bundleAlreadyApplied = cartPromoCode === data.promoCode;
+  // the flat cart-wide discount silently cover two full series. Checking
+  // the promo code alone isn't enough though: it stays set on the cart
+  // store even after someone manually removes the bundle's items, so we
+  // also require every product of this bundle to still actually be in the
+  // cart before calling it "already applied".
+  const cartIds = new Set(cartItems.map((i) => i.id));
+  const bundleAlreadyApplied =
+    cartPromoCode === data.promoCode && data.products.every((p) => cartIds.has(p.id));
   const accent = ACCENT;
 
   function dismiss() {
@@ -141,8 +148,7 @@ export default function BundlePopup() {
             alt={data.series.name}
             fill
             style={{ objectFit: 'cover' }}
-            sizes="(max-width: 700px) 100vw, 560px"
-            quality={95}
+            unoptimized
             priority
           />
 
@@ -222,15 +228,19 @@ export default function BundlePopup() {
             disabled={adding || bundleAlreadyApplied}
             style={{
               width: '100%', maxWidth: 340, padding: '18px', borderRadius: 100, border: 'none',
-              cursor: bundleAlreadyApplied ? 'default' : 'pointer',
-              background: bundleAlreadyApplied ? 'var(--line-2, #F2F2F2)' : accent,
-              color: bundleAlreadyApplied ? 'var(--muted, #5f5f5f)' : '#fff',
+              cursor: bundleAlreadyApplied ? 'not-allowed' : 'pointer',
+              background: accent, color: '#fff',
               fontSize: 15.5, fontWeight: 700,
-              transition: 'opacity .15s', opacity: adding ? 0.7 : 1,
+              transition: 'opacity .15s', opacity: bundleAlreadyApplied ? 0.4 : (adding ? 0.7 : 1),
             }}
           >
-            {bundleAlreadyApplied ? t('alreadyApplied') : t('cta')}
+            {t('cta')}
           </button>
+          {bundleAlreadyApplied && (
+            <p style={{ fontSize: 12.5, color: 'var(--muted, #5f5f5f)', margin: '10px 0 0' }}>
+              {t('alreadyApplied')}
+            </p>
+          )}
         </div>
       </div>
 
