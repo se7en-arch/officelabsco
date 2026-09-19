@@ -36,7 +36,7 @@ export default function DealerLoginPage() {
       <style>{`
         .dl-login-bg {
           position: fixed; inset: 0; z-index: 0;
-          background: url('/images/Hero AboutUs 2.webp') center/cover no-repeat;
+          background: url('/images/dealers-login-bg.webp') center/cover no-repeat;
         }
         .dl-login-bg::after {
           content: ''; position: absolute; inset: 0;
