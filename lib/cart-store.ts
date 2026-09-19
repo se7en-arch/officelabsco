@@ -1,6 +1,7 @@
 'use client';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { BUNDLE_PROMO_CODE } from './bundle-constants';
 
 export type CartItem = {
   id: number;
@@ -100,13 +101,21 @@ export const useCart = create<CartStore>()(
       total: () => get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
 
       discountAmount: () => {
-        const { items, discountPercent, bundleProductIds } = get();
+        const { items, promoCode, discountPercent, bundleProductIds } = get();
         if (discountPercent <= 0) return 0;
-        const bundleSet = new Set(bundleProductIds);
-        const discountBase = bundleSet.size > 0
-          ? items.filter((i) => bundleSet.has(i.id)).reduce((sum, i) => sum + i.price * i.quantity, 0)
-          : items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-        return +(discountBase * discountPercent / 100).toFixed(2);
+        // BUNDLE10 always prices per line item — never fall back to
+        // discounting the whole cart, even if bundleProductIds is somehow
+        // empty (e.g. a cart persisted from before this was tracked). An
+        // empty bundleProductIds for the bundle code means "nothing to
+        // discount", not "discount everything".
+        if (promoCode === BUNDLE_PROMO_CODE) {
+          const bundleSet = new Set(bundleProductIds);
+          const discountBase = items.filter((i) => bundleSet.has(i.id)).reduce((sum, i) => sum + i.price * i.quantity, 0);
+          return +(discountBase * discountPercent / 100).toFixed(2);
+        }
+        // Regular, non-bundle promo code: flat percentage of the whole cart.
+        const raw = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        return +(raw * discountPercent / 100).toFixed(2);
       },
 
       discountedTotal: () => {
@@ -116,6 +125,20 @@ export const useCart = create<CartStore>()(
 
       count: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
     }),
-    { name: 'officelabsco-cart', skipHydration: true }
+    {
+      name: 'officelabsco-cart',
+      skipHydration: true,
+      // Self-heal carts persisted from before bundleProductIds existed (or
+      // from any earlier bug): a BUNDLE10 promo with no tracked items is an
+      // invalid combination and must not linger — drop it outright rather
+      // than let a stale promoCode silently discount a rebuilt cart later.
+      // Uses setState (not mutating the callback's state param) since the
+      // latter isn't guaranteed to be written back across zustand versions.
+      onRehydrateStorage: () => (state) => {
+        if (state?.promoCode === BUNDLE_PROMO_CODE && state.bundleProductIds.length === 0) {
+          useCart.setState({ promoCode: null, discountPercent: 0 });
+        }
+      },
+    }
   )
 );

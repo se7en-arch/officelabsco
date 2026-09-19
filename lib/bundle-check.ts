@@ -1,9 +1,6 @@
 import { prisma } from '@/lib/prisma';
 
-// The shop popup's auto-provisioned code (see /api/bundle-deal). Kept here so
-// every place that needs to special-case it (validate-promo, order creation)
-// references the same constant instead of a hardcoded string.
-export const BUNDLE_PROMO_CODE = 'BUNDLE10';
+export { BUNDLE_PROMO_CODE } from '@/lib/bundle-constants';
 
 // Product ids of one series whose complete active lineup is fully present in
 // the cart (or null if none qualifies). The cart may contain other items
