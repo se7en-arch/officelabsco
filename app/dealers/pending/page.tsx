@@ -6,7 +6,7 @@ export default function DealerPendingPage() {
       <style>{`
         .dl-pending-bg {
           position: fixed; inset: 0; z-index: 0;
-          background: url('/images/Hero AboutUs 2.webp') center/cover no-repeat;
+          background: url('/images/dealers-pending-bg.webp') center/cover no-repeat;
         }
         .dl-pending-bg::after {
           content: ''; position: absolute; inset: 0;

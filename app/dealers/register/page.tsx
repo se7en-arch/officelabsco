@@ -88,7 +88,7 @@ export default function DealerRegisterPage() {
       <style>{`
         .dl-reg-bg {
           position: fixed; inset: 0; z-index: 0;
-          background: url('/images/Hero AboutUs 2.webp') center/cover no-repeat;
+          background: url('/images/dealers-register-bg.webp') center/cover no-repeat;
         }
         .dl-reg-bg::after {
           content: ''; position: absolute; inset: 0;
