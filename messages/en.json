@@ -41,6 +41,8 @@
     "promoInvalid": "Invalid promo code.",
     "beforeDiscount": "Before discount",
     "discount": "Discount ({discount}%)",
+    "summaryBundleGroup": "{series} set · −{discount}%",
+    "summaryOtherGroup": "Other products · no discount",
     "totalLabel": "Total",
     "checkout": "Proceed to checkout",
     "continueShopping": "← Continue shopping",
@@ -373,7 +375,7 @@
     "priceNote": "{original} € → {discounted} €",
     "cta": "Add whole set",
     "alreadyApplied": "You already added a set with this discount",
-    "discountTaken": "-10% is already used by another set in your cart — these items will be added at full price",
+    "discountTaken": "-10% is already used by another set in your cart — remove it from your cart to add this set with the discount",
     "prevSeries": "Previous series",
     "nextSeries": "Next series",
     "close": "Close"

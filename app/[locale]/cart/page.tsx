@@ -142,12 +142,42 @@ export default function CartPage() {
         <div className="cart-summary">
           <div className="cart-summary__title">{t('summary')}</div>
 
-          {items.map((item) => (
-            <div key={item.id} className="summary-row">
-              <span>{item.name} ×{item.quantity}</span>
-              <span>{item.price * item.quantity} €</span>
-            </div>
-          ))}
+          {bundleIdSet.size > 0 ? (
+            <>
+              <div className="summary-group-label summary-group-label--bundle">
+                {t('summaryBundleGroup', {
+                  series: items.find((i) => bundleIdSet.has(i.id))?.seriesName ?? '',
+                  discount,
+                })}
+              </div>
+              {items.filter((i) => bundleIdSet.has(i.id)).map((item) => (
+                <div key={item.id} className="summary-row">
+                  <span>{item.name} ×{item.quantity}</span>
+                  <span>{item.price * item.quantity} €</span>
+                </div>
+              ))}
+              {items.some((i) => !bundleIdSet.has(i.id)) && (
+                <>
+                  <div className="summary-divider" />
+                  <div className="summary-group-label">{t('summaryOtherGroup')}</div>
+                  {items.filter((i) => !bundleIdSet.has(i.id)).map((item) => (
+                    <div key={item.id} className="summary-row">
+                      <span>{item.name} ×{item.quantity}</span>
+                      <span>{item.price * item.quantity} €</span>
+                    </div>
+                  ))}
+                </>
+              )}
+              <div className="summary-divider" />
+            </>
+          ) : (
+            items.map((item) => (
+              <div key={item.id} className="summary-row">
+                <span>{item.name} ×{item.quantity}</span>
+                <span>{item.price * item.quantity} €</span>
+              </div>
+            ))
+          )}
 
           <div className="summary-row">
             <span>{t('delivery')}</span>

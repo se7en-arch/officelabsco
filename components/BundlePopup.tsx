@@ -87,10 +87,13 @@ export default function BundlePopup() {
     cartPromoCode === data.promoCode &&
     bundleIds.length === cartBundleProductIds.length &&
     bundleIds.every((id) => cartBundleProductIds.includes(id));
-  // The discount is for exactly one set per cart — if a different bundle
-  // (or a manually-entered code) already has it, this series' items can
-  // still be added, just at full price.
+  // The discount is for exactly one set per cart. If a different bundle (or
+  // a manually-entered code) already has it, block "Add whole set" here
+  // rather than silently adding the items at full price while the popup's
+  // own price line keeps showing -10% for them — that combination reads as
+  // "add this set and get the discount" even though it wouldn't.
   const anotherDiscountActive = !!cartPromoCode && !bundleAlreadyApplied;
+  const bundleBlocked = bundleAlreadyApplied || anotherDiscountActive;
   const accent = ACCENT;
 
   function dismiss() {
@@ -106,7 +109,7 @@ export default function BundlePopup() {
   }
 
   function addBundle() {
-    if (adding || bundleAlreadyApplied) return;
+    if (adding || bundleBlocked) return;
     setAdding(true);
     for (const p of data.products) {
       addItem({
@@ -119,12 +122,9 @@ export default function BundlePopup() {
         slug: p.slug,
       });
     }
-    // Only claim the discount slot if nothing else already has it — the
-    // first bundle (or manual code) applied keeps its discount; adding a
-    // different series afterward just adds those items at full price.
-    if (!cartPromoCode) {
-      setPromo(data.promoCode, data.discountPercent, data.products.map((p) => p.id));
-    }
+    // The early return above guarantees no other discount is active here,
+    // so this bundle can safely claim the discount slot.
+    setPromo(data.promoCode, data.discountPercent, data.products.map((p) => p.id));
     try { localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS)); } catch { /* ignore */ }
     router.push('/cart');
   }
@@ -224,23 +224,31 @@ export default function BundlePopup() {
             </p>
 
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 28 }}>
-              <span style={{ fontSize: 28, fontWeight: 800, color: accent, textDecoration: 'line-through' }}>
-                {data.bundleTotal} €
-              </span>
-              <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--text, #1C1C1C)' }}>
-                {data.discountedTotal} €
-              </span>
+              {anotherDiscountActive ? (
+                <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--text, #1C1C1C)' }}>
+                  {data.bundleTotal} €
+                </span>
+              ) : (
+                <>
+                  <span style={{ fontSize: 28, fontWeight: 800, color: accent, textDecoration: 'line-through' }}>
+                    {data.bundleTotal} €
+                  </span>
+                  <span style={{ fontSize: 28, fontWeight: 800, color: 'var(--text, #1C1C1C)' }}>
+                    {data.discountedTotal} €
+                  </span>
+                </>
+              )}
             </div>
 
             <button
               onClick={addBundle}
-              disabled={adding || bundleAlreadyApplied}
+              disabled={adding || bundleBlocked}
               style={{
                 width: '100%', maxWidth: 340, padding: '18px', borderRadius: 100, border: 'none',
-                cursor: bundleAlreadyApplied ? 'not-allowed' : 'pointer',
+                cursor: bundleBlocked ? 'not-allowed' : 'pointer',
                 background: accent, color: '#fff',
                 fontSize: 15.5, fontWeight: 700,
-                transition: 'opacity .15s', opacity: bundleAlreadyApplied ? 0.4 : (adding ? 0.7 : 1),
+                transition: 'opacity .15s', opacity: bundleBlocked ? 0.4 : (adding ? 0.7 : 1),
               }}
             >
               {t('cta')}

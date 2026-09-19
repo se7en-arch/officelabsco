@@ -1102,6 +1102,12 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 .summary-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 12px; }
 .summary-row span:first-child { color: var(--text-2); }
 .summary-row--total { font-size: 15px; font-weight: 700; border-top: 1px solid var(--line); padding-top: 12px; margin-top: 6px; }
+.summary-group-label {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--muted); margin: 0 0 10px;
+}
+.summary-group-label--bundle { color: #16a34a; }
+.summary-divider { height: 1px; background: var(--line); margin: 14px 0; }
 .btn-checkout { width: 100%; height: 46px; background: #16a34a; color: #fff; border-radius: var(--r); font-size: 14px; font-weight: 700; margin-top: 18px; transition: opacity .15s; }
 .btn-checkout:hover { opacity: .82; }
 
