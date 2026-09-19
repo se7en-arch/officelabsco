@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { generateOrderCode } from '@/lib/order-code';
 import { sendOrderNotification, sendCustomerConfirmation } from '@/lib/mailer';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
+import { BUNDLE_PROMO_CODE, cartQualifiesForBundle } from '@/lib/bundle-check';
 
 const isRateLimited = createRateLimiter(5, 60_000);
 
@@ -143,8 +144,14 @@ export async function POST(req: NextRequest) {
       select: { code: true, discount: true },
     });
     if (promo) {
-      promoCode = promo.code;
-      discountPercent = promo.discount;
+      // BUNDLE10 (the shop popup's code) is only honored when the order's
+      // items actually amount to a complete series bundle — otherwise
+      // someone could type the code in manually with an arbitrary cart.
+      const eligible = promo.code !== BUNDLE_PROMO_CODE || await cartQualifiesForBundle(itemIds);
+      if (eligible) {
+        promoCode = promo.code;
+        discountPercent = promo.discount;
+      }
     }
   }
   const serverTotal = +(itemsTotal * (1 - discountPercent / 100)).toFixed(2);

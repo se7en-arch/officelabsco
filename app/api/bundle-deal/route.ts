@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
+import { BUNDLE_PROMO_CODE } from '@/lib/bundle-check';
 
 export const dynamic = 'force-dynamic';
 
 const isRateLimited = createRateLimiter(30, 60_000);
 
-// One shared, always-active code for the shop bundle popup. Ensured lazily
-// here (rather than requiring manual setup in /adminpanel/promos) so the
-// popup always has a working code — an admin can still see/deactivate it
-// there like any other promo code.
-const BUNDLE_PROMO_CODE = 'BUNDLE10';
+// Ensured lazily here (rather than requiring manual setup in
+// /adminpanel/promos) so the popup always has a working code — an admin can
+// still see/deactivate it there like any other promo code. Whether it's
+// actually allowed to apply to a given cart is enforced separately in
+// /api/validate-promo and /api/orders (see lib/bundle-check.ts).
 const BUNDLE_DISCOUNT = 10;
 
 const SERIES_SLUGS = ['astra', 'terra', 'nova', 'loft'];

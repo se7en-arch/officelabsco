@@ -28,7 +28,7 @@ export default function CartPage() {
     const res = await fetch('/api/validate-promo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code: promoInput.trim() }),
+      body: JSON.stringify({ code: promoInput.trim(), items: items.map((i) => i.id) }),
     });
     setPromoLoading(false);
     if (!res.ok) {
