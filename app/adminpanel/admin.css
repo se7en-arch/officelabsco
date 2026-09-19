@@ -12,7 +12,7 @@
   --accent:   #F59E0B;
   --accent-d: #D97706;
   --accent-t: #B45309;
-  --danger:   #EF4444;
+  --danger:   rgb(255, 87, 51);
   --success:  #16A34A;
   --warning:  #CA8A04;
   --r:        10px;
@@ -1113,7 +1113,7 @@ body::before {
 .admin-bulk-btn:hover { background: rgba(255,255,255,.12); }
 .admin-bulk-btn:disabled { opacity: .5; cursor: not-allowed; }
 .admin-bulk-btn--danger { border-color: #fca5a5; color: #fca5a5; }
-.admin-bulk-btn--danger:hover { background: rgba(239,68,68,.2); }
+.admin-bulk-btn--danger:hover { background: rgba(255, 87, 51,.2); }
 
 /* ════════════════════════════════════════
    ORDER STYLES

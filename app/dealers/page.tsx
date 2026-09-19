@@ -111,8 +111,8 @@ export default function DealerLoginPage() {
         }
         .dl-glass-error {
           font-size: 13px; color: #FCA5A5;
-          background: rgba(239,68,68,.12);
-          border: 1px solid rgba(239,68,68,.22);
+          background: rgba(255, 87, 51,.12);
+          border: 1px solid rgba(255, 87, 51,.22);
           padding: 10px 14px; border-radius: 10px;
           margin-bottom: 16px;
         }

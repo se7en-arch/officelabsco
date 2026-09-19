@@ -313,7 +313,7 @@ export default function DealerDashboard({
                     <td style={{ textAlign: 'center', color: '#4B5563' }}>{item.quantity}</td>
                     <td style={{ textAlign: 'right', fontWeight: 800, color: '#1C1C1C' }}>{fmt(item.unitPrice * item.quantity)} €</td>
                     <td>
-                      <button style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: 14 }}
+                      <button style={{ background: 'none', border: 'none', color: 'rgb(255, 87, 51)', cursor: 'pointer', fontSize: 14 }}
                         onClick={() => removeFromCart(item.productId, item.color)}>✕</button>
                     </td>
                   </tr>

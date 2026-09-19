@@ -11,7 +11,7 @@
   --brand: #1C1C1C;
   --brand-hover: #333;
   --accent: #F59E0B;
-  --danger: #EF4444;
+  --danger: rgb(255, 87, 51);
   --r: 8px;
   --r-lg: 14px;
   --sh: 0 2px 8px rgba(0,0,0,.06);

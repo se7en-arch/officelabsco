@@ -108,15 +108,15 @@ export default function DealerAccountPage() {
         .addr-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .addr-btn { font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--border,#E5E7EB); background: transparent; cursor: pointer; color: var(--text,#111); transition: background .15s; }
         .addr-btn:hover { background: var(--bg-hover,#F3F4F6); }
-        .addr-btn--del { color: #EF4444; border-color: rgba(239,68,68,.3); }
-        .addr-btn--del:hover { background: rgba(239,68,68,.07); }
+        .addr-btn--del { color: rgb(255, 87, 51); border-color: rgba(255, 87, 51,.3); }
+        .addr-btn--del:hover { background: rgba(255, 87, 51,.07); }
         .addr-add-form { background: var(--card,#fff); border: 1px dashed rgba(245,158,11,.4); border-radius: 12px; padding: 20px; margin-top: 8px; }
         .addr-add-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .addr-add-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
         .addr-add-group label { font-size: 11px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: .06em; }
         .addr-add-group input { padding: 9px 12px; border: 1px solid var(--border,#E5E7EB); border-radius: 8px; font-size: 14px; font-family: inherit; background: var(--bg,#fff); color: var(--text,#111); outline: none; }
         .addr-add-group input:focus { border-color: #F59E0B; box-shadow: 0 0 0 3px rgba(245,158,11,.1); }
-        .addr-err { font-size: 13px; color: #EF4444; margin-bottom: 10px; }
+        .addr-err { font-size: 13px; color: rgb(255, 87, 51); margin-bottom: 10px; }
         .addr-save-btn { padding: 9px 20px; background: linear-gradient(135deg,#F59E0B,#D97706); color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
         .addr-save-btn:disabled { opacity: .5; cursor: not-allowed; }
         @media(max-width:540px){.addr-add-row{grid-template-columns:1fr}.addr-card{flex-direction:column}}

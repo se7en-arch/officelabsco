@@ -147,7 +147,7 @@ export default function DealersLayout({ children }: { children: ReactNode }) {
         .dl-btn--outline:hover:not(:disabled) { background: #fff; border-color: rgba(0,0,0,.25); color: #1C1C1C; }
         .dl-btn--full { width: 100%; }
         .dl-btn--sm { padding: 7px 14px; font-size: 13px; border-radius: 8px; }
-        .dl-btn--danger { background: linear-gradient(135deg, #EF4444, #DC2626); color: #fff; }
+        .dl-btn--danger { background: linear-gradient(135deg, rgb(255, 87, 51), #DC2626); color: #fff; }
         .dl-btn--success { background: linear-gradient(135deg, #22C55E, #16A34A); color: #fff; }
         .dl-btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
 

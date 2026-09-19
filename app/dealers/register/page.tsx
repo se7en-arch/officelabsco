@@ -146,8 +146,8 @@ export default function DealerRegisterPage() {
         }
         .dl-reg-group input::placeholder { color: rgba(255,255,255,.2); }
         .dl-reg-group input:focus { border-color: rgba(245,158,11,.6); background: rgba(255,255,255,.11); box-shadow: 0 0 0 3px rgba(245,158,11,.12); }
-        .dl-reg-group input.err { border-color: rgba(239,68,68,.6); }
-        .dl-reg-group input.err:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
+        .dl-reg-group input.err { border-color: rgba(255, 87, 51,.6); }
+        .dl-reg-group input.err:focus { box-shadow: 0 0 0 3px rgba(255, 87, 51,.15); }
         .dl-reg-field-err { font-size: 11px; color: #FCA5A5; margin-top: -3px; }
         .dl-reg-hint { font-size: 11px; color: rgba(255,255,255,.3); margin-top: -4px; }
         .dl-reg-checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
@@ -155,7 +155,7 @@ export default function DealerRegisterPage() {
         .dl-reg-checkbox-row label { font-size: 13px; color: rgba(255,255,255,.7); cursor: pointer; }
         .dl-reg-error {
           font-size: 13px; color: #FCA5A5;
-          background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.22);
+          background: rgba(255, 87, 51,.12); border: 1px solid rgba(255, 87, 51,.22);
           padding: 10px 14px; border-radius: 10px; margin-bottom: 20px;
         }
         .dl-reg-btn {

@@ -147,7 +147,7 @@ export default function AdminSidebar() {
                   {badge > 0 && (
                     <span style={{
                       marginLeft: 'auto',
-                      background: '#EF4444',
+                      background: 'rgb(255, 87, 51)',
                       color: '#fff',
                       fontSize: 10,
                       fontWeight: 800,
