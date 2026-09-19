@@ -119,7 +119,7 @@ export default function BundlePopup() {
         slug: p.slug,
       });
     }
-    setPromo(data.promoCode, data.discountPercent);
+    setPromo(data.promoCode, data.discountPercent, data.products.map((p) => p.id));
     try { localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS)); } catch { /* ignore */ }
     router.push('/cart');
   }

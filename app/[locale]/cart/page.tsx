@@ -35,8 +35,8 @@ export default function CartPage() {
       setPromoError(t('promoInvalid'));
       return;
     }
-    const { discount: pct } = await res.json();
-    setPromo(promoInput.trim().toUpperCase(), pct);
+    const { discount: pct, bundleProductIds } = await res.json();
+    setPromo(promoInput.trim().toUpperCase(), pct, bundleProductIds);
     setPromoError('');
   }
 
