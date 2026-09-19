@@ -373,7 +373,7 @@
     "priceNote": "{original} € → {discounted} €",
     "cta": "Add whole set",
     "alreadyApplied": "You already added a set with this discount",
-    "discountBlocked": "This discount only applies if your cart contains just the set's items — remove the other items to apply it",
+    "discountTaken": "-10% is already used by another set in your cart — these items will be added at full price",
     "prevSeries": "Previous series",
     "nextSeries": "Next series",
     "close": "Close"

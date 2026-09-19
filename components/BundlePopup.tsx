@@ -45,7 +45,7 @@ export default function BundlePopup() {
   const addItem = useCart((s) => s.addItem);
   const setPromo = useCart((s) => s.setPromo);
   const cartPromoCode = useCart((s) => s.promoCode);
-  const cartItems = useCart((s) => s.items);
+  const cartBundleProductIds = useCart((s) => s.bundleProductIds);
 
   const [bundles, setBundles] = useState<BundleData[] | null>(null);
   const [index, setIndex] = useState(0);
@@ -78,28 +78,19 @@ export default function BundlePopup() {
   if (!open || !bundles) return null;
 
   const data = bundles[index];
-  // The popup's discount is meant for exactly one series' bundle per cart.
-  // Once BUNDLE10 is already applied for ANY series, adding a different
-  // series' bundle on top is blocked too — not just re-adding the same one
-  // — otherwise browsing to another series with the arrows and clicking
-  // "Add whole set" there would stack a second full bundle under the same
-  // flat discount. Checking the promo code alone isn't enough either: it
-  // stays set on the cart store even after someone manually removes the
-  // bundle's items, so we also require the cart to still actually contain a
-  // complete bundle of at least one series before calling it "applied".
-  const cartIds = new Set(cartItems.map((i) => i.id));
+  const bundleIds = data.products.map((p) => p.id);
+  // This exact series is the one currently claiming the discount slot — the
+  // cart store is the single source of truth here (it auto-clears
+  // bundleProductIds the moment any of that bundle's items gets removed,
+  // see cart-store.ts), so a plain equality check is enough.
   const bundleAlreadyApplied =
     cartPromoCode === data.promoCode &&
-    bundles.some((b) => b.products.every((p) => cartIds.has(p.id)));
-  // The discount only actually applies once the cart ends up containing
-  // EXACTLY this bundle's products and nothing else (see
-  // lib/bundle-check.ts) — so if there's already something in the cart
-  // that isn't part of this series (leftovers from a different/broken
-  // bundle, or an unrelated product), adding this set would still add the
-  // items but the -10% would not apply. Warn about that upfront rather
-  // than let it silently not apply after the fact.
-  const bundleIds = new Set(data.products.map((p) => p.id));
-  const cartHasForeignItems = cartItems.some((i) => !bundleIds.has(i.id));
+    bundleIds.length === cartBundleProductIds.length &&
+    bundleIds.every((id) => cartBundleProductIds.includes(id));
+  // The discount is for exactly one set per cart — if a different bundle
+  // (or a manually-entered code) already has it, this series' items can
+  // still be added, just at full price.
+  const anotherDiscountActive = !!cartPromoCode && !bundleAlreadyApplied;
   const accent = ACCENT;
 
   function dismiss() {
@@ -128,10 +119,10 @@ export default function BundlePopup() {
         slug: p.slug,
       });
     }
-    // Only grant the discount if the cart will end up being exactly this
-    // bundle — if other items are already in there, skip setPromo so the
-    // items get added but no discount is falsely implied.
-    if (!cartHasForeignItems) {
+    // Only claim the discount slot if nothing else already has it — the
+    // first bundle (or manual code) applied keeps its discount; adding a
+    // different series afterward just adds those items at full price.
+    if (!cartPromoCode) {
       setPromo(data.promoCode, data.discountPercent, data.products.map((p) => p.id));
     }
     try { localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS)); } catch { /* ignore */ }
@@ -259,9 +250,9 @@ export default function BundlePopup() {
                 {t('alreadyApplied')}
               </p>
             )}
-            {!bundleAlreadyApplied && cartHasForeignItems && (
+            {!bundleAlreadyApplied && anotherDiscountActive && (
               <p style={{ fontSize: 12.5, color: 'var(--muted, #5f5f5f)', margin: '10px 0 0' }}>
-                {t('discountBlocked')}
+                {t('discountTaken')}
               </p>
             )}
           </div>

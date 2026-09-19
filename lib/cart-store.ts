@@ -30,6 +30,11 @@ type CartStore = {
   setPromo: (code: string, discountPercent: number, bundleProductIds?: number[]) => void;
   clearPromo: () => void;
   total: () => number;
+  // Euro amount the current promo actually knocks off. For a bundle promo
+  // (bundleProductIds non-empty) only those line items count toward it —
+  // everything else in the cart stays at full price. For a regular,
+  // non-bundle code it's the usual flat percentage of the whole cart.
+  discountAmount: () => number;
   discountedTotal: () => number;
   count: () => number;
 };
@@ -94,10 +99,19 @@ export const useCart = create<CartStore>()(
 
       total: () => get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
 
+      discountAmount: () => {
+        const { items, discountPercent, bundleProductIds } = get();
+        if (discountPercent <= 0) return 0;
+        const bundleSet = new Set(bundleProductIds);
+        const discountBase = bundleSet.size > 0
+          ? items.filter((i) => bundleSet.has(i.id)).reduce((sum, i) => sum + i.price * i.quantity, 0)
+          : items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+        return +(discountBase * discountPercent / 100).toFixed(2);
+      },
+
       discountedTotal: () => {
-        const { discountPercent } = get();
         const raw = get().items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-        return +(raw * (1 - discountPercent / 100)).toFixed(2);
+        return +(raw - get().discountAmount()).toFixed(2);
       },
 
       count: () => get().items.reduce((sum, i) => sum + i.quantity, 0),

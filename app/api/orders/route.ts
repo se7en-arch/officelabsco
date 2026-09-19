@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { generateOrderCode } from '@/lib/order-code';
 import { sendOrderNotification, sendCustomerConfirmation } from '@/lib/mailer';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
-import { BUNDLE_PROMO_CODE, cartQualifiesForBundle } from '@/lib/bundle-check';
+import { BUNDLE_PROMO_CODE, cartQualifyingBundleProductIds } from '@/lib/bundle-check';
 
 const isRateLimited = createRateLimiter(5, 60_000);
 
@@ -138,23 +138,36 @@ export async function POST(req: NextRequest) {
   // the discount percent is never taken from the client.
   let promoCode: string | null = null;
   let discountPercent = 0;
+  let bundleProductIds: number[] = [];
   if (typeof body.promoCode === 'string' && body.promoCode.trim()) {
     const promo = await prisma.promoCode.findFirst({
       where: { code: body.promoCode.trim().toUpperCase().slice(0, 50), active: true },
       select: { code: true, discount: true },
     });
     if (promo) {
-      // BUNDLE10 (the shop popup's code) is only honored when the order's
-      // items actually amount to a complete series bundle — otherwise
-      // someone could type the code in manually with an arbitrary cart.
-      const eligible = promo.code !== BUNDLE_PROMO_CODE || await cartQualifiesForBundle(itemIds);
-      if (eligible) {
+      if (promo.code === BUNDLE_PROMO_CODE) {
+        // BUNDLE10 only discounts the specific line items that make up one
+        // complete series bundle — everything else in the order stays at
+        // full price, even if it happens to be a second complete series.
+        const ids = await cartQualifyingBundleProductIds(itemIds);
+        if (ids) {
+          promoCode = promo.code;
+          discountPercent = promo.discount;
+          bundleProductIds = ids;
+        }
+      } else {
         promoCode = promo.code;
         discountPercent = promo.discount;
       }
     }
   }
-  const serverTotal = +(itemsTotal * (1 - discountPercent / 100)).toFixed(2);
+  const bundleIdSet = new Set(bundleProductIds);
+  const serverTotal = bundleIdSet.size > 0
+    ? +serverItems.reduce((s, i) => {
+        const line = i.price * i.quantity;
+        return s + (bundleIdSet.has(i.id) ? line * (1 - discountPercent / 100) : line);
+      }, 0).toFixed(2)
+    : +(itemsTotal * (1 - discountPercent / 100)).toFixed(2);
   // ──────────────────────────────────────────────────────────────────
 
   const ua        = req.headers.get('user-agent') ?? null;

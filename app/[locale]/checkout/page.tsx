@@ -12,10 +12,10 @@ const CARRIERS = [
 
 export default function CheckoutPage() {
   const t = useTranslations('checkout');
-  const { items, total, clear, promoCode, discountPercent } = useCart();
+  const { items, total, clear, promoCode, discountPercent, discountAmount: getDiscountAmount, discountedTotal } = useCart();
   const rawTotal = total();
-  const discountAmount = parseFloat(((rawTotal * discountPercent) / 100).toFixed(2));
-  const finalTotal = parseFloat((rawTotal - discountAmount).toFixed(2));
+  const discountAmount = getDiscountAmount();
+  const finalTotal = discountedTotal();
 
   const STEPS = [t('stepData'), t('stepDelivery'), t('stepPayment')];
 

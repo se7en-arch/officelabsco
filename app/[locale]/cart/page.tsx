@@ -7,7 +7,11 @@ import { useTranslations } from 'next-intl';
 
 export default function CartPage() {
   const t = useTranslations('cart');
-  const { items, removeItem, updateQty, total, count, promoCode, discountPercent, setPromo, clearPromo } = useCart();
+  const {
+    items, removeItem, updateQty, total, count,
+    promoCode, discountPercent, bundleProductIds, setPromo, clearPromo,
+    discountAmount: getDiscountAmount, discountedTotal,
+  } = useCart();
   const [promoInput, setPromoInput] = useState('');
   const [promoError, setPromoError] = useState('');
   const [promoLoading, setPromoLoading] = useState(false);
@@ -15,8 +19,9 @@ export default function CartPage() {
   const rawTotal = total();
   const discount = discountPercent;
   const appliedPromo = promoCode ?? '';
-  const discountAmount = parseFloat(((rawTotal * discount) / 100).toFixed(2));
-  const finalTotal = parseFloat((rawTotal - discountAmount).toFixed(2));
+  const discountAmount = getDiscountAmount();
+  const finalTotal = discountedTotal();
+  const bundleIdSet = new Set(bundleProductIds);
 
   async function applyPromo() {
     if (!promoInput.trim()) {
@@ -72,7 +77,11 @@ export default function CartPage() {
       <div className="cart-page">
         {/* Items */}
         <div>
-          {items.map((item) => (
+          {items.map((item) => {
+            const isBundleItem = bundleIdSet.has(item.id);
+            const lineTotal = item.price * item.quantity;
+            const discountedLine = +(lineTotal * (1 - discount / 100)).toFixed(2);
+            return (
             <div key={item.id} className="cart-item">
               <div className="cart-item__img">
                 <Image
@@ -88,8 +97,27 @@ export default function CartPage() {
                 <div className="cart-item__top">
                   <Link href={`/shop/${item.slug}`} className="cart-item__name">
                     {item.name}
+                    {isBundleItem && (
+                      <span style={{
+                        marginLeft: 8, fontSize: 10.5, fontWeight: 800, color: '#16a34a',
+                        background: '#f0fdf4', padding: '2px 7px', borderRadius: 999, verticalAlign: 'middle',
+                      }}>
+                        −{discount}%
+                      </span>
+                    )}
                   </Link>
-                  <span className="cart-item__price">{item.price * item.quantity} €</span>
+                  <span className="cart-item__price">
+                    {isBundleItem ? (
+                      <>
+                        <span style={{ textDecoration: 'line-through', color: 'var(--muted)', fontSize: 12.5, marginRight: 6 }}>
+                          {lineTotal} €
+                        </span>
+                        {discountedLine} €
+                      </>
+                    ) : (
+                      `${lineTotal} €`
+                    )}
+                  </span>
                 </div>
 
                 <div className="cart-item__meta">{item.seriesName} · {item.categoryName}</div>
@@ -106,7 +134,8 @@ export default function CartPage() {
                 </div>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Summary */}
