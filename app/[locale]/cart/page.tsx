@@ -51,6 +51,35 @@ export default function CartPage() {
     setPromoError('');
   }
 
+  const promoUi = (
+    <div className="promo-wrap">
+      {appliedPromo ? (
+        <div className="promo-applied">
+          <span className="promo-applied__tag">
+            {appliedPromo} <span className="promo-applied__pct">−{discount}%</span>
+          </span>
+          <button className="promo-applied__remove" onClick={removePromo} aria-label={t('promoRemove')}>✕</button>
+        </div>
+      ) : (
+        <div className="promo-field">
+          <input
+            className="promo-input"
+            type="text"
+            placeholder={t('promoPlaceholder')}
+            value={promoInput}
+            onChange={(e) => { setPromoInput(e.target.value); setPromoError(''); }}
+            onKeyDown={(e) => e.key === 'Enter' && applyPromo()}
+            disabled={promoLoading}
+          />
+          <button className="promo-btn" onClick={applyPromo} disabled={promoLoading}>
+            {promoLoading ? '...' : t('promoApply')}
+          </button>
+        </div>
+      )}
+      {promoError && <p className="promo-error">{promoError}</p>}
+    </div>
+  );
+
   if (items.length === 0) {
     return (
       <div className="page-wrap">
@@ -156,6 +185,7 @@ export default function CartPage() {
                   <span>{item.price * item.quantity} €</span>
                 </div>
               ))}
+              {promoUi}
               {items.some((i) => !bundleIdSet.has(i.id)) && (
                 <>
                   <div className="summary-divider" />
@@ -184,33 +214,11 @@ export default function CartPage() {
             <span>{t('deliveryFree')}</span>
           </div>
 
-          {/* Promo code */}
-          <div className="promo-wrap">
-            {appliedPromo ? (
-              <div className="promo-applied">
-                <span className="promo-applied__tag">
-                  {appliedPromo} <span className="promo-applied__pct">−{discount}%</span>
-                </span>
-                <button className="promo-applied__remove" onClick={removePromo} aria-label={t('promoRemove')}>✕</button>
-              </div>
-            ) : (
-              <div className="promo-field">
-                <input
-                  className="promo-input"
-                  type="text"
-                  placeholder={t('promoPlaceholder')}
-                  value={promoInput}
-                  onChange={(e) => { setPromoInput(e.target.value); setPromoError(''); }}
-                  onKeyDown={(e) => e.key === 'Enter' && applyPromo()}
-                  disabled={promoLoading}
-                />
-                <button className="promo-btn" onClick={applyPromo} disabled={promoLoading}>
-                  {promoLoading ? '...' : t('promoApply')}
-                </button>
-              </div>
-            )}
-            {promoError && <p className="promo-error">{promoError}</p>}
-          </div>
+          {/* Promo code — shown here only when it's not the bundle discount
+              (that one is already shown right under its series' items
+              above, so customers don't have to hunt for which items it
+              applies to). */}
+          {bundleIdSet.size === 0 && promoUi}
 
           {discount > 0 && (
             <>
