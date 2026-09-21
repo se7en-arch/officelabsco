@@ -1,0 +1,28 @@
+-- CreateTable
+CREATE TABLE "Popup" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "type" TEXT NOT NULL DEFAULT 'promo',
+    "active" BOOLEAN NOT NULL DEFAULT false,
+    "priority" INTEGER NOT NULL DEFAULT 0,
+    "startsAt" DATETIME,
+    "endsAt" DATETIME,
+    "pages" TEXT NOT NULL DEFAULT 'shop',
+    "frequency" TEXT NOT NULL DEFAULT 'days',
+    "frequencyDays" INTEGER NOT NULL DEFAULT 7,
+    "delaySeconds" INTEGER NOT NULL DEFAULT 2,
+    "title" TEXT,
+    "titleEn" TEXT,
+    "text" TEXT,
+    "textEn" TEXT,
+    "image" TEXT,
+    "ctaLabel" TEXT,
+    "ctaLabelEn" TEXT,
+    "ctaLink" TEXT,
+    "promoCode" TEXT,
+    "accent" TEXT NOT NULL DEFAULT '#FF5733',
+    "showCountdown" BOOLEAN NOT NULL DEFAULT false,
+    "version" INTEGER NOT NULL DEFAULT 1,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);

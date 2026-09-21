@@ -5,13 +5,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useCart } from '@/lib/cart-store';
 
-const DISMISS_KEY = 'officelabsco-bundle-popup-dismissed-until';
-const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
-const SHOW_DELAY_MS = 1200;
-
-// TEMP (testing only): ignore the 7-day dismiss suppression so the popup
-// shows on every /shop load. Set back to false to restore normal behavior.
-const TEMP_ALWAYS_SHOW = true;
 
 // One fixed accent for every series in this popup, regardless of which
 // series' bundle is shown — kept intentionally different from the
@@ -37,7 +30,13 @@ const ArrowIcon = ({ flip }: { flip?: boolean }) => (
   </svg>
 );
 
-export default function BundlePopup() {
+// Whether/when this shows (schedule, pages, frequency, on/off) is decided by
+// PopupHost from the admin-managed Popup settings — this component only
+// renders the bundle offer itself.
+export default function BundlePopup({ delaySeconds, onClose }: {
+  delaySeconds: number;
+  onClose: (engaged: boolean) => void;
+}) {
   const t = useTranslations('bundlePopup');
   const locale = useLocale();
   const en = locale === 'en';
@@ -53,13 +52,6 @@ export default function BundlePopup() {
   const [adding, setAdding] = useState(false);
 
   useEffect(() => {
-    if (!TEMP_ALWAYS_SHOW) {
-      try {
-        const until = localStorage.getItem(DISMISS_KEY);
-        if (until && Date.now() < parseInt(until, 10)) return;
-      } catch { /* ignore */ }
-    }
-
     let cancelled = false;
     let showTimer: ReturnType<typeof setTimeout>;
 
@@ -68,7 +60,7 @@ export default function BundlePopup() {
       .then((json: { bundles: BundleData[] } | null) => {
         if (cancelled || !json || json.bundles.length === 0) return;
         setBundles(json.bundles);
-        showTimer = setTimeout(() => { if (!cancelled) setOpen(true); }, SHOW_DELAY_MS);
+        showTimer = setTimeout(() => { if (!cancelled) setOpen(true); }, delaySeconds * 1000);
       })
       .catch(() => {});
 
@@ -98,7 +90,7 @@ export default function BundlePopup() {
 
   function dismiss() {
     setOpen(false);
-    try { localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS)); } catch { /* ignore */ }
+    onClose(false);
   }
 
   function prev() {
@@ -125,7 +117,7 @@ export default function BundlePopup() {
     // The early return above guarantees no other discount is active here,
     // so this bundle can safely claim the discount slot.
     setPromo(data.promoCode, data.discountPercent, data.products.map((p) => p.id));
-    try { localStorage.setItem(DISMISS_KEY, String(Date.now() + DISMISS_MS)); } catch { /* ignore */ }
+    onClose(true);
     router.push('/cart');
   }
 

@@ -379,5 +379,14 @@
     "prevSeries": "Previous series",
     "nextSeries": "Next series",
     "close": "Close"
+  },
+  "promoPopup": {
+    "eyebrow": "LIMITED OFFER",
+    "endsIn": "Ends in",
+    "days": "d",
+    "close": "Close",
+    "applied": "The discount will be applied to your cart automatically",
+    "alreadyApplied": "This discount is already applied to your cart",
+    "discountTaken": "You already have another active discount in your cart — it won't be replaced"
   }
 }

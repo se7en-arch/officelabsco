@@ -230,3 +230,31 @@ model DealerOrderItem {
 
   @@index([orderId])
 }
+
+model Popup {
+  id            Int       @id @default(autoincrement())
+  name          String
+  type          String    @default("promo")
+  active        Boolean   @default(false)
+  priority      Int       @default(0)
+  startsAt      DateTime?
+  endsAt        DateTime?
+  pages         String    @default("shop")
+  frequency     String    @default("days")
+  frequencyDays Int       @default(7)
+  delaySeconds  Int       @default(2)
+  title         String?
+  titleEn       String?
+  text          String?
+  textEn        String?
+  image         String?
+  ctaLabel      String?
+  ctaLabelEn    String?
+  ctaLink       String?
+  promoCode     String?
+  accent        String    @default("#FF5733")
+  showCountdown Boolean   @default(false)
+  version       Int       @default(1)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
