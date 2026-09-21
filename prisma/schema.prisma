@@ -258,3 +258,24 @@ model Popup {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
+
+model PopupStat {
+  id      Int    @id @default(autoincrement())
+  popupId Int
+  day     String
+  views   Int    @default(0)
+  clicks  Int    @default(0)
+  closes  Int    @default(0)
+
+  @@unique([popupId, day])
+}
+
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  locale    String   @default("bg")
+  source    String?
+  popupId   Int?
+  consent   Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

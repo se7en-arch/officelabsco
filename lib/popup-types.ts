@@ -1,5 +1,5 @@
 // Client-safe shared types/constants for the admin-managed popups.
-export const POPUP_TYPES = ['bundle', 'promo'] as const;
+export const POPUP_TYPES = ['bundle', 'promo', 'email', 'bar'] as const;
 export const POPUP_PAGES = ['shop', 'home', 'all'] as const;
 export const POPUP_FREQUENCIES = ['always', 'days', 'session'] as const;
 
@@ -52,4 +52,15 @@ export type PopupAdmin = {
   accent: string;
   showCountdown: boolean;
   version: number;
+};
+
+// Aggregated numbers shown next to each popup in the admin list.
+export type PopupStats = {
+  views: number;
+  clicks: number;
+  closes: number;
+  signups: number;
+  orders: number;
+  revenue: number;
+  last14: number[]; // views per day, oldest -> newest
 };

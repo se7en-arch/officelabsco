@@ -4,34 +4,14 @@ import { useLocale } from 'next-intl';
 import { usePathname } from '@/i18n/navigation';
 import BundlePopup from './BundlePopup';
 import PromoPopup from './PromoPopup';
+import EmailPopup from './EmailPopup';
+import { fetchActivePopups, pageOf, pickFirst, markSeen, trackPopup } from '@/lib/popup-client';
 import type { PopupPublic } from '@/lib/popup-types';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-const keyOf = (p: PopupPublic) => `officelabsco-popup-${p.id}-v${p.version}`;
-
-// "Already seen" for this popup at this version. Bumping the version in the
-// admin panel (any edit, or turning it back on) resets it for everyone.
-function isSuppressed(p: PopupPublic): boolean {
-  try {
-    if (p.frequency === 'session') return sessionStorage.getItem(keyOf(p)) === '1';
-    if (p.frequency === 'days') {
-      const until = localStorage.getItem(keyOf(p));
-      return !!until && Date.now() < parseInt(until, 10);
-    }
-  } catch { /* storage blocked — just show it */ }
-  return false;
-}
-
-function markSeen(p: PopupPublic) {
-  try {
-    if (p.frequency === 'session') sessionStorage.setItem(keyOf(p), '1');
-    else if (p.frequency === 'days') localStorage.setItem(keyOf(p), String(Date.now() + p.frequencyDays * DAY_MS));
-  } catch { /* ignore */ }
-}
-
-// Mounted once in the public layout: asks the server which single popup (if
-// any) is live for this page right now — on/off, schedule, page and
-// priority are all managed from /adminpanel/popups — and renders it.
+// Mounted once in the public layout: asks the server which popups are live
+// for this page right now — on/off, schedule, page and priority are all
+// managed from /adminpanel/popups — and shows the first one this visitor
+// hasn't already seen. One modal at a time.
 export default function PopupHost() {
   const pathname = usePathname();
   const locale = useLocale();
@@ -41,27 +21,26 @@ export default function PopupHost() {
     setPopup(null);
     // Never interrupt the purchase flow.
     if (pathname.startsWith('/cart') || pathname.startsWith('/checkout')) return;
-    const page = pathname === '/' ? 'home' : pathname === '/shop' ? 'shop' : 'other';
 
     let cancelled = false;
-    fetch(`/api/popups/active?page=${page}&locale=${locale}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((json: { popup: PopupPublic | null } | null) => {
-        if (cancelled || !json?.popup) return;
-        if (!isSuppressed(json.popup)) setPopup(json.popup);
-      })
-      .catch(() => {});
+    fetchActivePopups(pageOf(pathname), locale).then(({ popups }) => {
+      if (cancelled) return;
+      setPopup(pickFirst(popups));
+    });
     return () => { cancelled = true; };
   }, [pathname, locale]);
 
   if (!popup) return null;
 
-  const close = () => {
+  const shown = () => trackPopup(popup.id, 'view');
+  const close = (engaged: boolean) => {
+    trackPopup(popup.id, engaged ? 'click' : 'close');
     markSeen(popup);
     setPopup(null);
   };
+  const key = `${popup.id}-${popup.version}`;
 
-  return popup.type === 'bundle'
-    ? <BundlePopup key={`${popup.id}-${popup.version}`} delaySeconds={popup.delaySeconds} onClose={close} />
-    : <PromoPopup key={`${popup.id}-${popup.version}`} popup={popup} onClose={close} />;
+  if (popup.type === 'bundle') return <BundlePopup key={key} delaySeconds={popup.delaySeconds} onShown={shown} onClose={close} />;
+  if (popup.type === 'email') return <EmailPopup key={key} popup={popup} onShown={shown} onClose={close} />;
+  return <PromoPopup key={key} popup={popup} onShown={shown} onClose={close} />;
 }

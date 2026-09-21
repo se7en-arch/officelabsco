@@ -388,5 +388,36 @@
     "applied": "The discount will be applied to your cart automatically",
     "alreadyApplied": "This discount is already applied to your cart",
     "discountTaken": "You already have another active discount in your cart — it won't be replaced"
+  },
+  "emailPopup": {
+    "placeholder": "Your email",
+    "submit": "Subscribe",
+    "consent": "I agree to receive emails with offers and news from OfficeLabs Co. I have read the",
+    "privacy": "Privacy Policy",
+    "invalidEmail": "Please enter a valid email",
+    "consentRequired": "Please confirm your consent",
+    "tooMany": "Too many attempts — try again shortly",
+    "error": "Something went wrong, please try again",
+    "thanksEyebrow": "Done",
+    "thanksTitle": "Thank you!",
+    "thanksText": "You are subscribed.",
+    "yourCode": "Your discount code:",
+    "codeApplied": "The code (−{discount}%) has been applied to your cart automatically.",
+    "codeNotApplied": "Keep it — you can enter it in your cart.",
+    "toShop": "Go to shop",
+    "close": "Close"
+  },
+  "topBar": {
+    "close": "Close",
+    "days": "d"
+  },
+  "newsletter": {
+    "consent": "I agree to receive emails with offers and news from OfficeLabs Co. I have read the",
+    "privacy": "Privacy Policy",
+    "invalidEmail": "Please enter a valid email",
+    "consentRequired": "Please confirm your consent",
+    "tooMany": "Too many attempts — try again shortly",
+    "error": "Something went wrong, please try again",
+    "thanks": "Thank you! You are subscribed."
   }
 }

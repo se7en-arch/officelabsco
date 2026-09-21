@@ -33,8 +33,9 @@ const ArrowIcon = ({ flip }: { flip?: boolean }) => (
 // Whether/when this shows (schedule, pages, frequency, on/off) is decided by
 // PopupHost from the admin-managed Popup settings — this component only
 // renders the bundle offer itself.
-export default function BundlePopup({ delaySeconds, onClose }: {
+export default function BundlePopup({ delaySeconds, onShown, onClose }: {
   delaySeconds: number;
+  onShown: () => void;
   onClose: (engaged: boolean) => void;
 }) {
   const t = useTranslations('bundlePopup');
@@ -60,7 +61,7 @@ export default function BundlePopup({ delaySeconds, onClose }: {
       .then((json: { bundles: BundleData[] } | null) => {
         if (cancelled || !json || json.bundles.length === 0) return;
         setBundles(json.bundles);
-        showTimer = setTimeout(() => { if (!cancelled) setOpen(true); }, delaySeconds * 1000);
+        showTimer = setTimeout(() => { if (!cancelled) { setOpen(true); onShown(); } }, delaySeconds * 1000);
       })
       .catch(() => {});
 

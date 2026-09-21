@@ -23,6 +23,7 @@ import SortSelect from '@/components/SortSelect';
 import AnimatedGrid from '@/components/AnimatedGrid';
 import CategoryDropdown from '@/components/CategoryDropdown';
 import ShopScrollReset from '@/components/ShopScrollReset';
+import NewsletterForm from '@/components/NewsletterForm';
 
 const PER_PAGE = 6;
 
@@ -266,10 +267,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
         <div className="cta-inner">
           <div>
             <h2 className="cta-title">{t('ctaTitle')}</h2>
-            <div className="cta-form">
-              <input className="cta-input" placeholder={t('ctaEmail')} type="email" />
-              <button className="cta-submit">{t('ctaSend')}</button>
-            </div>
+            <NewsletterForm />
           </div>
           <div>
             <div className="cta-right-title">{t('ctaRightTitle')}</div>

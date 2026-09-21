@@ -7,11 +7,12 @@ export const dynamic = 'force-dynamic';
 
 const isRateLimited = createRateLimiter(60, 60_000);
 
-// Which single popup (if any) the storefront should show right now on the
-// given page. Only the highest-priority eligible one is returned — never
-// two at once.
+// The popups (modal) and top bars that are live for a page right now, in
+// priority order. The client shows the first one the visitor hasn't already
+// seen/dismissed (that memory lives in their browser), one modal and one
+// bar at a time.
 export async function GET(req: NextRequest) {
-  if (isRateLimited(getIp(req))) return NextResponse.json({ popup: null }, { status: 429 });
+  if (isRateLimited(getIp(req))) return NextResponse.json({ popups: [], bars: [] }, { status: 429 });
 
   const sp = req.nextUrl.searchParams;
   const page = ['shop', 'home'].includes(sp.get('page') ?? '') ? sp.get('page')! : 'other';
@@ -29,42 +30,42 @@ export async function GET(req: NextRequest) {
   // A running promo/campaign popup (e.g. Black Friday) pauses the bundle
   // popup everywhere — only one discount offer at a time.
   const promoRunning = live.some((r) => r.type === 'promo');
-  const candidates = live.filter((r) => {
+  const onPage = live.filter((r) => {
     if (promoRunning && r.type === 'bundle') return false;
     return r.pages === 'all' || r.pages === page;
   });
 
-  const top = candidates[0];
-  if (!top) return NextResponse.json({ popup: null });
+  // Only advertise/apply a code if it actually exists and is active.
+  const codes = [...new Set(onPage.map((r) => r.promoCode).filter((c): c is string => !!c))];
+  const promos = codes.length
+    ? await prisma.promoCode.findMany({ where: { code: { in: codes }, active: true }, select: { code: true, discount: true } })
+    : [];
+  const discountOf = new Map(promos.map((p) => [p.code, p.discount]));
 
-  // Only advertise/apply the code if it actually exists and is active.
-  let promoCode: string | null = null;
-  let discountPercent: number | null = null;
-  if (top.promoCode) {
-    const promo = await prisma.promoCode.findFirst({
-      where: { code: top.promoCode, active: true },
-      select: { code: true, discount: true },
-    });
-    if (promo) { promoCode = promo.code; discountPercent = promo.discount; }
-  }
-
-  const popup: PopupPublic = {
-    id: top.id,
-    type: top.type as PopupType,
-    version: top.version,
-    frequency: top.frequency as PopupFrequency,
-    frequencyDays: top.frequencyDays,
-    delaySeconds: top.delaySeconds,
-    accent: top.accent,
-    title: (en ? top.titleEn : null) || top.title || '',
-    text: (en ? top.textEn : null) || top.text || '',
-    image: top.image,
-    ctaLabel: (en ? top.ctaLabelEn : null) || top.ctaLabel || '',
-    ctaLink: top.ctaLink || '/shop',
-    promoCode,
-    discountPercent,
-    endsAt: top.endsAt ? top.endsAt.toISOString() : null,
-    showCountdown: top.showCountdown,
+  const toPublic = (r: (typeof rows)[number]): PopupPublic => {
+    const discount = r.promoCode ? discountOf.get(r.promoCode) ?? null : null;
+    return {
+      id: r.id,
+      type: r.type as PopupType,
+      version: r.version,
+      frequency: r.frequency as PopupFrequency,
+      frequencyDays: r.frequencyDays,
+      delaySeconds: r.delaySeconds,
+      accent: r.accent,
+      title: (en ? r.titleEn : null) || r.title || '',
+      text: (en ? r.textEn : null) || r.text || '',
+      image: r.image,
+      ctaLabel: (en ? r.ctaLabelEn : null) || r.ctaLabel || '',
+      ctaLink: r.ctaLink || '/shop',
+      promoCode: discount !== null ? r.promoCode : null,
+      discountPercent: discount,
+      endsAt: r.endsAt ? r.endsAt.toISOString() : null,
+      showCountdown: r.showCountdown,
+    };
   };
-  return NextResponse.json({ popup });
+
+  return NextResponse.json({
+    popups: onPage.filter((r) => r.type !== 'bar').slice(0, 5).map(toPublic),
+    bars: onPage.filter((r) => r.type === 'bar').slice(0, 5).map(toPublic),
+  });
 }

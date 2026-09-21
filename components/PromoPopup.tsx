@@ -3,27 +3,17 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useCart } from '@/lib/cart-store';
+import { useCountdown, splitCountdown } from '@/lib/popup-client';
 import type { PopupPublic } from '@/lib/popup-types';
-
-function useCountdown(endsAt: string | null) {
-  const [left, setLeft] = useState<number | null>(() => (endsAt ? new Date(endsAt).getTime() - Date.now() : null));
-  useEffect(() => {
-    if (!endsAt) return;
-    const tick = () => setLeft(new Date(endsAt).getTime() - Date.now());
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, [endsAt]);
-  return left;
-}
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
 // Campaign popup (Black Friday, seasonal sales…) configured entirely from
 // the admin panel: text, image, accent color, optional countdown and an
 // optional promo code that the button applies to the cart for the visitor.
-export default function PromoPopup({ popup, onClose }: {
+export default function PromoPopup({ popup, onShown, onClose }: {
   popup: PopupPublic;
+  onShown: () => void;
   onClose: (engaged: boolean) => void;
 }) {
   const t = useTranslations('promoPopup');
@@ -35,8 +25,9 @@ export default function PromoPopup({ popup, onClose }: {
   const left = useCountdown(popup.showCountdown ? popup.endsAt : null);
 
   useEffect(() => {
-    const id = setTimeout(() => setOpen(true), popup.delaySeconds * 1000);
+    const id = setTimeout(() => { setOpen(true); onShown(); }, popup.delaySeconds * 1000);
     return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [popup.delaySeconds]);
 
   if (!open) return null;
@@ -63,12 +54,7 @@ export default function PromoPopup({ popup, onClose }: {
     else router.push(popup.ctaLink);
   }
 
-  const parts = left !== null && left > 0 ? {
-    d: Math.floor(left / 86_400_000),
-    h: Math.floor(left / 3_600_000) % 24,
-    m: Math.floor(left / 60_000) % 60,
-    s: Math.floor(left / 1000) % 60,
-  } : null;
+  const parts = left !== null && left > 0 ? splitCountdown(left) : null;
 
   return (
     <div

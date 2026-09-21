@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import CartInitializer from '@/components/CartInitializer';
 import UTMCapture from '@/components/UTMCapture';
 import PopupHost from '@/components/PopupHost';
+import TopBar from '@/components/TopBar';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -62,6 +63,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <CartInitializer />
           <UTMCapture />
+          <TopBar />
           <Navbar />
           <div className="ol-page-content">{children}</div>
           <Footer />
