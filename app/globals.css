@@ -894,7 +894,7 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 .qty__btn { width: 40px; height: 42px; font-size: 18px; color: var(--text); transition: background .1s; }
 .qty__btn:hover { background: var(--line-2); }
 .qty__val { width: 46px; text-align: center; font-size: 14px; font-weight: 600; }
-.btn-add-cart { flex: none; width: 119px; height: 41px; background: var(--brand); color: #fff; border-radius: var(--r); font-size: 14px; font-weight: 700; transition: opacity .15s; }
+.btn-add-cart { flex: none; width: 119px; height: 40px; background: var(--brand); color: #fff; border-radius: var(--r); font-size: 14px; font-weight: 700; transition: opacity .15s; }
 .btn-add-cart:hover { opacity: .82; }
 .btn-add-cart--out,
 .btn-add-cart:disabled {

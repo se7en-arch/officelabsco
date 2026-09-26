@@ -7,8 +7,8 @@ export type ColorVariant = {
 export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   'astra-low-cabinet': [
     {
-      name: 'Лате',
-      color: '#C8A882',
+      name: 'Снежен',
+      color: '#E8DFD8',
       images: [
         '/products/low-cab-1-latte-1.png',
         '/products/low-cab-1-latte-2.png',
@@ -17,8 +17,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Капучино',
-      color: '#6B4F3A',
+      name: 'Ленен',
+      color: '#AE9F8F',
       images: [
         '/products/low-cab-1-cappuccino-1.png',
         '/products/low-cab-1-cappuccino-2.png',
@@ -29,7 +29,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'astra-table': [
     {
-      name: 'Ангора',
+      name: 'Снежен',
       color: '#E8DFD8',
       images: [
         '/products/astra-table-angora-1.png',
@@ -38,7 +38,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Кубанит',
+      name: 'Ленен',
       color: '#AE9F8F',
       images: [
         '/products/astra-table-cubanit-1.png',
@@ -49,7 +49,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'astra-filing-cabinet': [
     {
-      name: 'Ангора',
+      name: 'Снежен',
       color: '#E8DFD8',
       images: [
         '/products/astra-container-angora-1.png',
@@ -58,7 +58,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Кубанит',
+      name: 'Ленен',
       color: '#AE9F8F',
       images: [
         '/products/astra-container-cubanit-1.png',
@@ -69,8 +69,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'astra-high-cabinet': [
     {
-      name: 'Лате',
-      color: '#C8A882',
+      name: 'Снежен',
+      color: '#E8DFD8',
       images: [
         '/products/high-cab-1-latte-1.png',
         '/products/high-cab-1-latte-2.png',
@@ -78,8 +78,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Капучино',
-      color: '#6B4F3A',
+      name: 'Ленен',
+      color: '#AE9F8F',
       images: [
         '/products/high-cab-1-cappuccino-1.png',
         '/products/high-cab-1-cappuccino-2.png',
@@ -233,8 +233,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   // ── Loft ─────────────────────────────────────────────────────────────────
   'loft-steel-desk': [
     {
-      name: 'Черен',
-      color: '#2B2B2B',
+      name: 'Графит',
+      color: '#5A5654',
       images: [
         '/products/loft-desk-black-1.png',
         '/products/loft-desk-black-2.png',
@@ -242,8 +242,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Тъмно зелен',
-      color: '#2D5A45',
+      name: 'Таупе',
+      color: '#B7A891',
       images: [
         '/products/loft-desk-deep-green-1.png',
         '/products/loft-desk-deep-green-2.png',
@@ -253,8 +253,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'loft-iron-table': [
     {
-      name: 'Черен',
-      color: '#2B2B2B',
+      name: 'Графит',
+      color: '#5A5654',
       images: [
         '/products/loft-coffee-table-black-1.png',
         '/products/loft-coffee-table-black-2.png',
@@ -262,8 +262,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Тъмно зелен',
-      color: '#2D5A45',
+      name: 'Таупе',
+      color: '#B7A891',
       images: [
         '/products/loft-coffee-table-deep-green-1.png',
         '/products/loft-coffee-table-deep-green-2.png',
@@ -273,8 +273,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'loft-low-cabinet': [
     {
-      name: 'Черен',
-      color: '#2B2B2B',
+      name: 'Графит',
+      color: '#5A5654',
       images: [
         '/products/loft-low-cab-black-1.png',
         '/products/loft-low-cab-black-2.png',
@@ -282,8 +282,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Тъмно зелен',
-      color: '#2D5A45',
+      name: 'Таупе',
+      color: '#B7A891',
       images: [
         '/products/loft-low-cab-deep-green-1.png',
         '/products/loft-low-cab-deep-green-2.png',
@@ -293,8 +293,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'loft-filing-cabinet': [
     {
-      name: 'Черен',
-      color: '#2B2B2B',
+      name: 'Графит',
+      color: '#5A5654',
       images: [
         '/products/loft-container-black-1.png',
         '/products/loft-container-black-2.png',
@@ -302,8 +302,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Тъмно зелен',
-      color: '#2D5A45',
+      name: 'Таупе',
+      color: '#B7A891',
       images: [
         '/products/loft-container-deep-green-1.png',
         '/products/loft-container-deep-green-2.png',
@@ -313,8 +313,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'loft-plant-stand': [
     {
-      name: 'Черен',
-      color: '#2B2B2B',
+      name: 'Графит',
+      color: '#5A5654',
       images: [
         '/products/loft-plant-black-1.png',
         '/products/loft-plant-black-2.png',
@@ -322,8 +322,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Тъмно зелен',
-      color: '#2D5A45',
+      name: 'Таупе',
+      color: '#B7A891',
       images: [
         '/products/loft-plant-deep-green-1.png',
         '/products/loft-plant-deep-green-2.png',
@@ -333,8 +333,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'loft-high-cabinet': [
     {
-      name: 'Черен',
-      color: '#2B2B2B',
+      name: 'Графит',
+      color: '#5A5654',
       images: [
         '/products/loft-high-cab-black-1.png',
         '/products/loft-high-cab-black-2.png',
@@ -342,8 +342,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Тъмно зелен',
-      color: '#2D5A45',
+      name: 'Таупе',
+      color: '#B7A891',
       images: [
         '/products/loft-high-cab-deep-green-1.png',
         '/products/loft-high-cab-deep-green-2.png',
@@ -353,8 +353,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'loft-pipe-bookshelf': [
     {
-      name: 'Черен',
-      color: '#2B2B2B',
+      name: 'Графит',
+      color: '#5A5654',
       images: [
         '/products/loft-shelf-black-1.png',
         '/products/loft-shelf-black-2.png',
@@ -362,8 +362,8 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Тъмно зелен',
-      color: '#2D5A45',
+      name: 'Таупе',
+      color: '#B7A891',
       images: [
         '/products/loft-shelf-deep-green-1.png',
         '/products/loft-shelf-deep-green-2.png',
@@ -375,7 +375,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   // ── Nova ─────────────────────────────────────────────────────────────────
   'nova-farm-table': [
     {
-      name: 'Антрацит',
+      name: 'Каменно сиво',
       color: '#B5C8D4',
       images: [
         '/products/nova-coffee-table-diamond-1.png',
@@ -384,7 +384,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Крем',
+      name: 'Пясъчно бежов',
       color: '#EDE8DF',
       images: [
         '/products/nova-coffee-table-cream-1.png',
@@ -395,7 +395,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'nova-filing-cabinet': [
     {
-      name: 'Антрацит',
+      name: 'Каменно сиво',
       color: '#B5C8D4',
       images: [
         '/products/nova-container-diamond-1.png',
@@ -404,7 +404,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Крем',
+      name: 'Пясъчно бежов',
       color: '#EDE8DF',
       images: [
         '/products/nova-container-cream-1.png',
@@ -415,7 +415,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'nova-walnut-desk': [
     {
-      name: 'Антрацит',
+      name: 'Каменно сиво',
       color: '#B5C8D4',
       images: [
         '/products/nova-desk-diamond-1.png',
@@ -424,7 +424,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Крем',
+      name: 'Пясъчно бежов',
       color: '#EDE8DF',
       images: [
         '/products/nova-desk-cream-1.png',
@@ -435,7 +435,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'nova-low-cabinet': [
     {
-      name: 'Антрацит',
+      name: 'Каменно сиво',
       color: '#B5C8D4',
       images: [
         '/products/nova-low-cab-diamond-1.png',
@@ -444,7 +444,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Крем',
+      name: 'Пясъчно бежов',
       color: '#EDE8DF',
       images: [
         '/products/nova-low-cab-cream-1.png',
@@ -455,7 +455,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'nova-tall-wardrobe': [
     {
-      name: 'Антрацит',
+      name: 'Каменно сиво',
       color: '#B5C8D4',
       images: [
         '/products/nova-high-cab-diamond-1.png',
@@ -464,7 +464,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Крем',
+      name: 'Пясъчно бежов',
       color: '#EDE8DF',
       images: [
         '/products/nova-high-cab-cream-1.png',
@@ -475,7 +475,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'nova-plant-stand': [
     {
-      name: 'Антрацит',
+      name: 'Каменно сиво',
       color: '#B5C8D4',
       images: [
         '/products/nova-plant-diamond-1.png',
@@ -484,7 +484,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Крем',
+      name: 'Пясъчно бежов',
       color: '#EDE8DF',
       images: [
         '/products/nova-plant-cream-1.png',
@@ -495,7 +495,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   ],
   'nova-open-shelf': [
     {
-      name: 'Антрацит',
+      name: 'Каменно сиво',
       color: '#B5C8D4',
       images: [
         '/products/nova-shelf-diamond-1.png',
@@ -504,7 +504,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
       ],
     },
     {
-      name: 'Крем',
+      name: 'Пясъчно бежов',
       color: '#EDE8DF',
       images: [
         '/products/nova-shelf-cream-1.png',
