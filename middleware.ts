@@ -47,13 +47,11 @@ export default function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Pass API, admin panel, and internal tools through unmodified (own auth, not locale-based)
+  // Pass API and admin panel (incl. the /adminpanel/table, /adminpanel/catalog,
+  // /adminpanel/calculator internal tools) through unmodified — own auth, not locale-based
   if (
     pathname.startsWith('/api') ||
-    pathname.startsWith('/adminpanel') ||
-    pathname.startsWith('/table') ||
-    pathname.startsWith('/catalog') ||
-    pathname.startsWith('/calculator')
+    pathname.startsWith('/adminpanel')
   ) {
     return NextResponse.next();
   }
@@ -64,7 +62,6 @@ export default function middleware(req: NextRequest) {
   }
 
   // If PREVIEW_SECRET is set, site is locked — check bypass cookie
-  // M-06: catalog and table are now included (not excluded from matcher)
   if (PREVIEW_SECRET) {
     const bypass = req.cookies.get(BYPASS_COOKIE)?.value;
     if (bypass !== PREVIEW_SECRET) {
@@ -77,6 +74,5 @@ export default function middleware(req: NextRequest) {
 
 export const config = {
   // Match everything except Next.js internals and static files
-  // M-06: removed table|catalog from exclusion so preview lock covers them
   matcher: ['/((?!_next|_vercel|.*\\..*).*)','/api/admin/:path*'],
 };

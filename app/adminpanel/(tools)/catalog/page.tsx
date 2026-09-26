@@ -7,10 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function CatalogPage() {
   const auth = await isAdminAuthenticated();
-
-  if (!auth) {
-    redirect('/adminpanel?next=/catalog');
-  }
+  if (!auth) redirect('/adminpanel?next=/adminpanel/catalog');
 
   const [products, seriesList] = await Promise.all([
     prisma.product.findMany({

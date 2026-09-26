@@ -7,10 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function TablePage() {
   const auth = await isAdminAuthenticated();
-
-  if (!auth) {
-    redirect('/adminpanel?next=/table');
-  }
+  if (!auth) redirect('/adminpanel?next=/adminpanel/table');
 
   const products = await prisma.product.findMany({
     include: { series: true, category: true },

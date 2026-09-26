@@ -91,23 +91,20 @@ const navItems = [
     links: [
       {
         key: 'catalog',
-        href: '/catalog',
+        href: '/adminpanel/catalog',
         label: 'Каталог',
-        external: true,
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
       },
       {
         key: 'product-table',
-        href: '/table',
+        href: '/adminpanel/table',
         label: 'Продуктова таблица',
-        external: true,
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>,
       },
       {
         key: 'cost-calculator',
-        href: '/calculator',
+        href: '/adminpanel/calculator',
         label: 'Калкулатор',
-        external: true,
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="11" x2="8" y2="11.01"/><line x1="12" y1="11" x2="12" y2="11.01"/><line x1="16" y1="11" x2="16" y2="11.01"/><line x1="8" y1="15" x2="8" y2="15.01"/><line x1="12" y1="15" x2="12" y2="15.01"/><line x1="16" y1="15" x2="16" y2="15.01"/></svg>,
       },
     ],
@@ -200,17 +197,6 @@ export default function AdminSidebar() {
                   )}
                 </>
               );
-
-              // Внатрешните инструменти (каталог, таблица, калкулатор) са
-              // отделни full-page приложения извън AdminShell — отварят се
-              // в нов таб, за да не губиш админ панела от него.
-              if ('external' in link && link.external) {
-                return (
-                  <a key={link.href} href={link.href} target="_blank" rel="noopener noreferrer" className="admin-nav-link">
-                    {content}
-                  </a>
-                );
-              }
 
               return (
                 <Link key={link.href} href={link.href} className={`admin-nav-link${isActive(link.href, pathname) ? ' active' : ''}`}>

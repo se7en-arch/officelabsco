@@ -9,10 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function CalculatorPage() {
   const auth = await isAdminAuthenticated();
-
-  if (!auth) {
-    redirect('/adminpanel?next=/calculator');
-  }
+  if (!auth) redirect('/adminpanel?next=/adminpanel/calculator');
 
   const [series, saved, vatSetting, products] = await Promise.all([
     prisma.series.findMany({ select: { name: true, materials: true }, orderBy: { name: 'asc' } }),
