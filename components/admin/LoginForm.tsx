@@ -1,6 +1,13 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+
+// Only allow redirecting back to a same-site, absolute path after login —
+// never to an external URL (open-redirect guard for the ?next= param).
+function safeNext(next: string | null): string {
+  if (!next || !next.startsWith('/') || next.startsWith('//')) return '/adminpanel/dashboard';
+  return next;
+}
 
 export default function LoginForm() {
   const [username, setUsername] = useState('');
@@ -8,6 +15,7 @@ export default function LoginForm() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,7 +29,7 @@ export default function LoginForm() {
     });
 
     if (res.ok) {
-      router.push('/adminpanel/dashboard');
+      router.push(safeNext(searchParams.get('next')));
     } else {
       const data = await res.json();
       setError(data.error);

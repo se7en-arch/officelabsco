@@ -1,6 +1,6 @@
+import { redirect } from 'next/navigation';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
-import TableLoginForm from '@/components/table/TableLoginForm';
 import CostCalculator from '@/components/calculator/CostCalculator';
 import { COLOR_VARIANTS } from '@/lib/color-variants';
 import { buildModuleSeeds, reconcileModules } from '@/lib/calculator-modules';
@@ -11,7 +11,7 @@ export default async function CalculatorPage() {
   const auth = await isAdminAuthenticated();
 
   if (!auth) {
-    return <TableLoginForm title="Калкулатор на себестойност" />;
+    redirect('/adminpanel?next=/calculator');
   }
 
   const [series, saved, vatSetting, products] = await Promise.all([

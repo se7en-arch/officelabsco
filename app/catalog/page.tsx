@@ -1,6 +1,6 @@
+import { redirect } from 'next/navigation';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
-import TableLoginForm from '@/components/table/TableLoginForm';
 import CatalogGenerator from '@/components/catalog/CatalogGenerator';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +9,7 @@ export default async function CatalogPage() {
   const auth = await isAdminAuthenticated();
 
   if (!auth) {
-    return <TableLoginForm />;
+    redirect('/adminpanel?next=/catalog');
   }
 
   const [products, seriesList] = await Promise.all([
