@@ -160,8 +160,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
         <div className="product-info">
           <h1 className="product-info__name">{displayName}</h1>
           <p className="product-info__price-hint">
-            <span className="product-info__price-val">{product.price} €</span>{' '}
-            {t('priceHint', { monthly: (product.price / 12).toFixed(2) })}
+            <span className="product-info__price-val">{product.price} €</span>
           </p>
           <p className="product-info__vat-note">{t('vatNote')}</p>
           <AddToCartButton
