@@ -131,7 +131,7 @@
     "priceHint": "or {monthly} €/mo. for 12 mo.",
     "vatNote": "Price includes VAT.",
     "assemblyTitle": "Assembly",
-    "assemblyValue": "€{price}.00 (optional)",
+    "assemblyValue": "€{price}.00 — optional, not included in the product price. Carried out at the delivery address on a separately arranged date.",
     "addShort": "Order",
     "addedShort": "Added!",
     "breadHome": "Home",
