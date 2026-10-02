@@ -212,18 +212,7 @@ export default function ProductTabs({
           <div className="ptabs__shipping-col">
             <h3 className="ptabs__shipping-heading">{t('shippingTitle')}</h3>
             <p>{t('shippingText')}</p>
-            <table className="ptabs__delivery-table">
-              <tbody>
-                <tr>
-                  <th>{t('shippingDestination')}</th>
-                  <th>{t('shippingTime')}</th>
-                  <th>{t('shippingPrice')}</th>
-                </tr>
-                <tr><td>{t('shippingSofia')}</td><td>{t('shippingTime1')}</td><td>{t('shippingFree')}</td></tr>
-                <tr><td>{t('shippingNationwide')}</td><td>{t('shippingTime2')}</td><td>{t('shippingFree')}</td></tr>
-                <tr><td>{t('shippingEU')}</td><td>{t('shippingTime3')}</td><td>{t('shippingOnRequest')}</td></tr>
-              </tbody>
-            </table>
+            <p>{t('shippingInternational')}</p>
           </div>
           <div className="ptabs__shipping-col">
             <h3 className="ptabs__shipping-heading">{t('returnsTitle')}</h3>
