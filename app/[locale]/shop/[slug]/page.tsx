@@ -11,6 +11,7 @@ import ProductColorGallery from '@/components/ProductColorGallery';
 import ProductColorSwitcher from '@/components/ProductColorSwitcher';
 import ProductTabs from '@/components/ProductTabs';
 import { COLOR_VARIANTS } from '@/lib/color-variants';
+import { ASSEMBLY_PRICES } from '@/lib/assembly-prices';
 
 export const revalidate = 120;
 
@@ -199,6 +200,25 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
               <span className="spec-value">{displayCategoryName}</span>
             </div>
           </div>
+
+          {ASSEMBLY_PRICES[product.slug] != null && (
+            <div className="product-services">
+              <div className="product-specs__title">{t('servicesTitle')}</div>
+              <div className="product-services__note">{t('servicesNote')}</div>
+              <div className="service-row">
+                <span className="service-row__icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                  </svg>
+                </span>
+                <span className="service-row__body">
+                  <span className="service-row__title">{t('assemblyTitle')}</span>
+                  <span className="service-row__desc">{t('assemblyDesc')}</span>
+                </span>
+                <span className="service-row__price">{ASSEMBLY_PRICES[product.slug]},00 €</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

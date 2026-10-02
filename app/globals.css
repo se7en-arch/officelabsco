@@ -1021,6 +1021,19 @@ footer { border-top: 1px solid var(--line); background: var(--surface); }
 .spec-label { width: 130px; font-size: 13px; color: var(--muted); flex-shrink: 0; }
 .spec-value { font-size: 13px; font-weight: 500; }
 
+.product-services { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 24px; }
+.product-services__note { font-size: 12px; color: var(--muted); margin-top: -8px; margin-bottom: 16px; }
+.service-row { display: flex; align-items: flex-start; gap: 12px; }
+.service-row__icon {
+  flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%;
+  background: var(--line-2); color: var(--text-2);
+  display: flex; align-items: center; justify-content: center;
+}
+.service-row__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.service-row__title { font-size: 13px; font-weight: 700; }
+.service-row__desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.service-row__price { flex-shrink: 0; font-size: 14px; font-weight: 700; white-space: nowrap; padding-top: 7px; }
+
 /* ── PRODUCT TABS ── */
 .ptabs { margin: 56px 0 64px; border-top: 1px solid var(--line); }
 .ptabs__nav { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
