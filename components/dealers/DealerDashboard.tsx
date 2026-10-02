@@ -197,8 +197,6 @@ export default function DealerDashboard({
             const dp          = dealerPrice(p.price, discount);
             const qKey        = getQtyKey(p.id, variant?.name ?? null);
             const qty         = qtys[qKey] ?? 1;
-            const retailVat   = Math.round(p.price * 1.2 * 100) / 100;
-            const dpVat       = Math.round(dp    * 1.2 * 100) / 100;
 
             return (
               <div key={p.id} className="dl-product-card">
@@ -230,12 +228,12 @@ export default function DealerDashboard({
                     <div className="dl-product-card__price-block dl-product-card__price-block--retail">
                       <div className="dl-product-card__price-head">Клиентска</div>
                       <div className="dl-product-card__price-main">{fmt(p.price)} €</div>
-                      <div className="dl-product-card__price-vat">{fmt(retailVat)} с ДДС</div>
+                      <div className="dl-product-card__price-vat">с ДДС</div>
                     </div>
                     <div className="dl-product-card__price-block dl-product-card__price-block--dealer">
                       <div className="dl-product-card__price-head">Дилърска</div>
                       <div className="dl-product-card__price-main">{fmt(dp)} €</div>
-                      <div className="dl-product-card__price-vat">{fmt(dpVat)} с ДДС</div>
+                      <div className="dl-product-card__price-vat">с ДДС</div>
                     </div>
                   </div>
                   <div className="dl-product-card__actions">
