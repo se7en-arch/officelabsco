@@ -1,20 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { randomInt } from 'crypto';
 import { prisma } from '@/lib/prisma';
-import { hashPassword } from '@/lib/dealer-auth';
-import { sendDealerNewPassword } from '@/lib/mailer';
+import { sendDealerResetLink } from '@/lib/mailer';
+import { createResetToken } from '@/lib/dealer-reset';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
 
 // 3 requests per hour per IP — stops someone from spamming reset emails.
 const isRateLimited = createRateLimiter(3, 60 * 60_000);
 
-// Unambiguous characters only (no 0/O, 1/l/I) so it's easy to type from an email.
-const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-function generatePassword(length = 12): string {
-  let out = '';
-  for (let i = 0; i < length; i++) out += ALPHABET[randomInt(ALPHABET.length)];
-  return out;
-}
+// Dealer-facing site (middleware rewrites dealers.* → /dealers/*).
+const DEALERS_BASE = process.env.NEXT_PUBLIC_DEALERS_URL ?? 'https://dealers.officelabsco.com';
 
 export async function POST(req: NextRequest) {
   if (isRateLimited(getIp(req))) {
@@ -24,7 +18,7 @@ export async function POST(req: NextRequest) {
   // Same response whether or not the account exists — no account enumeration.
   const genericOk = NextResponse.json({
     ok: true,
-    message: 'Ако имейлът е регистриран при нас, ще получите нова парола на него в рамките на няколко минути.',
+    message: 'Ако имейлът е регистриран при нас, ще получите линк за смяна на паролата в рамките на няколко минути.',
   });
 
   try {
@@ -35,15 +29,9 @@ export async function POST(req: NextRequest) {
     const dealer = await prisma.dealer.findUnique({ where: { email: normalized } });
     if (!dealer) return genericOk;
 
-    const newPassword = generatePassword();
-    // Overwriting the hash also invalidates any existing dealer session cookie,
-    // since sessions are bound to the stored passwordHash.
-    await prisma.dealer.update({
-      where: { id: dealer.id },
-      data: { passwordHash: await hashPassword(newPassword) },
-    });
-
-    await sendDealerNewPassword(dealer.email, dealer.contactName, newPassword);
+    const token = await createResetToken(dealer.id);
+    const link = `${DEALERS_BASE}/reset?id=${encodeURIComponent(dealer.id)}&token=${token}`;
+    await sendDealerResetLink(dealer.email, dealer.contactName, link);
     return genericOk;
   } catch {
     return genericOk;
