@@ -9,6 +9,28 @@ export default function DealerLoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotMsg, setForgotMsg] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+
+  async function handleForgot(e: React.FormEvent) {
+    e.preventDefault();
+    setForgotLoading(true); setForgotMsg('');
+    try {
+      const res = await fetch('/api/dealers/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await res.json();
+      setForgotMsg(res.ok ? data.message : (data.error ?? 'Грешка. Опитайте отново.'));
+    } catch {
+      setForgotMsg('Грешка при свързване.');
+    } finally {
+      setForgotLoading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -17,7 +39,7 @@ export default function DealerLoginPage() {
       const res = await fetch('/api/dealers/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
@@ -200,6 +222,27 @@ export default function DealerLoginPage() {
               {loading ? 'Влизане...' : 'Вход →'}
             </button>
           </form>
+
+          <div style={{ textAlign: 'center', marginTop: 12, fontSize: 13 }}>
+            <button type="button" onClick={() => { setForgotOpen(o => !o); setForgotMsg(''); }}
+              style={{ background: 'none', border: 'none', color: '#B45309', cursor: 'pointer', fontSize: 13, padding: 0 }}>
+              Забравена парола?
+            </button>
+          </div>
+
+          {forgotOpen && (
+            <form onSubmit={handleForgot} style={{ marginTop: 14 }}>
+              <div className="dl-glass-form-group">
+                <label htmlFor="forgot-email">Имейл адрес</label>
+                <input id="forgot-email" type="email" value={forgotEmail}
+                  onChange={e => setForgotEmail(e.target.value)} required placeholder="your@company.com" />
+              </div>
+              <button type="submit" className="dl-glass-btn" disabled={forgotLoading}>
+                {forgotLoading ? 'Изпращане...' : 'Изпрати нова парола'}
+              </button>
+              {forgotMsg && <div style={{ marginTop: 10, fontSize: 13, color: '#374151' }}>{forgotMsg}</div>}
+            </form>
+          )}
 
           <div className="dl-glass-divider">
             <span>или</span>

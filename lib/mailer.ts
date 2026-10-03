@@ -331,3 +331,33 @@ export async function sendCustomerConfirmation(order: OrderEmailData): Promise<v
   if (error) console.error('[Mailer] Клиентски имейл грешка:', error);
   else console.log(`[Mailer] Потвърждение → ${order.email}`);
 }
+
+// ─── Dealer password reset ─────────────────────────────────────────────────
+
+export async function sendDealerNewPassword(to: string, contactName: string, newPassword: string): Promise<void> {
+  const resend = getResend();
+  if (!resend) {
+    console.warn('[Mailer] RESEND_API_KEY не е зададен — пропускам имейл за нова парола.');
+    return;
+  }
+
+  const html = `
+    <div style="font-family:system-ui,-apple-system,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#1a1a1a">
+      <h2 style="font-size:18px;margin:0 0 12px">Нова парола за дилърския портал</h2>
+      <p style="font-size:14px;line-height:1.6;margin:0 0 16px">Здравейте${contactName ? `, ${contactName}` : ''},</p>
+      <p style="font-size:14px;line-height:1.6;margin:0 0 16px">По ваша заявка генерирахме нова парола за вход в дилърския портал на OfficeLabs Co:</p>
+      <p style="font-size:18px;font-weight:700;letter-spacing:1px;background:#f3f4f6;border-radius:8px;padding:12px 16px;margin:0 0 16px;font-family:monospace">${newPassword}</p>
+      <p style="font-size:13px;line-height:1.6;color:#555;margin:0">Препоръчваме да смените паролата след първия вход. Ако не сте поискали тази промяна, свържете се с нас на info@officelabsco.com.</p>
+    </div>`;
+
+  const { error } = await resend.emails.send({
+    from:    'OfficeLabs Co <noreply@officelabsco.com>',
+    to,
+    replyTo: 'info@officelabsco.com',
+    subject: 'Нова парола — дилърски портал | OfficeLabs Co',
+    html,
+  });
+
+  if (error) console.error('[Mailer] Имейл за нова парола грешка:', error);
+  else console.log(`[Mailer] Нова парола изпратена → ${to}`);
+}

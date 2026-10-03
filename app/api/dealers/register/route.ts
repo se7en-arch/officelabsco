@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Невалиден телефонен номер. Формат: +359 88 888 8888 или 088 888 8888.' }, { status: 400 });
     }
 
-    const existingEmail = await prisma.dealer.findUnique({ where: { email: email.toLowerCase() } });
+    const existingEmail = await prisma.dealer.findUnique({ where: { email: String(email).trim().toLowerCase() } });
     if (existingEmail) {
       return NextResponse.json({ error: 'Имейлът вече е регистриран.' }, { status: 409 });
     }
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     const passwordHash = await hashPassword(password);
     const dealer = await prisma.dealer.create({
       data: {
-        email:          email.toLowerCase(),
+        email:          String(email).trim().toLowerCase(),
         passwordHash,
         companyName:    String(companyName).slice(0, 200),
         contactName:    String(contactName).slice(0, 100),

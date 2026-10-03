@@ -17,7 +17,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Имейл и парола са задължителни.' }, { status: 400 });
     }
 
-    const dealer = await prisma.dealer.findUnique({ where: { email: email.toLowerCase() } });
+    // Trim: mobile autofill and copy-paste often add a trailing space to the email.
+    const dealer = await prisma.dealer.findUnique({ where: { email: String(email).trim().toLowerCase() } });
 
     // H-04: verifyAndUpgrade auto-migrates legacy SHA-256 → bcrypt on successful login
     const passwordOk = dealer ? await verifyAndUpgrade(password, dealer) : false;
