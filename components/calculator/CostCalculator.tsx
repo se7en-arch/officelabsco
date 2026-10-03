@@ -635,8 +635,12 @@ export default function CostCalculator({
     }, 0);
     return hardwareCost + materialCost;
   }
-  function moduleSale(m: ModuleRow): number { return moduleCost(m) * (1 + state.markup / 100); }
-  function moduleFinal(m: ModuleRow): number { return moduleSale(m) * (1 + state.vat / 100); }
+  // All material/hardware prices are entered VAT-inclusive, so moduleCost() is a
+  // gross figure. Net cost strips the VAT once; markup is applied to the net cost,
+  // and VAT is added back only at the very end (never applied twice).
+  function moduleCostNet(m: ModuleRow): number { return moduleCost(m) / (1 + state.vat / 100); }
+  function moduleSaleNet(m: ModuleRow): number { return moduleCostNet(m) * (1 + state.markup / 100); }
+  function moduleSaleGross(m: ModuleRow): number { return moduleSaleNet(m) * (1 + state.vat / 100); }
 
   const allSeriesNames = useMemo(() => {
     const set = new Set(state.modules.map(m => m.seriesName || OTHER_GROUP));
@@ -790,9 +794,10 @@ export default function CostCalculator({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {filteredModules.map(m => {
             const isOpen = expanded.has(m.id);
-            const cost = moduleCost(m);
-            const sale = moduleSale(m);
-            const final = moduleFinal(m);
+            const costGross = moduleCost(m);
+            const costNet = moduleCostNet(m);
+            const saleNet = moduleSaleNet(m);
+            const saleGross = moduleSaleGross(m);
             const accent = seriesAccent(m.seriesName);
             return (
               <div key={m.id} className={`cc-module-card${isOpen ? ' cc-module-card--open' : ''}`} style={{ borderTopColor: accent }}>
@@ -821,16 +826,20 @@ export default function CostCalculator({
 
                   <div className="cc-module-totals">
                     <div className="cc-stat">
-                      <span className="cc-stat__label">Себестойност</span>
-                      <span className="cc-stat__value">{fmt(cost)} €</span>
+                      <span className="cc-stat__label">Себест. без ДДС</span>
+                      <span className="cc-stat__value">{fmt(costNet)} €</span>
                     </div>
                     <div className="cc-stat">
-                      <span className="cc-stat__label">Продажна</span>
-                      <span className="cc-stat__value">{fmt(sale)} €</span>
+                      <span className="cc-stat__label">Себест. с ДДС</span>
+                      <span className="cc-stat__value">{fmt(costGross)} €</span>
+                    </div>
+                    <div className="cc-stat">
+                      <span className="cc-stat__label">Продажна без ДДС</span>
+                      <span className="cc-stat__value">{fmt(saleNet)} €</span>
                     </div>
                     <div className="cc-stat cc-stat--accent">
-                      <span className="cc-stat__label">С ДДС</span>
-                      <span className="cc-stat__value">{fmt(final)} €</span>
+                      <span className="cc-stat__label">Продажна с ДДС</span>
+                      <span className="cc-stat__value">{fmt(saleGross)} €</span>
                     </div>
                   </div>
 
