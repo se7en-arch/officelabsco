@@ -1,5 +1,6 @@
 'use client';
 import { Link } from '@/i18n/navigation';
+import { COLOR_VARIANTS } from '@/lib/color-variants';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useCart } from '@/lib/cart-store';
@@ -26,7 +27,12 @@ export default function ProductCard({
   const addItem = useCart((s) => s.addItem);
   const [added, setAdded] = useState(false);
 
+  // Products with colour options must not be added from the grid (no colour would
+  // be chosen). The button just opens the product page, where the colour is picked.
+  const hasColors = !!COLOR_VARIANTS[slug];
+
   function handleAdd(e: React.MouseEvent) {
+    if (hasColors) return; // let the card link open the product page
     e.preventDefault();
     addItem({ id, name, slug, price, image, seriesName, categoryName });
     setAdded(true);
@@ -59,7 +65,7 @@ export default function ProductCard({
             className={`card__buy-btn${added ? ' card__buy-btn--added' : ''}`}
             onClick={handleAdd}
           >
-            <span className="card__buy-btn__default">{t('addShort')}</span>
+            <span className="card__buy-btn__default">{hasColors ? t('chooseColor') : t('addShort')}</span>
             <span className="card__buy-btn__success">{t('addedShort')}</span>
           </button>
         </div>

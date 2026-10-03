@@ -134,6 +134,7 @@
     "vatNote": "Price includes VAT.",
     "assemblyTitle": "Assembly",
     "assemblyValue": "€{price}.00 — optional, not included in the product price. Carried out at the delivery address on a separately arranged date.",
+    "chooseColor": "Choose color",
     "addShort": "Order",
     "addedShort": "Added!",
     "breadHome": "Home",
