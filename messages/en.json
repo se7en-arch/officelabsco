@@ -79,7 +79,9 @@
     "city": "City",
     "postcode": "Postal code",
     "address": "Address",
-    "officeHint": "We will contact you to arrange the {carrier} office in your selected city.",
+    "officeHint": "We will contact you to arrange the courier office in your selected city.",
+    "proformaHint": "Payment is made by proforma invoice, which you will receive after confirming. We will contact you to arrange delivery.",
+    "confirmOnly": "Confirm",
     "deliveryFree": "Free",
     "paymentTitle": "Payment method",
     "cardLabel": "Online by card",
@@ -110,8 +112,8 @@
     "summaryDeliveryFree": "Free",
     "summaryTotal": "Total",
     "successTitle": "Order received!",
-    "successEmail": "You will receive a confirmation at {email}.",
-    "successCall": "Expect a call from {carrier} to arrange delivery.",
+    "successEmail": "You will receive a confirmation at the email address you entered.",
+    "successCall": "Expect a call from us to arrange delivery.",
     "continueShopping": "Continue shopping"
   },
   "product": {

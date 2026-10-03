@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminAuthenticated } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
+import { carrierLabel, paymentLabel } from '@/lib/order-labels';
 
 function esc(s: string | null | undefined): string {
   return (s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -60,7 +61,7 @@ export async function GET(
     <div class="addr-line">${esc(order.phone)}</div>
   ` : `
     <div class="addr-name">${esc(order.firstName)} ${esc(order.lastName)}</div>
-    <div class="addr-line">Офис на ${esc(order.carrier)}</div>
+    <div class="addr-line">Офис на ${esc(carrierLabel(order.carrier))}</div>
     <div class="addr-line">${esc(order.phone)}</div>
   `;
 
@@ -273,8 +274,8 @@ tbody tr:last-child{border-bottom:2px solid #1c1c1c}
     <div>
       <div class="footer-label">Начин на плащане</div>
       <div class="footer-text">
-        ${esc(order.payment === 'card' ? 'Банкова карта' : 'Наложен платеж')}<br>
-        Куриер: ${esc(order.carrier)}<br>
+        ${esc(paymentLabel(order.payment))}<br>
+        Куриер: ${esc(carrierLabel(order.carrier))}<br>
         ${esc(order.delivType === 'address' ? 'Доставка до адрес' : 'Доставка до офис')}
       </div>
     </div>

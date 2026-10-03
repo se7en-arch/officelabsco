@@ -5,10 +5,10 @@ import { useCart } from '@/lib/cart-store';
 import { useTranslations } from 'next-intl';
 import BuyNowPayLater from '@/components/BuyNowPayLater';
 
-const CARRIERS = [
-  { id: 'speedy', label: 'Speedy' },
-  { id: 'econt',  label: 'Econt' },
-];
+// Every order is confirmed by proforma invoice and the courier is arranged with the
+// customer afterwards, so neither is chosen in the checkout.
+const CARRIER = 'none';
+const PAYMENT = 'proforma';
 
 export default function CheckoutPage() {
   const t = useTranslations('checkout');
@@ -33,13 +33,13 @@ export default function CheckoutPage() {
   const [vat, setVat]               = useState('');
   const [mol, setMol]               = useState('');
 
-  const [carrier, setCarrier]       = useState('speedy');
+  const carrier = CARRIER;
   const [delivType, setDelivType]   = useState<'address' | 'office'>('address');
   const [city, setCity]             = useState('');
   const [address, setAddress]       = useState('');
   const [postcode, setPostcode]     = useState('');
 
-  const [payment, setPayment]       = useState<'card' | 'cod'>('card');
+  const payment = PAYMENT;
   const [errors, setErrors]   = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Set<string>>(new Set());
 
@@ -187,8 +187,6 @@ export default function CheckoutPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  const carrierLabel = CARRIERS.find(c => c.id === carrier)?.label ?? carrier;
-
   if (items.length === 0 && !done) {
     return (
       <div className="page-wrap">
@@ -208,8 +206,8 @@ export default function CheckoutPage() {
           <div className="checkout-success__icon">✓</div>
           <h1 className="checkout-success__title">{t('successTitle')}</h1>
           <p className="checkout-success__sub">
-            {t('successEmail', { email })}<br />
-            {t('successCall', { carrier: carrierLabel })}
+            {t('successEmail')}<br />
+            {t('successCall')}
           </p>
           <Link href="/shop" className="btn-primary" style={{ marginTop: 24 }}>{t('continueShopping')}</Link>
         </div>
@@ -402,22 +400,6 @@ export default function CheckoutPage() {
             <div className="co-section">
               <h2 className="co-section__title">{t('deliveryTitle')}</h2>
 
-              <div className="co-field" style={{ marginBottom: 24 }}>
-                <label className="co-label">{t('courier')}</label>
-                <div className="co-carriers">
-                  {CARRIERS.map((c) => (
-                    <button
-                      key={c.id}
-                      className={`co-carrier${carrier === c.id ? ' active' : ''}`}
-                      onClick={() => setCarrier(c.id)}
-                    >
-                      <span className="co-carrier__name">{c.label}</span>
-                      <span className="co-carrier__price">{t('deliveryFree')}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="co-toggle-wrap" style={{ marginBottom: 24 }}>
                 <button className={`co-toggle${delivType === 'address' ? ' active' : ''}`} onClick={() => setDelivType('address')}>{t('toAddress')}</button>
                 <button className={`co-toggle${delivType === 'office' ? ' active' : ''}`} onClick={() => setDelivType('office')}>{t('toOffice')}</button>
@@ -472,7 +454,7 @@ export default function CheckoutPage() {
               )}
 
               {delivType === 'office' && (
-                <p className="co-hint">{t('officeHint', { carrier: carrierLabel })}</p>
+                <p className="co-hint">{t('officeHint')}</p>
               )}
             </div>
           )}
@@ -481,41 +463,7 @@ export default function CheckoutPage() {
           {step === 2 && (
             <div className="co-section">
               <h2 className="co-section__title">{t('paymentTitle')}</h2>
-              <div className="co-payments">
-                <button
-                  className={`co-payment${payment === 'card' ? ' active' : ''}`}
-                  onClick={() => setPayment('card')}
-                >
-                  <span className="co-payment__icon">💳</span>
-                  <div>
-                    <div className="co-payment__label">{t('cardLabel')}</div>
-                    <div className="co-payment__sub">{t('cardSub')}</div>
-                  </div>
-                </button>
-                <button
-                  className={`co-payment${payment === 'cod' ? ' active' : ''}`}
-                  onClick={() => setPayment('cod')}
-                >
-                  <span className="co-payment__icon">💵</span>
-                  <div>
-                    <div className="co-payment__label">{t('codLabel')}</div>
-                    <div className="co-payment__sub">{t('codSub')}</div>
-                  </div>
-                </button>
-              </div>
-
-              {/* <BuyNowPayLater price={rawTotal} /> */}
-
-              {payment === 'card' && (
-                <div className="co-card-info">
-                  <p>{t('cardHint')}</p>
-                </div>
-              )}
-              {payment === 'cod' && (
-                <div className="co-card-info">
-                  <p>{t('codHint')}</p>
-                </div>
-              )}
+              <p className="co-hint">{t('proformaHint')}</p>
 
               <div className="co-review">
                 <h3 className="co-review__title">{t('reviewTitle')}</h3>
@@ -529,8 +477,7 @@ export default function CheckoutPage() {
                     {vat && <div className="co-review__row"><span>{t('reviewVat')}</span><span>{vat}</span></div>}
                   </>
                 )}
-                <div className="co-review__row"><span>{t('reviewCourier')}</span><span>{carrierLabel}</span></div>
-                <div className="co-review__row">
+                                <div className="co-review__row">
                   <span>{t('reviewDelivery')}</span>
                   <span>{delivType === 'address' ? `${city}, ${address}` : t('toOfficeCity', { city })}</span>
                 </div>
@@ -563,7 +510,7 @@ export default function CheckoutPage() {
               <button className="co-nav__next" onClick={next}>{t('next')}</button>
             ) : (
               <button className="co-nav__submit" onClick={submit}>
-                {payment === 'card' ? t('confirmPay') : t('confirmOrder')}
+                {t('confirmOnly')}
               </button>
             )}
           </div>

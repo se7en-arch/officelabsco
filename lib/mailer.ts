@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { paymentLabel } from '@/lib/order-labels';
 
 export interface OrderEmailData {
   id:          number;
@@ -143,7 +144,7 @@ function buildAdminHtml(order: OrderEmailData): string {
         ${row('Град', order.city)}
         ${order.delivType === 'address' ? row('Адрес', order.address) : ''}
         ${order.delivType === 'address' && order.postcode ? row('Пощ. код', order.postcode) : ''}
-        ${row('Плащане', order.payment === 'card' ? 'Банкова карта' : 'Наложен платеж')}
+        ${row('Плащане', paymentLabel(order.payment))}
       </table>
 
       <div style="border-top:1px solid #eee;margin:20px 0"></div>
@@ -250,7 +251,7 @@ function buildCustomerHtml(order: OrderEmailData): string {
           ${row('Тип', order.delivType === 'address' ? 'До адрес' : 'До офис на куриера')}
           ${row('Град', order.city)}
           ${order.delivType === 'address' ? row('Адрес', order.address) : ''}
-          ${row('Плащане', order.payment === 'card' ? 'Банкова карта' : 'Наложен платеж')}
+          ${row('Плащане', paymentLabel(order.payment))}
         </table>
       </div>
 

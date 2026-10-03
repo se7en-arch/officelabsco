@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
+import { carrierLabel, paymentLabel } from '@/lib/order-labels';
 import OrderStatusForm from '@/components/admin/OrderStatusForm';
 
 const STATUS_LABELS: Record<string, string> = {
@@ -266,12 +267,12 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
               <h2>Доставка</h2>
             </div>
             <div className="admin-card__body" style={{ padding: '12px 20px' }}>
-              <DetailRow label="Куриер" value={order.carrier} />
+              <DetailRow label="Куриер" value={carrierLabel(order.carrier)} />
               <DetailRow label="Тип" value={order.delivType === 'address' ? 'До адрес' : 'До офис'} />
               <DetailRow label="Град" value={order.city} />
               <DetailRow label="Адрес" value={order.address} />
               <DetailRow label="Пощ. код" value={order.postcode} />
-              <DetailRow label="Плащане" value={order.payment === 'card' ? 'Карта' : 'Наложен платеж'} />
+              <DetailRow label="Плащане" value={paymentLabel(order.payment)} />
               {order.trackingNumber && (
                 <>
                   <div style={{ borderTop: '1px solid var(--line)', margin: '10px 0' }} />
