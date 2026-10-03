@@ -339,7 +339,7 @@ export default function EditProductForm({
         <div style={{ padding: 20 }}>
           <div className="admin-form-row">
             <div className="admin-form-group">
-              <label className="admin-form-label">Размери</label>
+              <label className="admin-form-label">Размер</label>
               <input className="admin-form-input" value={form.dimensions} onChange={e => set('dimensions', e.target.value)} placeholder="напр. 120 × 60 × 75 cm" />
             </div>
             <div className="admin-form-group">

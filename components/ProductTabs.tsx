@@ -130,7 +130,7 @@ export default function ProductTabs({
             <tbody>
               <tr><th>{t('specSeries')}</th><td>{seriesName}</td></tr>
               <tr><th>{t('specCategory')}</th><td>{categoryName}</td></tr>
-              {dimensions && <tr><th>{t('specDimensions')}</th><td>{dimensions}</td></tr>}
+              <tr><th>{t('specDimensions')}</th><td>{dimensions || '—'}</td></tr>
               {weight && <tr><th>{t('specWeight')}</th><td>{weight}</td></tr>}
               {colors && <tr><th>{t('specColors')}</th><td>{colors}</td></tr>}
               {material && <tr><th>{t('specMaterial')}</th><td>{material}</td></tr>}
