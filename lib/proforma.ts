@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { SELLER } from '@/lib/seller';
+import type { Seller } from '@/lib/seller';
 import { paymentLabel } from '@/lib/order-labels';
 
 type ProformaOrder = {
@@ -34,13 +34,13 @@ export function proformaNumber(order: Pick<ProformaOrder, 'id' | 'orderNumber' |
 }
 
 /** Proforma = payment request before delivery; it is not a tax document. */
-export function buildProformaHtml(order: ProformaOrder, vatPct: number): string {
+export function buildProformaHtml(order: ProformaOrder, vatPct: number, seller: Seller): string {
   const subtotal = order.items.reduce((s, i) => s + i.price * i.quantity, 0);
   const vatAmount = vatPct > 0 ? +((subtotal * vatPct) / (100 + vatPct)).toFixed(2) : 0;
   const net = +(subtotal - vatAmount).toFixed(2);
   const isCompany = !!(order.company || order.eik);
   const date = new Date(order.createdAt).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' });
-  const due = new Date(Date.now() + SELLER.paymentDays * 86400000).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' });
+  const due = new Date(Date.now() + seller.paymentDays * 86400000).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' });
 
   const rows = order.items.map((item, idx) => `
     <tr style="background:${idx % 2 ? '#f9f9f9' : '#fff'}">
@@ -64,9 +64,9 @@ export function buildProformaHtml(order: ProformaOrder, vatPct: number): string 
 <div style="max-width:720px;margin:24px auto;background:#fff;padding:36px 40px">
   <table style="width:100%;border-collapse:collapse"><tr>
     <td style="vertical-align:top">
-      <div style="font-size:17px;font-weight:800">${esc(SELLER.name)}</div>
+      <div style="font-size:17px;font-weight:800">${esc(seller.name)}</div>
       <div style="font-size:11px;color:#666;line-height:1.6;margin-top:4px">
-        ЕИК: ${esc(SELLER.eik)}${SELLER.vatNumber ? `<br>ДДС №: ${esc(SELLER.vatNumber)}` : ''}<br>${esc(SELLER.address)}
+        ЕИК: ${esc(seller.eik)}${seller.vatNumber ? `<br>ДДС №: ${esc(seller.vatNumber)}` : ''}<br>${esc(seller.address)}
       </div>
     </td>
     <td style="vertical-align:top;text-align:right">
@@ -111,10 +111,10 @@ export function buildProformaHtml(order: ProformaOrder, vatPct: number): string 
 
   <div style="margin-top:28px;padding:16px 18px;background:#f5f5f5;font-size:12px;line-height:1.7">
     <div style="font-size:9px;font-weight:800;letter-spacing:1px;color:#888;text-transform:uppercase;margin-bottom:6px">Банкови данни за плащане</div>
-    Получател: <strong>${esc(SELLER.name)}</strong><br>
-    Банка: ${esc(SELLER.bankName)}<br>
-    IBAN: <strong>${esc(SELLER.iban)}</strong><br>
-    BIC: ${esc(SELLER.bic)}<br>
+    Получател: <strong>${esc(seller.name)}</strong><br>
+    Банка: ${esc(seller.bankName)}<br>
+    IBAN: <strong>${esc(seller.iban)}</strong><br>
+    BIC: ${esc(seller.bic)}<br>
     Основание: <strong>${proformaNumber(order)}</strong><br>
     Срок за плащане: до ${due}
   </div>
@@ -127,7 +127,7 @@ export function buildProformaHtml(order: ProformaOrder, vatPct: number): string 
 </body></html>`;
 }
 
-export async function sendProforma(order: ProformaOrder, vatPct: number): Promise<{ ok: boolean; error?: string }> {
+export async function sendProforma(order: ProformaOrder, vatPct: number, seller: Seller): Promise<{ ok: boolean; error?: string }> {
   if (!process.env.RESEND_API_KEY) return { ok: false, error: 'Липсва RESEND_API_KEY.' };
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { error } = await resend.emails.send({
@@ -135,7 +135,7 @@ export async function sendProforma(order: ProformaOrder, vatPct: number): Promis
     to:      order.email,
     replyTo: 'info@officelabsco.com',
     subject: `Проформа фактура ${proformaNumber(order)} — OfficeLabs Co`,
-    html:    buildProformaHtml(order, vatPct),
+    html:    buildProformaHtml(order, vatPct, seller),
   });
   if (error) return { ok: false, error: String(error.message ?? error) };
   return { ok: true };
