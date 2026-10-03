@@ -154,11 +154,11 @@ export default function CartPage() {
 
                 <div className="cart-item__actions">
                   <div className="qty">
-                    <button className="qty__btn" onClick={() => updateQty(item.id, item.quantity - 1)}>−</button>
+                    <button className="qty__btn" onClick={() => updateQty(item.id, item.quantity - 1, item.selectedColor)}>−</button>
                     <span className="qty__val">{item.quantity}</span>
-                    <button className="qty__btn" onClick={() => updateQty(item.id, item.quantity + 1)}>+</button>
+                    <button className="qty__btn" onClick={() => updateQty(item.id, item.quantity + 1, item.selectedColor)}>+</button>
                   </div>
-                  <button className="btn-remove" onClick={() => removeItem(item.id)}>
+                  <button className="btn-remove" onClick={() => removeItem(item.id, item.selectedColor)}>
                     {t('remove')}
                   </button>
                 </div>

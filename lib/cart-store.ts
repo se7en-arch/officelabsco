@@ -25,8 +25,8 @@ type CartStore = {
   // still in the cart.
   bundleProductIds: number[];
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
-  removeItem: (id: number) => void;
-  updateQty: (id: number, quantity: number) => void;
+  removeItem: (id: number, selectedColor?: string) => void;
+  updateQty: (id: number, quantity: number, selectedColor?: string) => void;
   clear: () => void;
   setPromo: (code: string, discountPercent: number, bundleProductIds?: number[]) => void;
   clearPromo: () => void;
@@ -74,21 +74,24 @@ export const useCart = create<CartStore>()(
           return { items: [...state.items, { ...item, quantity: 1 }] };
         }),
 
-      removeItem: (id) =>
+      // A line is identified by product + colour, so the same product in two
+      // colours must be removed/updated separately.
+      removeItem: (id, selectedColor) =>
         set((state) => ({
-          items: state.items.filter((i) => i.id !== id),
+          items: state.items.filter((i) => !(i.id === id && (i.selectedColor ?? null) === (selectedColor ?? null))),
           ...dropBundlePromoIfNeeded(state, id),
         })),
 
-      updateQty: (id, quantity) =>
+      updateQty: (id, quantity, selectedColor) =>
         set((state) => {
+          const sameLine = (i: CartItem) => i.id === id && (i.selectedColor ?? null) === (selectedColor ?? null);
           if (quantity <= 0) {
             return {
-              items: state.items.filter((i) => i.id !== id),
+              items: state.items.filter((i) => !sameLine(i)),
               ...dropBundlePromoIfNeeded(state, id),
             };
           }
-          return { items: state.items.map((i) => (i.id === id ? { ...i, quantity } : i)) };
+          return { items: state.items.map((i) => (sameLine(i) ? { ...i, quantity } : i)) };
         }),
 
       clear: () => set({ items: [], promoCode: null, discountPercent: 0, bundleProductIds: [] }),
