@@ -1,9 +1,15 @@
 import { Resend } from 'resend';
 import { paymentLabel } from '@/lib/order-labels';
 
+// Same number the admin panel shows (#orderCode, falling back to the sequence number).
+function orderNo(order: { id: number; orderNumber?: number | null; orderCode?: string | null }): string {
+  return `#${order.orderCode ?? String(order.orderNumber ?? order.id).padStart(5, '0')}`;
+}
+
 export interface OrderEmailData {
   id:          number;
   orderNumber?: number | null;
+  orderCode?:   string | null;
   firstName: string;
   lastName:  string;
   email:     string;
@@ -80,7 +86,7 @@ function buildAdminHtml(order: OrderEmailData): string {
           </td>
           <td align="right">
             <div style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:0.8px">Нова поръчка</div>
-            <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-top:2px">#Order${String(displayNum).padStart(5, '0')}</div>
+            <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;margin-top:2px">${orderNo(order)}</div>
           </td>
         </tr>
       </table>
@@ -139,7 +145,7 @@ function buildAdminHtml(order: OrderEmailData): string {
 
       <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:12px">Доставка и плащане</div>
       <table cellpadding="0" cellspacing="0" width="100%">
-        ${row('Куриер', order.carrier.charAt(0).toUpperCase() + order.carrier.slice(1))}
+        ${order.carrier !== 'none' ? row('Куриер', order.carrier.charAt(0).toUpperCase() + order.carrier.slice(1)) : ''}
         ${row('Тип доставка', order.delivType === 'address' ? 'До адрес' : 'До офис')}
         ${row('Град', order.city)}
         ${order.delivType === 'address' ? row('Адрес', order.address) : ''}
@@ -181,7 +187,6 @@ function buildAdminHtml(order: OrderEmailData): string {
 // ─── Customer confirmation email ────────────────────────────────────────────
 
 function buildCustomerHtml(order: OrderEmailData): string {
-  const orderNo = `#Order${String(order.orderNumber ?? order.id).padStart(5, '0')}`;
   const date = new Date(order.createdAt).toLocaleDateString('bg-BG', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
@@ -218,7 +223,7 @@ function buildCustomerHtml(order: OrderEmailData): string {
       <div style="width:56px;height:56px;background:#dcfce7;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:28px;line-height:56px">✓</div>
       <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#1a1a1a;letter-spacing:-0.5px">Благодарим за поръчката!</h1>
       <p style="margin:0;font-size:14px;color:#666;line-height:1.6">
-        Здравейте, <strong>${order.firstName}</strong>! Получихме вашата поръчка <strong>${orderNo}</strong> от ${date}.<br>
+        Здравейте, <strong>${order.firstName}</strong>! Получихме вашата поръчка <strong>${orderNo(order)}</strong> от ${date}.<br>
         Ще се свържем с вас при изпращане на пратката.
       </p>
     </td>
@@ -247,7 +252,7 @@ function buildCustomerHtml(order: OrderEmailData): string {
       <div style="margin-top:24px;background:#f9f9f9;border-radius:8px;padding:18px 20px">
         <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:10px">Доставка</div>
         <table cellpadding="0" cellspacing="0" width="100%">
-          ${row('Куриер', order.carrier.charAt(0).toUpperCase() + order.carrier.slice(1))}
+          ${order.carrier !== 'none' ? row('Куриер', order.carrier.charAt(0).toUpperCase() + order.carrier.slice(1)) : ''}
           ${row('Тип', order.delivType === 'address' ? 'До адрес' : 'До офис на куриера')}
           ${row('Град', order.city)}
           ${order.delivType === 'address' ? row('Адрес', order.address) : ''}
@@ -298,7 +303,7 @@ export async function sendOrderNotification(order: OrderEmailData): Promise<void
   }
 
   const to      = process.env.NOTIFY_EMAIL ?? 'info@officelabsco.com';
-  const subject = `Нова поръчка #Order${String(order.orderNumber ?? order.id).padStart(5, '0')} — €${order.total.toFixed(2)} | OfficeLabs Co`;
+  const subject = `Нова поръчка ${orderNo(order)} — €${order.total.toFixed(2)} | OfficeLabs Co`;
 
   const { error } = await resend.emails.send({
     from:    'OfficeLabs Co <noreply@officelabsco.com>',
@@ -319,7 +324,7 @@ export async function sendCustomerConfirmation(order: OrderEmailData): Promise<v
     return;
   }
 
-  const subject = `Потвърждение на поръчка #Order${String(order.orderNumber ?? order.id).padStart(5, '0')} — OfficeLabs Co`;
+  const subject = `Потвърждение на поръчка ${orderNo(order)} — OfficeLabs Co`;
 
   const { error } = await resend.emails.send({
     from:    'OfficeLabs Co <noreply@officelabsco.com>',
