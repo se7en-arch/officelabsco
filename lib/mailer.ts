@@ -327,7 +327,7 @@ export async function sendCustomerConfirmation(order: OrderEmailData): Promise<v
   const subject = `Потвърждение на поръчка ${orderNo(order)} — OfficeLabs Co`;
 
   const { error } = await resend.emails.send({
-    from:    'OfficeLabs Co <noreply@officelabsco.com>',
+    from:    'OfficeLabs Co <info@officelabsco.com>',
     to:      order.email,
     replyTo: 'info@officelabsco.com',
     subject,

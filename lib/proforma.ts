@@ -131,7 +131,7 @@ export async function sendProforma(order: ProformaOrder, vatPct: number, seller:
   if (!process.env.RESEND_API_KEY) return { ok: false, error: 'Липсва RESEND_API_KEY.' };
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { error } = await resend.emails.send({
-    from:    'OfficeLabs Co <noreply@officelabsco.com>',
+    from:    'OfficeLabs Co <info@officelabsco.com>',
     to:      order.email,
     replyTo: 'info@officelabsco.com',
     subject: `Проформа фактура ${proformaNumber(order)} — OfficeLabs Co`,
