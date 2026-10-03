@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 type Props = {
   product: Omit<CartItem, 'quantity' | 'selectedColor'>;
   stock?: number;
-  variants?: { name: string; color: string }[];
+  variants?: { name: string; color: string; images?: string[] }[];
 };
 
 // Made-to-order: every product is produced and delivered after the order is
@@ -32,7 +32,10 @@ export default function AddToCartButton({ product, variants }: Props) {
   }, [variants]);
 
   function handleAdd() {
-    for (let i = 0; i < qty; i++) addItem({ ...product, selectedColor });
+    // Use the photo of the chosen colour so the cart shows the right variant.
+    const variantImage = variants?.find((v) => v.name === selectedColor)?.images?.[0];
+    const image = variantImage ?? product.image;
+    for (let i = 0; i < qty; i++) addItem({ ...product, image, selectedColor });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   }
