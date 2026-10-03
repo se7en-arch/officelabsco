@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { carrierLabel, paymentLabel } from '@/lib/order-labels';
 import OrderStatusForm from '@/components/admin/OrderStatusForm';
+import SendProformaButton from '@/components/admin/SendProformaButton';
 
 const STATUS_LABELS: Record<string, string> = {
   pending: 'Нова',
@@ -105,6 +106,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             </svg>
             Изтегли фактура
           </a>
+          <SendProformaButton orderId={order.id} email={order.email} />
           <Link href="/adminpanel/orders" className="admin-cancel-btn">← Назад</Link>
         </div>
       </div>
