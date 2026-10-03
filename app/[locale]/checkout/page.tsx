@@ -467,6 +467,12 @@ export default function CheckoutPage() {
 
               <div className="co-review">
                 <h3 className="co-review__title">{t('reviewTitle')}</h3>
+                {items.map((item) => (
+                  <div key={`${item.id}-${item.selectedColor ?? ''}`} className="co-review__row">
+                    <span>{item.name}{item.selectedColor ? ` — ${item.selectedColor}` : ''} ×{item.quantity}</span>
+                    <span>{item.price * item.quantity} €</span>
+                  </div>
+                ))}
                 <div className="co-review__row"><span>{t('reviewClient')}</span><span>{firstName} {lastName}</span></div>
                 <div className="co-review__row"><span>{t('reviewPhone')}</span><span>{phone}</span></div>
                 <div className="co-review__row"><span>{t('reviewEmail')}</span><span>{email}</span></div>

@@ -126,6 +126,7 @@ export default function CartPage() {
                 <div className="cart-item__top">
                   <Link href={`/shop/${item.slug}`} className="cart-item__name">
                     {item.name}
+                    {item.selectedColor && <span style={{ fontWeight: 400, color: 'var(--muted)' }}> — {item.selectedColor}</span>}
                     {isBundleItem && (
                       <span style={{
                         marginLeft: 8, fontSize: 10.5, fontWeight: 800, color: '#16a34a',
@@ -181,7 +182,7 @@ export default function CartPage() {
               </div>
               {items.filter((i) => bundleIdSet.has(i.id)).map((item) => (
                 <div key={item.id} className="summary-row">
-                  <span>{item.name} ×{item.quantity}</span>
+                  <span>{item.name}{item.selectedColor ? ` — ${item.selectedColor}` : ''} ×{item.quantity}</span>
                   <span>{item.price * item.quantity} €</span>
                 </div>
               ))}
@@ -192,7 +193,7 @@ export default function CartPage() {
                   <div className="summary-group-label">{t('summaryOtherGroup')}</div>
                   {items.filter((i) => !bundleIdSet.has(i.id)).map((item) => (
                     <div key={item.id} className="summary-row">
-                      <span>{item.name} ×{item.quantity}</span>
+                      <span>{item.name}{item.selectedColor ? ` — ${item.selectedColor}` : ''} ×{item.quantity}</span>
                       <span>{item.price * item.quantity} €</span>
                     </div>
                   ))}
@@ -203,7 +204,7 @@ export default function CartPage() {
           ) : (
             items.map((item) => (
               <div key={item.id} className="summary-row">
-                <span>{item.name} ×{item.quantity}</span>
+                <span>{item.name}{item.selectedColor ? ` — ${item.selectedColor}` : ''} ×{item.quantity}</span>
                 <span>{item.price * item.quantity} €</span>
               </div>
             ))
