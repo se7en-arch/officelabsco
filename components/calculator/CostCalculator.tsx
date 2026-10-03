@@ -642,15 +642,6 @@ export default function CostCalculator({
   function moduleSaleNet(m: ModuleRow): number { return moduleCostNet(m) * (1 + state.markup / 100); }
   function moduleSaleGross(m: ModuleRow): number { return moduleSaleNet(m) * (1 + state.vat / 100); }
 
-  // Weight: sum of material sheets used by the module. A half sheet counts as half a plate.
-  const PLATE_KG = 70;
-  function moduleKg(m: ModuleRow): number {
-    return Object.values(m.materials).reduce((sum, sel) => {
-      const plates = sel.portion === 'half' ? 0.5 : 1;
-      return sum + plates * (sel.qty || 0) * PLATE_KG;
-    }, 0);
-  }
-
   const allSeriesNames = useMemo(() => {
     const set = new Set(state.modules.map(m => m.seriesName || OTHER_GROUP));
     return Array.from(set).sort((a, b) => a.localeCompare(b, 'bg'));
@@ -807,7 +798,6 @@ export default function CostCalculator({
             const costNet = moduleCostNet(m);
             const saleNet = moduleSaleNet(m);
             const saleGross = moduleSaleGross(m);
-            const kg = moduleKg(m);
             const accent = seriesAccent(m.seriesName);
             return (
               <div key={m.id} className={`cc-module-card${isOpen ? ' cc-module-card--open' : ''}`} style={{ borderTopColor: accent }}>
@@ -850,10 +840,6 @@ export default function CostCalculator({
                     <div className="cc-stat cc-stat--accent">
                       <span className="cc-stat__label">Продажна с ДДС</span>
                       <span className="cc-stat__value">{fmt(saleGross)} €</span>
-                    </div>
-                    <div className="cc-stat">
-                      <span className="cc-stat__label">Килограми</span>
-                      <span className="cc-stat__value">{fmt(kg)} кг</span>
                     </div>
                   </div>
 
