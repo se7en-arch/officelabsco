@@ -225,7 +225,7 @@ export default function DealerLoginPage() {
 
           <div style={{ textAlign: 'center', marginTop: 12, fontSize: 13 }}>
             <button type="button" onClick={() => { setForgotOpen(o => !o); setForgotMsg(''); }}
-              style={{ background: 'none', border: 'none', color: '#B45309', cursor: 'pointer', fontSize: 13, padding: 0 }}>
+              style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 13, padding: 0 }}>
               Забравена парола?
             </button>
           </div>
@@ -238,9 +238,9 @@ export default function DealerLoginPage() {
                   onChange={e => setForgotEmail(e.target.value)} required placeholder="your@company.com" />
               </div>
               <button type="submit" className="dl-glass-btn" disabled={forgotLoading}>
-                {forgotLoading ? 'Изпращане...' : 'Изпрати нова парола'}
+                {forgotLoading ? 'Изпращане...' : 'Изпрати имейл за смяна'}
               </button>
-              {forgotMsg && <div style={{ marginTop: 10, fontSize: 13, color: '#374151' }}>{forgotMsg}</div>}
+              {forgotMsg && <div style={{ marginTop: 10, fontSize: 13, color: '#fff' }}>{forgotMsg}</div>}
             </form>
           )}
 
