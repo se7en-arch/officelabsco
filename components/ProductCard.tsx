@@ -4,7 +4,8 @@ import { COLOR_VARIANTS } from '@/lib/color-variants';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '@/lib/cart-store';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { colourLabel } from '@/lib/i18n-labels';
 
 type Props = {
   id: number;
@@ -16,14 +17,20 @@ type Props = {
   badge?: string | null;
   seriesName: string;
   categoryName: string;
+  nameBg?: string;
+  nameEn?: string | null;
+  categoryNameBg?: string;
+  categoryNameEn?: string | null;
   description?: string | null;
   stock?: number;
 };
 
 export default function ProductCard({
   id, name, slug, price, image, seriesName, categoryName, description,
+  nameBg, nameEn, categoryNameBg, categoryNameEn,
 }: Props) {
   const t = useTranslations('product');
+  const locale = useLocale();
   const addItem = useCart((s) => s.addItem);
   const [added, setAdded] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -55,7 +62,13 @@ export default function ProductCard({
       setPickerOpen((o) => !o);
       return;
     }
-    addItem({ id, name, slug, price, image, seriesName, categoryName });
+    addItem({
+      id, slug, price, image, seriesName,
+      name: nameBg ?? name,
+      nameEn: nameEn ?? undefined,
+      categoryName: categoryNameBg ?? categoryName,
+      categoryNameEn: categoryNameEn ?? undefined,
+    });
     flashAdded();
   }
 
@@ -64,7 +77,11 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     addItem({
-      id, name, slug, price, seriesName, categoryName,
+      id, slug, price, seriesName,
+      name: nameBg ?? name,
+      nameEn: nameEn ?? undefined,
+      categoryName: categoryNameBg ?? categoryName,
+      categoryNameEn: categoryNameEn ?? undefined,
       image: variant.images[0] ?? image,
       selectedColor: variant.name,
     });
@@ -115,7 +132,7 @@ export default function ProductCard({
                   onClick={(e) => handlePick(e, v)}
                 >
                   <span className="card__color-opt__dot" style={{ background: v.color }} />
-                  <span>{v.name}</span>
+                  <span>{colourLabel(v.name, locale)}</span>
                 </button>
               ))}
             </div>

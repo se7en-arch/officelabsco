@@ -5,7 +5,9 @@ export const alt = 'OfficeLabs Co – Премиум мебели';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
-export default function OGImage() {
+export default async function OGImage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const en = locale === 'en';
   return new ImageResponse(
     (
       <div
@@ -49,7 +51,7 @@ export default function OGImage() {
           marginBottom: 16,
           display: 'flex',
         }}>
-          Офис мебели и обзавеждане
+          {en ? 'Office furniture and interiors' : 'Офис мебели и обзавеждане'}
         </div>
 
         {/* Main title */}
@@ -74,7 +76,7 @@ export default function OGImage() {
           maxWidth: 700,
           display: 'flex',
         }}>
-          ASTRA · TERRA · NOVA · LOFT — четири серии, създадени за модерното работно пространство.
+          {en ? 'ASTRA · TERRA · NOVA · LOFT — four series designed for the modern workspace.' : 'ASTRA · TERRA · NOVA · LOFT — четири серии, създадени за модерното работно пространство.'}
         </div>
 
         {/* URL */}

@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface Section { id: string; title: string; }
 
@@ -16,6 +17,7 @@ export default function LegalLayout({
   sections: Section[];
   children: React.ReactNode;
 }) {
+  const t = useTranslations('ui');
   const [activeId, setActiveId] = useState(sections[0]?.id ?? '');
   const [scrolled, setScrolled] = useState(false);
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -288,7 +290,7 @@ export default function LegalLayout({
           {icon && <div className="lgl-hero__icon">{icon}</div>}
           <div>
             <h1>{title}</h1>
-            <p className="lgl-hero__meta">Последно обновяване: {updated}</p>
+            <p className="lgl-hero__meta">{t('lastUpdated')}: {updated}</p>
           </div>
         </div>
       </div>
@@ -296,7 +298,7 @@ export default function LegalLayout({
       {/* BODY */}
       <div className="lgl-outer">
         <aside className="lgl-sidebar">
-          <div className="lgl-sidebar__label">Съдържание</div>
+          <div className="lgl-sidebar__label">{t('contents')}</div>
           <nav>
             {sections.map((s) => (
               <a

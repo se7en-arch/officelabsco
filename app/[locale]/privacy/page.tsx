@@ -1,10 +1,13 @@
 import LegalLayout from '@/components/LegalLayout';
 import type { Metadata } from 'next';
+import { getLocale } from 'next-intl/server';
 
-export const metadata: Metadata = {
-  title: 'Политика за поверителност – OfficeLabs Co',
-  description: 'Как OfficeLabs Co събира, използва и защитава личните ви данни.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const en = (await getLocale()) === 'en';
+  return en
+    ? { title: 'Privacy policy – OfficeLabs Co', description: 'How OfficeLabs Co collects, uses and protects your personal data.' }
+    : { title: 'Политика за поверителност – OfficeLabs Co', description: 'Как OfficeLabs Co събира, използва и защитава личните ви данни.' };
+}
 
 const SECTIONS = [
   { id: 'controller', title: 'Администратор на данни' },
@@ -21,7 +24,7 @@ const SECTIONS = [
   { id: 'contact',    title: 'Свържете се с нас' },
 ];
 
-export default function PrivacyPage() {
+function PrivacyBg() {
   return (
     <LegalLayout
       title="Политика за поверителност"
@@ -324,4 +327,319 @@ export default function PrivacyPage() {
 
     </LegalLayout>
   );
+}
+
+const SECTIONS_EN = [
+  { id: 'controller', title: 'Data controller' },
+  { id: 'collect',    title: 'What data we collect' },
+  { id: 'use',        title: 'How we use the data' },
+  { id: 'basis',      title: 'Legal basis (GDPR)' },
+  { id: 'sharing',    title: 'Sharing with third parties' },
+  { id: 'cookies',    title: 'Cookies' },
+  { id: 'rights',     title: 'Your rights' },
+  { id: 'retention',  title: 'Data retention' },
+  { id: 'security',   title: 'Security' },
+  { id: 'children',   title: 'Children' },
+  { id: 'changes',    title: 'Changes to this policy' },
+  { id: 'contact',    title: 'Contact us' },
+];
+
+function PrivacyEn() {
+  return (
+    <LegalLayout
+      title="Privacy policy"
+      updated="18 July 2026"
+      sections={SECTIONS_EN}
+      icon={
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect x="6" y="14" width="20" height="14" rx="3" stroke="currentColor" strokeWidth="2"/>
+          <path d="M10 14v-4a6 6 0 0 1 12 0v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <circle cx="16" cy="21" r="2" fill="currentColor"/>
+        </svg>
+      }
+    >
+
+      <section className="lgl-section" id="controller">
+        <h2>Data controller</h2>
+        <p>
+          <strong>OfficeLabs Co</strong> is the controller of personal data within the meaning
+          of the General Data Protection Regulation (GDPR, Regulation (EU) 2016/679).
+        </p>
+        <ul>
+          <li><strong>Website:</strong> <a href="https://officelabsco.com">officelabsco.com</a></li>
+          <li><strong>Email:</strong> <a href="mailto:info@officelabsco.com">info@officelabsco.com</a></li>
+        </ul>
+        <p>
+          This policy describes what personal data we collect, why, and how we protect it
+          when you use our website or place an order with us.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="collect">
+        <h2>What data we collect</h2>
+
+        <h3>Data you provide when placing an order</h3>
+        <ul>
+          <li>Full name, email address, phone number</li>
+          <li>Delivery address (city, street, postcode)</li>
+          <li>Company details when you request an invoice (company name, UIC, VAT number, company representative)</li>
+          <li>Chosen courier, delivery method and payment method</li>
+        </ul>
+
+        <h3>Technical data collected automatically</h3>
+        <ul>
+          <li>IP address and approximate location (country, city)</li>
+          <li>Browser type and version (User-Agent)</li>
+          <li>The page you came from (Referer)</li>
+          <li>Preferred browser language</li>
+          <li>Time zone</li>
+        </ul>
+
+        <h3>Marketing data (UTM)</h3>
+        <p>
+          When you visit from an advertising link, we store UTM parameters (utm_source,
+          utm_medium, utm_campaign) solely to analyse the effectiveness of our marketing channels.
+        </p>
+
+        <h3>Cart data</h3>
+        <p>
+          The contents of your cart are stored locally in your browser (localStorage) and are
+          not sent to our servers until you complete an order.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="use">
+        <h2>How we use the data</h2>
+
+        <h3>Fulfilling orders</h3>
+        <p>
+          Personal data from an order is used exclusively to process and deliver the order, to
+          issue an invoice on request, and to communicate about the status of the delivery.
+        </p>
+
+        <h3>Email notifications</h3>
+        <p>
+          We send an order confirmation by email immediately after you place an order. We do not
+          send marketing emails without your explicit consent.
+        </p>
+
+        <h3>Improving the service</h3>
+        <p>
+          Technical data (IP, browser, UTM) is used anonymously to analyse traffic, improve the
+          website and prevent abuse.
+        </p>
+
+        <h3>Legal obligations</h3>
+        <p>
+          We keep order data (including invoices) for 5 years, as required by the Corporate Income
+          Tax Act and the VAT Act.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="basis">
+        <h2>Legal basis (GDPR)</h2>
+        <p>We process your personal data on the following legal bases:</p>
+        <ul>
+          <li>
+            <strong>Performance of a contract — Art. 6(1)(b) GDPR</strong> — data necessary to
+            process and deliver your order.
+          </li>
+          <li>
+            <strong>Legal obligation — Art. 6(1)(c) GDPR</strong> — data necessary for accounting
+            and tax reporting.
+          </li>
+          <li>
+            <strong>Legitimate interest — Art. 6(1)(f) GDPR</strong> — technical data for security
+            and abuse prevention; UTM data to assess marketing effectiveness.
+          </li>
+        </ul>
+      </section>
+
+      <section className="lgl-section" id="sharing">
+        <h2>Sharing with third parties</h2>
+        <p>
+          We do not sell or rent out your personal data. Data may only be shared with:
+        </p>
+
+        <h3>Courier companies</h3>
+        <p>
+          We pass your full name, address and phone number to the chosen courier solely to carry
+          out the delivery.
+        </p>
+
+        <h3>Technical service providers</h3>
+        <ul>
+          <li>
+            <strong>Vercel Inc.</strong> — website hosting and image storage. Data is processed in
+            data centres within the EU and the USA, under{' '}
+            <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">
+              Vercel's privacy policy
+            </a>.
+          </li>
+          <li>
+            <strong>Turso / ChiselStrike Inc.</strong> — database in which orders are stored.
+          </li>
+          <li>
+            <strong>Resend Inc.</strong> — sending transactional emails (order confirmations).
+          </li>
+        </ul>
+
+        <h3>Public authorities</h3>
+        <p>
+          We may disclose data to competent authorities where we are required to do so by law
+          (e.g. the National Revenue Agency, courts, prosecutors).
+        </p>
+        <p>
+          All our providers are bound by contractual data protection obligations and have adopted
+          the European Commission's standard contractual clauses or provide an adequate level of
+          protection.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="cookies">
+        <h2>Cookies</h2>
+        <p>
+          The site uses a minimal number of cookies that are necessary for it to work. We do not
+          use tracking or advertising cookies.
+        </p>
+
+        <h3>Cookies used by the site</h3>
+        <ul>
+          <li>
+            <strong>ol_preview</strong> — a temporary cookie for access during development. It will
+            be removed after the site launches.
+          </li>
+          <li>
+            <strong>admin_token</strong> — authentication for the admin panel. Available only to
+            the administrator.
+          </li>
+        </ul>
+
+        <h3>Local storage (localStorage)</h3>
+        <p>
+          The shopping cart is stored in the localStorage of your browser under the key{' '}
+          <code>officelabsco-cart</code>. This data is not sent to our servers and is deleted when
+          you clear your browser data.
+        </p>
+        <p>
+          You can disable or delete cookies in your browser settings. Note that disabling them may
+          affect the functionality of the site.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="rights">
+        <h2>Your rights</h2>
+        <p>As a data subject under the GDPR you have the following rights:</p>
+        <ul>
+          <li>
+            <strong>Right of access (Art. 15)</strong> — to receive information about what data we
+            process about you.
+          </li>
+          <li>
+            <strong>Right to rectification (Art. 16)</strong> — to ask us to correct inaccurate data.
+          </li>
+          <li>
+            <strong>Right to erasure (Art. 17)</strong> — to ask us to delete your data, unless we
+            are legally required to keep it.
+          </li>
+          <li>
+            <strong>Right to restriction (Art. 18)</strong> — to ask us to restrict processing in
+            certain circumstances.
+          </li>
+          <li>
+            <strong>Right to data portability (Art. 20)</strong> — to receive your data in a
+            structured, machine-readable format.
+          </li>
+          <li>
+            <strong>Right to object (Art. 21)</strong> — to object to processing based on legitimate
+            interest.
+          </li>
+          <li>
+            <strong>Right to complain</strong> — to the Bulgarian Commission for Personal Data
+            Protection (CPDP),{' '}
+            <a href="https://www.cpdp.bg" target="_blank" rel="noopener noreferrer">cpdp.bg</a>, if you
+            believe your rights have been violated.
+          </li>
+        </ul>
+        <p>
+          To exercise your rights, email{' '}
+          <a href="mailto:info@officelabsco.com">info@officelabsco.com</a>.
+          We will reply within <strong>30 days</strong>.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="retention">
+        <h2>Data retention</h2>
+        <ul>
+          <li>
+            <strong>Order data</strong> — kept for <strong>5 years</strong>, as required by the
+            Corporate Income Tax Act and the VAT Act.
+          </li>
+          <li>
+            <strong>Technical data</strong> (IP, browser, UTM) — kept together with the order for the
+            same period.
+          </li>
+          <li>
+            <strong>Unfinished orders</strong> — not stored on the server; they remain only in the
+            localStorage of your browser.
+          </li>
+        </ul>
+        <p>
+          Once these periods expire, the data is deleted or anonymised securely.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="security">
+        <h2>Security</h2>
+        <p>We apply technical and organisational measures to protect your data:</p>
+        <ul>
+          <li>All traffic is encrypted with TLS/HTTPS;</li>
+          <li>Passwords and tokens are stored as cryptographic hashes (SHA-256);</li>
+          <li>Access to the admin panel is protected with a password;</li>
+          <li>The database is accessible only over an encrypted connection with an authentication token;</li>
+          <li>We do not accept card payments on the website. Payment is made by bank transfer against a proforma invoice, and the customer's bank details are processed only to issue the invoice.</li>
+        </ul>
+        <p>
+          If a security breach is detected, we will notify the affected persons and the CPDP within
+          the statutory deadlines.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="children">
+        <h2>Children</h2>
+        <p>
+          The site is not intended for persons under 18, and we knowingly do not collect personal data
+          from minors. If we learn that we have processed a child's data without parental consent, we
+          will delete it immediately.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="changes">
+        <h2>Changes to this policy</h2>
+        <p>
+          We may update this policy from time to time to reflect changes in legislation or in our
+          business. For significant changes we will publish a notice on the site. We recommend that you
+          check the policy regularly.
+        </p>
+        <p>
+          The date of the last update is shown at the top of the page.
+        </p>
+      </section>
+
+      <section className="lgl-section" id="contact">
+        <h2>Contact us</h2>
+        <p>For questions, requests or complaints related to your personal data:</p>
+        <ul>
+          <li><strong>Email:</strong> <a href="mailto:info@officelabsco.com">info@officelabsco.com</a></li>
+          <li><strong>Website:</strong> <a href="https://officelabsco.com">officelabsco.com</a></li>
+        </ul>
+      </section>
+
+    </LegalLayout>
+  );
+}
+
+export default async function PrivacyPage() {
+  const en = (await getLocale()) === 'en';
+  return en ? <PrivacyEn /> : <PrivacyBg />;
 }

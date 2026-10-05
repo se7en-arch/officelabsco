@@ -12,6 +12,7 @@ import ProductColorSwitcher from '@/components/ProductColorSwitcher';
 import ProductTabs from '@/components/ProductTabs';
 import { COLOR_VARIANTS } from '@/lib/color-variants';
 import { ASSEMBLY_PRICES } from '@/lib/assembly-prices';
+import { colourListLabel, materialLabel, weightLabel } from '@/lib/i18n-labels';
 
 export const revalidate = 120;
 
@@ -103,8 +104,8 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.name,
-    description: product.description ?? undefined,
+    name: displayName,
+    description: displayDesc ?? undefined,
     image: imageUrl,
     sku: product.sku ?? undefined,
     brand: { '@type': 'Brand', name: 'OfficeLabs Co' },
@@ -169,12 +170,14 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
             variants={COLOR_VARIANTS[product.slug]}
             product={{
               id: product.id,
-              name: displayName,
+              name: product.name,
+              nameEn: product.nameEn ?? undefined,
               slug: product.slug,
               price: product.price,
               image: product.image,
               seriesName: product.series.name,
-              categoryName: displayCategoryName,
+              categoryName: product.category.name,
+              categoryNameEn: product.category.nameEn ?? undefined,
             }}
           />
           {/* <BuyNowPayLater price={product.price} /> */}
@@ -215,9 +218,9 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
         seriesName={product.series.name}
         categoryName={displayCategoryName}
         dimensions={product.dimensions}
-        weight={product.weight}
-        colors={en ? (product.colorsEn || product.colors) : product.colors}
-        material={en ? (product.materialEn || product.material) : product.material}
+        weight={weightLabel(product.weight, locale)}
+        colors={en ? (product.colorsEn || colourListLabel(product.colors, locale)) : product.colors}
+        material={en ? (product.materialEn || materialLabel(product.material, locale)) : product.material}
         productId={product.id}
         reviews={reviews}
       />
@@ -235,6 +238,8 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
                 key={p.id}
                 id={p.id}
                 name={en ? (p.nameEn || p.name) : p.name}
+                nameBg={p.name}
+                nameEn={p.nameEn}
                 slug={p.slug}
                 price={p.price}
                 originalPrice={p.originalPrice}
@@ -242,6 +247,8 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
                 badge={p.badge}
                 seriesName={p.series.name}
                 categoryName={en ? (p.category.nameEn || p.category.name) : p.category.name}
+                categoryNameBg={p.category.name}
+                categoryNameEn={p.category.nameEn}
                 stock={p.stock}
               />
             ))}

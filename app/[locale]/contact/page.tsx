@@ -1,8 +1,59 @@
 'use client';
 import { useState } from 'react';
+import { useLocale } from 'next-intl';
 import type { Metadata } from 'next';
 
+const CONTACT_BG = {
+  h1: 'Свържете се с нас',
+  lead1: 'Имате въпрос, запитване или искате да разгледате мебелите ни на живо?',
+  lead2: 'Ще се радваме да чуем от вас.',
+  info: 'Информация за контакт',
+  email: 'Имейл',
+  replyTime: 'Отговаряме в рамките на 1 работен ден',
+  hours: 'Работно време',
+  weekdays: 'Понеделник – Петък: 9:00 – 18:00',
+  saturday: 'Събота: 10:00 – 14:00',
+  address: 'Адрес',
+  country: 'България',
+  formLabel: 'Изпратете съобщение',
+  sentTitle: 'Съобщението е изпратено!',
+  sentText: 'Ще се свържем с вас в рамките на 1 работен ден.',
+  name: 'Вашето име',
+  namePh: 'Иван Иванов',
+  emailLabel: 'Имейл адрес',
+  msgLabel: 'Съобщение',
+  msgPh: 'Напишете вашето запитване...',
+  sending: 'Изпращане…',
+  send: 'Изпрати съобщение',
+};
+
+const CONTACT_EN = {
+  h1: 'Contact us',
+  lead1: 'Do you have a question, a request, or would you like to see our furniture in person?',
+  lead2: 'We would be glad to hear from you.',
+  info: 'Contact information',
+  email: 'Email',
+  replyTime: 'We reply within 1 working day',
+  hours: 'Working hours',
+  weekdays: 'Monday – Friday: 9:00 – 18:00',
+  saturday: 'Saturday: 10:00 – 14:00',
+  address: 'Address',
+  country: 'Bulgaria',
+  formLabel: 'Send us a message',
+  sentTitle: 'Your message has been sent!',
+  sentText: 'We will get back to you within 1 working day.',
+  name: 'Your name',
+  namePh: 'John Smith',
+  emailLabel: 'Email address',
+  msgLabel: 'Message',
+  msgPh: 'Write your message...',
+  sending: 'Sending…',
+  send: 'Send message',
+};
+
 export default function ContactPage() {
+  const locale = useLocale();
+  const C = locale === 'en' ? CONTACT_EN : CONTACT_BG;
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
 
@@ -219,10 +270,10 @@ export default function ContactPage() {
         {/* HERO */}
         <div className="co-hero">
           <p className="co-hero__eye">OfficeLabs Co</p>
-          <h1>Свържете се с нас</h1>
+          <h1>{C.h1}</h1>
           <p className="co-hero__sub">
-            Имате въпрос, запитване или искате да разгледате мебелите ни на живо?
-            Ще се радваме да чуем от вас.
+            {C.lead1}
+            {C.lead2}
           </p>
         </div>
 
@@ -230,7 +281,7 @@ export default function ContactPage() {
         <div className="co-body">
           {/* Left — info */}
           <div>
-            <p className="co-info__label">Информация за контакт</p>
+            <p className="co-info__label">{C.info}</p>
 
             <div className="co-card">
               <div className="co-card__icon">
@@ -240,11 +291,11 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <p className="co-card__title">Имейл</p>
+                <p className="co-card__title">{C.email}</p>
                 <p className="co-card__val">
                   <a href="mailto:info@officelabsco.com">info@officelabsco.com</a>
                 </p>
-                <p className="co-card__val" style={{ fontSize: 12, marginTop: 2 }}>Отговаряме в рамките на 1 работен ден</p>
+                <p className="co-card__val" style={{ fontSize: 12, marginTop: 2 }}>{C.replyTime}</p>
               </div>
             </div>
 
@@ -256,9 +307,9 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <p className="co-card__title">Работно време</p>
-                <p className="co-card__val">Понеделник – Петък: 9:00 – 18:00</p>
-                <p className="co-card__val">Събота: 10:00 – 14:00</p>
+                <p className="co-card__title">{C.hours}</p>
+                <p className="co-card__val">{C.weekdays}</p>
+                <p className="co-card__val">{C.saturday}</p>
               </div>
             </div>
 
@@ -270,15 +321,15 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <p className="co-card__title">Адрес</p>
-                <p className="co-card__val">България</p>
+                <p className="co-card__title">{C.address}</p>
+                <p className="co-card__val">{C.country}</p>
               </div>
             </div>
           </div>
 
           {/* Right — form */}
           <div>
-            <p className="co-form__label">Изпратете съобщение</p>
+            <p className="co-form__label">{C.formLabel}</p>
 
             {status === 'done' ? (
               <div className="co-success">
@@ -287,24 +338,24 @@ export default function ContactPage() {
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </div>
-                <h3>Съобщението е изпратено!</h3>
-                <p>Ще се свържем с вас в рамките на 1 работен ден.</p>
+                <h3>{C.sentTitle}</h3>
+                <p>{C.sentText}</p>
               </div>
             ) : (
               <form className="co-form" onSubmit={handleSubmit}>
                 <div className="co-field">
-                  <label htmlFor="co-name">Вашето име</label>
+                  <label htmlFor="co-name">{C.name}</label>
                   <input
                     id="co-name"
                     type="text"
-                    placeholder="Иван Иванов"
+                    placeholder={C.namePh}
                     value={form.name}
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                     required
                   />
                 </div>
                 <div className="co-field">
-                  <label htmlFor="co-email">Имейл адрес</label>
+                  <label htmlFor="co-email">{C.emailLabel}</label>
                   <input
                     id="co-email"
                     type="email"
@@ -315,10 +366,10 @@ export default function ContactPage() {
                   />
                 </div>
                 <div className="co-field">
-                  <label htmlFor="co-msg">Съобщение</label>
+                  <label htmlFor="co-msg">{C.msgLabel}</label>
                   <textarea
                     id="co-msg"
-                    placeholder="Напишете вашето запитване..."
+                    placeholder={C.msgPh}
                     value={form.message}
                     onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                     required
@@ -329,7 +380,7 @@ export default function ContactPage() {
                   className="co-submit"
                   disabled={status === 'sending' || !form.name || !form.email || !form.message}
                 >
-                  {status === 'sending' ? 'Изпращане…' : 'Изпрати съобщение'}
+                  {status === 'sending' ? C.sending : C.send}
                 </button>
               </form>
             )}

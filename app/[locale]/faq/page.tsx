@@ -1,8 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
+import { useLocale } from 'next-intl';
 
-const GROUPS = [
+const GROUPS_BG = [
   {
     id: 'orders',
     title: 'Поръчки',
@@ -24,7 +25,7 @@ const GROUPS = [
       },
       {
         q: 'Как мога да проследя поръчката си?',
-        a: 'След изпращане на пратката ще получите имейл с номер за проследяване от съответния куриер.',
+        a: 'Ще се свържем с вас за уточняване на доставката и ще ви информираме за статуса на поръчката.',
       },
       {
         q: 'Поръчката ми потвърдена ли е, ако не съм получил имейл?',
@@ -46,15 +47,15 @@ const GROUPS = [
     items: [
       {
         q: 'Колко е срокът за доставка?',
-        a: '1–5 работни дни след потвърждение на поръчката, в зависимост от наличността и адреса на доставка.',
+        a: 'Производството и доставката отнемат 20 работни дни след потвърждение на поръчката. Доставяме на територията на цялата страна.',
       },
       {
         q: 'Каква е цената на доставката?',
-        a: 'Разходите за доставка се показват при финализиране на поръчката и зависят от избрания куриер и адреса.',
+        a: 'Доставката е безплатна.',
       },
       {
         q: 'Доставяте ли до офис на куриер?',
-        a: 'Да. При оформяне на поръчката можете да изберете доставка до адрес или до офис на куриерска компания по ваш избор.',
+        a: 'Да. При оформяне на поръчката можете да изберете доставка до адрес или до офис. Точният куриер и офисът се уговарят с вас след потвърждение на поръчката.',
       },
       {
         q: 'Какво да правя ако пратката пристигне повредена?',
@@ -120,7 +121,7 @@ const GROUPS = [
       },
       {
         q: 'Продуктите изискват ли монтаж?',
-        a: 'Информацията за монтаж е посочена на страницата на всеки продукт. При въпроси сме на ваше разположение.',
+        a: 'Монтажът е по желание и не е включен в цената на продукта. Цената му е посочена на страницата на всеки продукт.',
       },
     ],
   },
@@ -136,11 +137,11 @@ const GROUPS = [
     items: [
       {
         q: 'Какви начини на плащане приемате?',
-        a: 'Приемаме наложен платеж (в брой при получаване) и плащане с банкова карта (Visa, Mastercard, Maestro) чрез защитена платежна страница.',
+        a: 'Плащането се извършва по банков път, по проформа фактура. Не приемаме наложен платеж и плащане с карта на сайта.',
       },
       {
-        q: 'Сигурно ли е плащането с карта?',
-        a: 'Плащането се извършва чрез криптирана HTTPS връзка. Данните ви за карта не се съхраняват на нашите сървъри.',
+        q: 'Как се извършва плащането?',
+        a: 'След потвърждение на поръчката изпращаме проформа фактура с банковите ни данни. Плащането се извършва по банков път.',
       },
       {
         q: 'Мога ли да получа фактура?',
@@ -150,7 +151,77 @@ const GROUPS = [
   },
 ];
 
+
+// English copy. Same groups and order as GROUPS_BG (icons are shared by index).
+function buildGroupsEn() {
+  return GROUPS_BG.map((group, gi) => ({
+    ...group,
+    title: [
+      'Orders', 'Delivery', 'Returns and warranty', 'Products', 'Payment',
+    ][gi],
+    items: group.items.map((item, i) => ({
+      q: EN_QA[gi][i][0],
+      a: EN_QA[gi][i][1],
+    })),
+  }));
+}
+
+const EN_QA: [string, string][][] = [
+  [
+    ['How do I place an order?', 'Choose the product you want, add it to your cart and proceed to checkout. Enter your delivery details and confirm the order. You will receive a confirmation email straight away.'],
+    ['Can I cancel an order?', 'Yes — contact us at info@officelabsco.com within 2 hours of placing it. Once the order has been dispatched, cancellation is not possible, but you can return the goods.'],
+    ['How can I track my order?', 'We will contact you to arrange delivery and keep you informed about the status of your order.'],
+    ['Is my order confirmed if I did not receive an email?', 'Check your "Spam" folder. If the email is missing, contact us and we will check the status of your order.'],
+  ],
+  [
+    ['How long does delivery take?', 'Production and delivery take 20 working days from order confirmation. We deliver anywhere in Bulgaria.'],
+    ['How much does delivery cost?', 'Delivery is free.'],
+    ['Can I have my order delivered to a courier office?', 'Yes. When you place your order you can choose delivery to an address or to an office. The exact courier and office are agreed with you after the order is confirmed.'],
+    ['What should I do if the parcel arrives damaged?', 'Refuse to accept the parcel and contact us immediately at info@officelabsco.com. We will arrange a replacement or a full refund.'],
+  ],
+  [
+    ['How long do I have to return a product?', 'You have a statutory right of withdrawal within 14 calendar days of receipt. We also accept returns within 30 days for unused goods in their original packaging.'],
+    ['How do I start a return?', 'Send an email to info@officelabsco.com with your order number and the reason for the return. We will give you instructions for sending the goods back.'],
+    ['Who pays for return shipping?', 'Return costs are for your account, unless the goods are defective or we sent the wrong product — in that case we cover the costs.'],
+    ['What warranty do the products have?', 'All products come with a 2-year statutory warranty. In case of a manufacturing defect you are entitled to free repair, replacement or a refund.'],
+    ['How do I file a complaint?', 'Send an email to info@officelabsco.com describing the problem and attaching photos. We review complaints within 30 days.'],
+  ],
+  [
+    ['Which furniture series do you offer?', 'We offer four designer series: ASTRA (modern minimalism), TERRA (natural materials), NOVA (functional design) and LOFT (industrial aesthetic).'],
+    ['Do the photos match the real product colours?', 'We make every effort to make the photos as accurate as possible, but slight colour differences are possible due to the settings of different screens.'],
+    ['Do you make custom orders?', 'Contact us at info@officelabsco.com with your requirements — we will let you know what is possible.'],
+    ['Do the products need assembly?', 'Assembly is optional and is not included in the product price. The assembly price is shown on each product page.'],
+  ],
+  [
+    ['Which payment methods do you accept?', 'Payment is made by bank transfer against a proforma invoice. We do not accept cash on delivery or card payments on the website.'],
+    ['How does payment work?', 'After you place your order we send you a proforma invoice with our bank details. Payment is made by bank transfer.'],
+    ['Can I get an invoice?', 'Yes. Enter your company details (UIC, VAT number, company representative) when placing your order and we will issue an invoice.'],
+  ],
+];
+
+const UI = {
+  bg: {
+    eye: 'Помощен център',
+    title: 'Често задавани въпроси',
+    sub: 'Намерете отговор на най-честите въпроси за поръчки, доставка, връщане и продукти.',
+    ctaTitle: 'Не намерихте отговор?',
+    ctaText: 'Свържете се с нас — ще отговорим в рамките на 1 работен ден.',
+    ctaBtn: 'Свържете се с нас',
+  },
+  en: {
+    eye: 'Help centre',
+    title: 'Frequently asked questions',
+    sub: 'Find answers to the most common questions about orders, delivery, returns and products.',
+    ctaTitle: "Didn't find your answer?",
+    ctaText: 'Contact us — we will reply within 1 working day.',
+    ctaBtn: 'Contact us',
+  },
+};
+
 export default function FaqPage() {
+  const locale = useLocale();
+  const ui = locale === 'en' ? UI.en : UI.bg;
+  const groups = locale === 'en' ? buildGroupsEn() : GROUPS_BG;
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
   function toggle(key: string) {
@@ -329,15 +400,15 @@ export default function FaqPage() {
 
       <main className="faq-page">
         <div className="faq-hero">
-          <p className="faq-hero__eye">Помощен център</p>
-          <h1>Често задавани въпроси</h1>
+          <p className="faq-hero__eye">{ui.eye}</p>
+          <h1>{ui.title}</h1>
           <p className="faq-hero__sub">
-            Намерете отговор на най-честите въпроси за поръчки, доставка, връщане и продукти.
+            {ui.sub}
           </p>
         </div>
 
         <div className="faq-body">
-          {GROUPS.map(group => (
+          {groups.map(group => (
             <div key={group.id}>
               <div className="faq-group__head">
                 <div className="faq-group__icon">{group.icon}</div>
@@ -378,11 +449,11 @@ export default function FaqPage() {
           {/* CTA */}
           <div className="faq-cta">
             <div className="faq-cta__left">
-              <h3>Не намерихте отговор?</h3>
-              <p>Свържете се с нас — ще отговорим в рамките на 1 работен ден.</p>
+              <h3>{ui.ctaTitle}</h3>
+              <p>{ui.ctaText}</p>
             </div>
             <Link href="/contact" className="faq-cta__btn">
-              Свържете се с нас
+              {ui.ctaBtn}
             </Link>
           </div>
         </div>

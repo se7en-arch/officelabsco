@@ -1,13 +1,22 @@
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 
-export const metadata: Metadata = {
-  title: 'За нас — OfficeLabs Co',
-  description: 'Авторски мебели, създадени с убеждението, че средата, в която работиш, определя кой ставаш.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const en = (await getLocale()) === 'en';
+  if (en) {
+    return {
+      title: 'About us — OfficeLabs Co',
+      description: 'Designer furniture built on the belief that the environment you work in shapes who you become.',
+    };
+  }
+  return {
+    title: 'За нас — OfficeLabs Co',
+    description: 'Авторски мебели, създадени с убеждението, че средата, в която работиш, определя кой ставаш.',
+  };
+}
 
 export default async function AboutPage() {
   const t = await getTranslations('about');

@@ -3,10 +3,14 @@ import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useCart } from '@/lib/cart-store';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { categoryLabel, colourLabel } from '@/lib/i18n-labels';
 
 export default function CartPage() {
   const t = useTranslations('cart');
+  const locale = useLocale();
+  const lineName = (i: { name: string; nameEn?: string }) => (locale === 'en' && i.nameEn) || i.name;
+  const lineCategory = (i: { categoryName: string; categoryNameEn?: string }) => (locale === 'en' && i.categoryNameEn) || categoryLabel(i.categoryName, locale);
   const {
     items, removeItem, updateQty, total, count,
     promoCode, discountPercent, bundleProductIds, setPromo, clearPromo,
@@ -115,7 +119,7 @@ export default function CartPage() {
               <div className="cart-item__img">
                 <Image
                   src={item.image}
-                  alt={item.name}
+                  alt={lineName(item)}
                   width={84}
                   height={84}
                   style={{ objectFit: 'contain', padding: '6px' }}
@@ -125,8 +129,8 @@ export default function CartPage() {
               <div className="cart-item__body">
                 <div className="cart-item__top">
                   <Link href={`/shop/${item.slug}`} className="cart-item__name">
-                    {item.name}
-                    {item.selectedColor && <span style={{ fontWeight: 400, color: 'var(--muted)' }}> — {item.selectedColor}</span>}
+                    {lineName(item)}
+                    {item.selectedColor && <span style={{ fontWeight: 400, color: 'var(--muted)' }}> — {colourLabel(item.selectedColor, locale)}</span>}
                     {isBundleItem && (
                       <span style={{
                         marginLeft: 8, fontSize: 10.5, fontWeight: 800, color: '#16a34a',
@@ -150,7 +154,7 @@ export default function CartPage() {
                   </span>
                 </div>
 
-                <div className="cart-item__meta">{item.seriesName} · {item.categoryName}</div>
+                <div className="cart-item__meta">{item.seriesName} · {lineCategory(item)}</div>
 
                 <div className="cart-item__actions">
                   <div className="qty">
@@ -182,7 +186,7 @@ export default function CartPage() {
               </div>
               {items.filter((i) => bundleIdSet.has(i.id)).map((item) => (
                 <div key={item.id} className="summary-row">
-                  <span>{item.name}{item.selectedColor ? ` — ${item.selectedColor}` : ''} ×{item.quantity}</span>
+                  <span>{lineName(item)}{item.selectedColor ? ` — ${colourLabel(item.selectedColor, locale)}` : ''} ×{item.quantity}</span>
                   <span>{item.price * item.quantity} €</span>
                 </div>
               ))}
@@ -193,7 +197,7 @@ export default function CartPage() {
                   <div className="summary-group-label">{t('summaryOtherGroup')}</div>
                   {items.filter((i) => !bundleIdSet.has(i.id)).map((item) => (
                     <div key={item.id} className="summary-row">
-                      <span>{item.name}{item.selectedColor ? ` — ${item.selectedColor}` : ''} ×{item.quantity}</span>
+                      <span>{lineName(item)}{item.selectedColor ? ` — ${colourLabel(item.selectedColor, locale)}` : ''} ×{item.quantity}</span>
                       <span>{item.price * item.quantity} €</span>
                     </div>
                   ))}
@@ -204,7 +208,7 @@ export default function CartPage() {
           ) : (
             items.map((item) => (
               <div key={item.id} className="summary-row">
-                <span>{item.name}{item.selectedColor ? ` — ${item.selectedColor}` : ''} ×{item.quantity}</span>
+                <span>{lineName(item)}{item.selectedColor ? ` — ${colourLabel(item.selectedColor, locale)}` : ''} ×{item.quantity}</span>
                 <span>{item.price * item.quantity} €</span>
               </div>
             ))

@@ -19,23 +19,33 @@ const inter = Inter({
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabsco.com';
 
-export const metadata: Metadata = {
-  title: 'OfficeLabs Co – Премиум мебели',
-  description: 'Авторски мебели в четири серии: ASTRA, TERRA, NOVA, LOFT. Бюра, маси, шкафове, етажерки.',
-  metadataBase: new URL(SITE_URL),
-  openGraph: {
-    title: 'OfficeLabs Co – Премиум мебели',
-    description: 'Авторски мебели в четири серии: ASTRA, TERRA, NOVA, LOFT. Бюра, маси, шкафове, етажерки.',
-    url: SITE_URL,
-    siteName: 'OfficeLabs Co',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'OfficeLabs Co – Премиум мебели',
-    description: 'Авторски мебели в четири серии: ASTRA, TERRA, NOVA, LOFT. Бюра, маси, шкафове, етажерки.',
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const en = locale === 'en';
+  const title = en ? "OfficeLabs Co – Premium furniture" : "OfficeLabs Co – Премиум мебели";
+  const description = en ? "Designer furniture in four series: ASTRA, TERRA, NOVA, LOFT. Desks, tables, cabinets and shelving." : "Авторски мебели в четири серии: ASTRA, TERRA, NOVA, LOFT. Бюра, маси, шкафове, етажерки.";
+  return {
+    title,
+    description,
+    metadataBase: new URL(SITE_URL),
+    openGraph: {
+      title,
+      description,
+      url: SITE_URL,
+      siteName: 'OfficeLabs Co',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: 'device-width',

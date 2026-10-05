@@ -1,10 +1,12 @@
 'use client';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 type Series = { id: number; name: string; slug: string };
 
 export default function ShopTabs({ series }: { series: Series[] }) {
+  const t = useTranslations('ui');
   const searchParams = useSearchParams();
   const active = searchParams.get('series') ?? '';
 
@@ -16,9 +18,9 @@ export default function ShopTabs({ series }: { series: Series[] }) {
   };
 
   return (
-    <nav className="shop-tabs" aria-label="Серии">
+    <nav className="shop-tabs" aria-label={t('seriesNav')}>
       <Link href="/shop" className={`shop-tab${!active ? ' active' : ''}`}>
-        Всички
+        {t('allSeries')}
       </Link>
       {series.map((s) => (
         <Link

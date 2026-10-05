@@ -116,10 +116,10 @@ export default function Navbar() {
                         {items.map((item) => (
                           <div key={item.id} className="cart-dropdown__item">
                             <div className="cart-dropdown__img">
-                              <Image src={item.image} alt={item.name} width={48} height={48} style={{ objectFit: 'contain', padding: 4 }} />
+                              <Image src={item.image} alt={(locale === 'en' && item.nameEn) || item.name} width={48} height={48} style={{ objectFit: 'contain', padding: 4 }} />
                             </div>
                             <div className="cart-dropdown__info">
-                              <span className="cart-dropdown__name">{item.name}</span>
+                              <span className="cart-dropdown__name">{(locale === 'en' && item.nameEn) || item.name}</span>
                               <span className="cart-dropdown__meta">{item.quantity} × {item.price} €</span>
                             </div>
                             <span className="cart-dropdown__price">{(item.price * item.quantity).toFixed(2)} €</span>

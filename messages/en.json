@@ -163,7 +163,20 @@
     "review1Name": "Maria Ivanova",
     "review1Text": "Very happy with my purchase! The quality is excellent, assembly was easy and quick. The furniture looks exactly like in the photos. Highly recommended!",
     "review2Name": "Technolink Ltd",
-    "review2Text": "We furnished our entire office with this furniture. Exceptional quality for the price, precise craftsmanship and fast delivery. We will definitely be back for the next order."
+    "review2Text": "We furnished our entire office with this furniture. Exceptional quality for the price, precise craftsmanship and fast delivery. We will definitely be back for the next order.",
+    "reviewVerified": "Verified purchase",
+    "reviewEmpty": "No reviews for this product yet. Be the first!",
+    "reviewFormTitle": "Write a review",
+    "reviewThanks": "Thank you for your review!",
+    "reviewRating": "Rating",
+    "reviewNamePh": "Your name",
+    "reviewTextPh": "Share your opinion of the product...",
+    "reviewSubmit": "Submit review",
+    "reviewSending": "Sending...",
+    "reviewErrRating": "Please choose a rating",
+    "reviewErrName": "Please enter your name",
+    "reviewErrText": "Your review must be at least 10 characters",
+    "reviewErrSend": "Something went wrong. Please try again."
   },
   "shop": {
     "heroTitle": "Explore the diverse collection of OfficeLabs Co",
@@ -414,5 +427,21 @@
     "tooMany": "Too many attempts — try again shortly",
     "error": "Something went wrong, please try again",
     "thanks": "Thank you! You are subscribed."
+  },
+  "ui": {
+    "prevPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
+    "photoN": "Photo {n}",
+    "productPhotoAlt": "{name} — photo {n}",
+    "openPhoto": "Open photo",
+    "close": "Close",
+    "prev": "Previous",
+    "next": "Next",
+    "officeInterior": "{tag} — office interior",
+    "seriesNav": "Series",
+    "allSeries": "All",
+    "colorLabel": "Colour:",
+    "lastUpdated": "Last updated",
+    "contents": "Contents"
   }
 }

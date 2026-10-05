@@ -107,11 +107,13 @@ export default function BundlePopup({ delaySeconds, onShown, onClose }: {
     for (const p of data.products) {
       addItem({
         id: p.id,
-        name: en ? (p.nameEn || p.name) : p.name,
+        name: p.name,
+        nameEn: p.nameEn || undefined,
         price: p.price,
         image: p.image,
         seriesName: data.series.name,
-        categoryName: en ? (p.categoryNameEn || p.categoryName) : p.categoryName,
+        categoryName: p.categoryName,
+        categoryNameEn: p.categoryNameEn || undefined,
         slug: p.slug,
       });
     }

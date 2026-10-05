@@ -85,9 +85,9 @@ export default function ProductTabs({
 
   async function handleReviewSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (form.rating === 0) { setFormError('Моля, изберете оценка'); return; }
-    if (form.name.trim().length < 2) { setFormError('Въведете вашето име'); return; }
-    if (form.text.trim().length < 10) { setFormError('Мнението трябва да е поне 10 знака'); return; }
+    if (form.rating === 0) { setFormError(t('reviewErrRating')); return; }
+    if (form.name.trim().length < 2) { setFormError(t('reviewErrName')); return; }
+    if (form.text.trim().length < 10) { setFormError(t('reviewErrText')); return; }
 
     setSubmitting(true);
     setFormError('');
@@ -104,7 +104,7 @@ export default function ProductTabs({
       setSubmitted(true);
       setForm({ name: '', rating: 0, text: '' });
     } else {
-      setFormError('Грешка при изпращане. Моля, опитайте отново.');
+      setFormError(t('reviewErrSend'));
     }
     setSubmitting(false);
   }
@@ -154,7 +154,7 @@ export default function ProductTabs({
                       {r.verified && (
                         <span className="ptabs__review-verified">
                           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                          Потвърдена покупка
+                          {t('reviewVerified')}
                         </span>
                       )}
                     </div>
@@ -165,32 +165,32 @@ export default function ProductTabs({
               ))}
             </div>
           ) : (
-            <p className="ptabs__no-reviews">Все още няма мнения за този продукт. Бъдете първи!</p>
+            <p className="ptabs__no-reviews">{t('reviewEmpty')}</p>
           )}
 
           <div className="ptabs__review-form-wrap">
-            <h3 className="ptabs__review-form-title">Напишете мнение</h3>
+            <h3 className="ptabs__review-form-title">{t('reviewFormTitle')}</h3>
             {submitted ? (
               <p className="ptabs__review-success">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Благодарим за мнението ви!
+                {t('reviewThanks')}
               </p>
             ) : (
               <form className="ptabs__review-form" onSubmit={handleReviewSubmit}>
                 <div className="ptabs__rf-rating">
-                  <span className="ptabs__rf-label">Оценка</span>
+                  <span className="ptabs__rf-label">{t('reviewRating')}</span>
                   <StarPicker value={form.rating} onChange={v => setForm(f => ({ ...f, rating: v }))} />
                 </div>
                 <input
                   className="ptabs__rf-input"
-                  placeholder="Вашето име"
+                  placeholder={t('reviewNamePh')}
                   value={form.name}
                   onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   maxLength={60}
                 />
                 <textarea
                   className="ptabs__rf-textarea"
-                  placeholder="Споделете мнението си за продукта..."
+                  placeholder={t('reviewTextPh')}
                   value={form.text}
                   onChange={e => setForm(f => ({ ...f, text: e.target.value }))}
                   rows={4}
@@ -198,7 +198,7 @@ export default function ProductTabs({
                 />
                 {formError && <p className="ptabs__rf-error">{formError}</p>}
                 <button type="submit" className="ptabs__rf-submit" disabled={submitting}>
-                  {submitting ? 'Изпращане...' : 'Изпрати мнение'}
+                  {submitting ? t('reviewSending') : t('reviewSubmit')}
                 </button>
               </form>
             )}

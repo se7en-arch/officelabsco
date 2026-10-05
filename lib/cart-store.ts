@@ -13,6 +13,9 @@ export type CartItem = {
   quantity: number;
   slug: string;
   selectedColor?: string;
+  // English name and category, when known. Older cart lines do not have them.
+  nameEn?: string;
+  categoryNameEn?: string;
 };
 
 type CartStore = {

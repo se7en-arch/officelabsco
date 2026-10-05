@@ -7,16 +7,31 @@ import { prisma } from '@/lib/prisma';
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
-  title: 'Магазин | OfficeLabs Co — Премиум офис мебели',
-  description: 'Разгледай всички серии офис мебели — NOVA, ASTRA, TERRA, LOFT. Бюра, маси, шкафове, етажерки. Безплатна доставка.',
-  openGraph: {
-    title: 'Магазин | OfficeLabs Co',
-    description: 'Разгледай всички серии офис мебели — NOVA, ASTRA, TERRA, LOFT.',
-    type: 'website',
-    siteName: 'OfficeLabs Co',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const en = (await getLocale()) === 'en';
+  if (en) {
+    return {
+      title: 'Shop | OfficeLabs Co — Premium office furniture',
+      description: 'Explore all office furniture series — NOVA, ASTRA, TERRA, LOFT. Desks, tables, cabinets and shelving. Free delivery.',
+      openGraph: {
+        title: 'Shop | OfficeLabs Co',
+        description: 'Explore all office furniture series — NOVA, ASTRA, TERRA, LOFT.',
+        type: 'website',
+        siteName: 'OfficeLabs Co',
+      },
+    };
+  }
+  return {
+    title: 'Магазин | OfficeLabs Co — Премиум офис мебели',
+    description: 'Разгледай всички серии офис мебели — NOVA, ASTRA, TERRA, LOFT. Бюра, маси, шкафове, етажерки. Безплатна доставка.',
+    openGraph: {
+      title: 'Магазин | OfficeLabs Co',
+      description: 'Разгледай всички серии офис мебели — NOVA, ASTRA, TERRA, LOFT.',
+      type: 'website',
+      siteName: 'OfficeLabs Co',
+    },
+  };
+}
 import ProductCard from '@/components/ProductCard';
 import ShopSidebar from '@/components/ShopSidebar';
 import SortSelect from '@/components/SortSelect';
@@ -182,6 +197,8 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                       key={p.id}
                       id={p.id}
                       name={en ? (p.nameEn || p.name) : p.name}
+                      nameBg={p.name}
+                      nameEn={p.nameEn}
                       slug={p.slug}
                       price={p.price}
                       originalPrice={p.originalPrice}
@@ -189,6 +206,8 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                       badge={p.badge}
                       seriesName={p.series.name}
                       categoryName={en ? (p.category.nameEn || p.category.name) : p.category.name}
+                      categoryNameBg={p.category.name}
+                      categoryNameEn={p.category.nameEn}
                       description={en ? (p.descriptionEn || p.description) : p.description}
                       stock={p.stock}
                     />
@@ -246,6 +265,8 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                   key={p.id}
                   id={p.id}
                   name={en ? (p.nameEn || p.name) : p.name}
+                  nameBg={p.name}
+                  nameEn={p.nameEn}
                   slug={p.slug}
                   price={p.price}
                   originalPrice={p.originalPrice}
@@ -253,6 +274,8 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                   badge={p.badge}
                   seriesName={p.series.name}
                   categoryName={en ? (p.category.nameEn || p.category.name) : p.category.name}
+                  categoryNameBg={p.category.name}
+                  categoryNameEn={p.category.nameEn}
                   description={en ? (p.descriptionEn || p.description) : p.description}
                   stock={p.stock}
                 />

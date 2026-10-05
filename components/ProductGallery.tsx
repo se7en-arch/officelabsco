@@ -1,6 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 
 const AUTO_MS = 3000;
 const SWIPE_MIN = 40;
@@ -14,6 +15,7 @@ export default function ProductGallery({
   images?: string[];
   productName: string;
 }) {
+  const t = useTranslations('ui');
   const slides = images && images.length > 0 ? images : [image];
   const count = slides.length;
 
@@ -78,7 +80,7 @@ export default function ProductGallery({
           <div key={i} className="gallery__slide">
             <Image
               src={src}
-              alt={`${productName} — снимка ${i + 1}`}
+              alt={t('productPhotoAlt', { name: productName, n: i + 1 })}
               fill
               style={{ objectFit: 'contain' }}
               sizes="(max-width: 900px) 100vw, 50vw"
@@ -91,12 +93,12 @@ export default function ProductGallery({
 
       {count > 1 && (
         <>
-          <button className="gallery__arrow gallery__arrow--prev" onClick={prev} aria-label="Предишна снимка">
+          <button className="gallery__arrow gallery__arrow--prev" onClick={prev} aria-label={t('prevPhoto')}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
-          <button className="gallery__arrow gallery__arrow--next" onClick={next} aria-label="Следваща снимка">
+          <button className="gallery__arrow gallery__arrow--next" onClick={next} aria-label={t('nextPhoto')}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 18l6-6-6-6" />
             </svg>
@@ -108,7 +110,7 @@ export default function ProductGallery({
                 key={i}
                 className={`gallery__dot${i === current ? ' active' : ''}`}
                 onClick={() => { setCurrent(i); setPaused(true); }}
-                aria-label={`Снимка ${i + 1}`}
+                aria-label={t('photoN', { n: i + 1 })}
               />
             ))}
           </div>

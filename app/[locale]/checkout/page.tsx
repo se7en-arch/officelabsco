@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import { useCart } from '@/lib/cart-store';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { colourLabel } from '@/lib/i18n-labels';
 import BuyNowPayLater from '@/components/BuyNowPayLater';
 
 // Every order is confirmed by proforma invoice and the courier is arranged with the
@@ -10,8 +11,25 @@ import BuyNowPayLater from '@/components/BuyNowPayLater';
 const CARRIER = 'none';
 const PAYMENT = 'proforma';
 
+// English validation messages. Same keys as MSGS in the component.
+const MSGS_EN: Record<string, string> = {
+  firstName_invalid: 'Letters only, at least 2 characters',
+  lastName_invalid:  'Letters only, at least 2 characters',
+  phone_invalid:     'Format: +359 88 888 8888 or 088 888 8888',
+  email_invalid:     'Invalid email address (e.g. john@mail.com)',
+  eik_invalid:       'UIC must be 9 or 13 digits',
+  vat_invalid:       'Format: BG123456789 (BG + 9 or 10 digits)',
+  postcode_invalid:  'Postcode: 4 digits (e.g. 1000)',
+  city_invalid:      'Invalid city name',
+  address_invalid:   'The address must be at least 5 characters',
+  company_invalid:   'At least 2 characters',
+  mol_invalid:       'Enter at least two names (letters only)',
+};
+
 export default function CheckoutPage() {
   const t = useTranslations('checkout');
+  const locale = useLocale();
+  const lineName = (i: { name: string; nameEn?: string }) => (locale === 'en' && i.nameEn) || i.name;
   const { items, total, clear, promoCode, discountPercent, discountAmount: getDiscountAmount, discountedTotal } = useCart();
   const rawTotal = total();
   const discountAmount = getDiscountAmount();
@@ -57,7 +75,7 @@ export default function CheckoutPage() {
     mol:      /^[А-ЯA-Zа-яa-zÀ-ÿ\s\-]{5,100}$/u,
   };
 
-  const MSGS: Record<string, string> = {
+  const MSGS: Record<string, string> = locale === 'en' ? MSGS_EN : {
     firstName_invalid: 'Само букви, минимум 2 символа',
     lastName_invalid:  'Само букви, минимум 2 символа',
     phone_invalid:     'Формат: +359 88 888 8888 или 088 888 8888',
@@ -178,7 +196,9 @@ export default function CheckoutPage() {
       });
       if (!res.ok) throw new Error('order_failed');
     } catch {
-      alert('Възникна грешка при изпращане на поръчката. Моля опитайте отново.');
+      alert(locale === 'en'
+        ? 'Something went wrong while sending your order. Please try again.'
+        : 'Възникна грешка при изпращане на поръчката. Моля опитайте отново.');
       return;
     }
     clear();
@@ -225,15 +245,15 @@ export default function CheckoutPage() {
               border: '1px solid var(--border, #E5E7EB)',
             }} onClick={e => e.stopPropagation()}>
               <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'rgba(34,197,94,.12)', border: '2px solid rgba(34,197,94,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, margin: '0 auto 20px' }}>✓</div>
-              <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10, letterSpacing: '-.04em' }}>Поръчката е приета!</div>
+              <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 10, letterSpacing: '-.04em' }}>{t('successTitle')}</div>
               <div style={{ fontSize: 14, color: 'var(--text-muted, #6B7280)', lineHeight: 1.6, marginBottom: 28 }}>
-                Ще получите обаждане от нашия екип за потвърждение и уточняване на детайлите по доставката.
+                {t('successCall')}
               </div>
               <button
                 style={{ width: '100%', padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', fontSize: 15, fontWeight: 800, fontFamily: 'inherit', background: 'linear-gradient(135deg,#16A34A,#15803D)', color: '#fff', boxShadow: '0 4px 20px rgba(22,163,74,.3)', transition: 'opacity .15s' }}
                 onClick={() => setShowPopup(false)}
               >
-                Разбрах →
+                {locale === 'en' ? 'Got it →' : 'Разбрах →'}
               </button>
             </div>
           </div>
@@ -280,7 +300,7 @@ export default function CheckoutPage() {
                     value={firstName}
                     onChange={e => { setFirstName(e.target.value); if (touched.has('firstName')) touch('firstName', e.target.value); }}
                     onBlur={e => touch('firstName', e.target.value)}
-                    placeholder="Иван"
+                    placeholder={locale === 'en' ? 'John' : 'Иван'}
                     maxLength={50}
                     autoComplete="given-name"
                   />
@@ -293,7 +313,7 @@ export default function CheckoutPage() {
                     value={lastName}
                     onChange={e => { setLastName(e.target.value); if (touched.has('lastName')) touch('lastName', e.target.value); }}
                     onBlur={e => touch('lastName', e.target.value)}
-                    placeholder="Иванов"
+                    placeholder={locale === 'en' ? 'Smith' : 'Иванов'}
                     maxLength={50}
                     autoComplete="family-name"
                   />
@@ -346,7 +366,7 @@ export default function CheckoutPage() {
                       value={company}
                       onChange={e => { setCompany(e.target.value); if (touched.has('company')) touch('company', e.target.value); }}
                       onBlur={e => touch('company', e.target.value)}
-                      placeholder="ООД / ЕООД / АД"
+                      placeholder={locale === 'en' ? 'Ltd / JSC / Sole trader' : 'ООД / ЕООД / АД'}
                       maxLength={100}
                     />
                     {errors.company && <span className="co-err">{errors.company}</span>}
@@ -385,7 +405,7 @@ export default function CheckoutPage() {
                       value={mol}
                       onChange={e => { setMol(e.target.value); if (touched.has('mol')) touch('mol', e.target.value); }}
                       onBlur={e => touch('mol', e.target.value)}
-                      placeholder="Три имена на представляващия"
+                      placeholder={locale === 'en' ? 'Full name of the company representative' : 'Три имена на представляващия'}
                       maxLength={100}
                     />
                     {errors.mol && <span className="co-err">{errors.mol}</span>}
@@ -413,7 +433,7 @@ export default function CheckoutPage() {
                     value={city}
                     onChange={e => { setCity(e.target.value); if (touched.has('city')) touch('city', e.target.value); }}
                     onBlur={e => touch('city', e.target.value)}
-                    placeholder="София"
+                    placeholder={locale === 'en' ? 'Sofia' : 'София'}
                     maxLength={80}
                     autoComplete="address-level2"
                   />
@@ -445,7 +465,7 @@ export default function CheckoutPage() {
                     value={address}
                     onChange={e => { setAddress(e.target.value); if (touched.has('address')) touch('address', e.target.value); }}
                     onBlur={e => touch('address', e.target.value)}
-                    placeholder="ул. Примерна 1, ет. 2, ап. 3"
+                    placeholder={locale === 'en' ? 'Example St. 1, fl. 2, apt. 3' : 'ул. Примерна 1, ет. 2, ап. 3'}
                     maxLength={200}
                     autoComplete="street-address"
                   />
@@ -469,7 +489,7 @@ export default function CheckoutPage() {
                 <h3 className="co-review__title">{t('reviewTitle')}</h3>
                 {items.map((item) => (
                   <div key={`${item.id}-${item.selectedColor ?? ''}`} className="co-review__row">
-                    <span>{item.name}{item.selectedColor ? ` — ${item.selectedColor}` : ''} ×{item.quantity}</span>
+                    <span>{lineName(item)}{item.selectedColor ? ` — ${colourLabel(item.selectedColor, locale)}` : ''} ×{item.quantity}</span>
                     <span>{item.price * item.quantity} €</span>
                   </div>
                 ))}

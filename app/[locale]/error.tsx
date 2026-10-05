@@ -1,5 +1,6 @@
 'use client';
 import { useEffect } from 'react';
+import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 
 export default function Error({
@@ -13,12 +14,14 @@ export default function Error({
     console.error(error);
   }, [error]);
 
+  const en = useLocale() === 'en';
+
   return (
     <div className="page-wrap" style={{ textAlign: 'center', paddingTop: 120, paddingBottom: 120 }}>
       <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
-      <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>Нещо не е наред</h1>
+      <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 12 }}>{en ? 'Something went wrong' : 'Нещо не е наред'}</h1>
       <p style={{ color: 'var(--text-2)', marginBottom: 32 }}>
-        Възникна грешка при зареждане на тази страница.
+        {en ? 'An error occurred while loading this page.' : 'Възникна грешка при зареждане на тази страница.'}
       </p>
       <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
         <button
@@ -26,10 +29,10 @@ export default function Error({
           className="btn-primary"
           style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
         >
-          Опитай отново
+          {en ? 'Try again' : 'Опитай отново'}
         </button>
         <Link href="/" className="btn-secondary">
-          Начална страница
+          {en ? 'Home page' : 'Начална страница'}
         </Link>
       </div>
     </div>

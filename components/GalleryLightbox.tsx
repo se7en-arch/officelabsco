@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 function getSpan(idx: number, total: number): 'wide' | 'full' | 'normal' {
   const posInGroup = idx % 5;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export default function GalleryLightbox({ images, tag }: Props) {
+  const t = useTranslations('ui');
   const [active, setActive] = useState<number | null>(null);
 
   const close = useCallback(() => setActive(null), []);
@@ -52,8 +54,8 @@ export default function GalleryLightbox({ images, tag }: Props) {
                       : span === 'wide' ? '(max-width:768px) 100vw, 853px'
                       : '(max-width:768px) 100vw, 420px';
           return (
-            <button key={src} className={cls} onClick={() => setActive(idx)} aria-label="Отвори снимка">
-              <Image src={src} alt={`${tag} — офис интериор`} fill className="gal-img"
+            <button key={src} className={cls} onClick={() => setActive(idx)} aria-label={t('openPhoto')}>
+              <Image src={src} alt={t('officeInterior', { tag })} fill className="gal-img"
                 sizes={sizes} priority={idx < 2} />
             </button>
           );
@@ -65,7 +67,7 @@ export default function GalleryLightbox({ images, tag }: Props) {
         <div className="lb-overlay" onClick={close}>
 
           {/* Close */}
-          <button className="lb-close" onClick={close} aria-label="Затвори">
+          <button className="lb-close" onClick={close} aria-label={t('close')}>
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path d="M2 2l16 16M18 2L2 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
@@ -75,7 +77,7 @@ export default function GalleryLightbox({ images, tag }: Props) {
           <div className="lb-counter">{active + 1} / {images.length}</div>
 
           {/* Prev */}
-          <button className="lb-arrow lb-arrow--prev" onClick={e => { e.stopPropagation(); prev(); }} aria-label="Предишна">
+          <button className="lb-arrow lb-arrow--prev" onClick={e => { e.stopPropagation(); prev(); }} aria-label={t('prev')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M15 19l-7-7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
@@ -86,7 +88,7 @@ export default function GalleryLightbox({ images, tag }: Props) {
             <Image
               key={images[active]}
               src={images[active]}
-              alt={`${tag} — офис интериор`}
+              alt={t('officeInterior', { tag })}
               fill
               className="lb-img"
               sizes="100vw"
@@ -95,7 +97,7 @@ export default function GalleryLightbox({ images, tag }: Props) {
           </div>
 
           {/* Next */}
-          <button className="lb-arrow lb-arrow--next" onClick={e => { e.stopPropagation(); next(); }} aria-label="Следваща">
+          <button className="lb-arrow lb-arrow--next" onClick={e => { e.stopPropagation(); next(); }} aria-label={t('next')}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M9 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
