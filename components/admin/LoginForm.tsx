@@ -1,12 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { safeNextPath } from '@/lib/safe-next';
 
 // Only allow redirecting back to a same-site, absolute path after login —
 // never to an external URL (open-redirect guard for the ?next= param).
 function safeNext(next: string | null): string {
-  if (!next || !next.startsWith('/') || next.startsWith('//')) return '/adminpanel/dashboard';
-  return next;
+  return safeNextPath(next) ?? '/adminpanel/dashboard';
 }
 
 export default function LoginForm() {

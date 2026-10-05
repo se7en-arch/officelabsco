@@ -102,37 +102,36 @@ export async function POST(req: NextRequest) {
   const body = raw as unknown as OrderBody;
 
   // ── C-01: Server-side price recalculation ──────────────────────────
-  // Never trust client-supplied prices or total
-  const itemIds = body.items
-    .map(i => i.id)
-    .filter((id): id is number => typeof id === 'number' && id > 0);
+  // Never trust client-supplied prices, quantities or totals. Every line must be
+  // a real, active product with an integer quantity 1–999; otherwise the order is refused.
+  for (const item of body.items) {
+    if (!Number.isInteger(item.id) || item.id <= 0 || !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 999) {
+      return NextResponse.json({ error: 'Невалидни артикули в количката.' }, { status: 400 });
+    }
+  }
+  const itemIds = [...new Set(body.items.map(i => i.id))];
 
-  const dbProducts = itemIds.length > 0
-    ? await prisma.product.findMany({
-        where: { id: { in: itemIds }, archived: false },
-        select: { id: true, price: true },
-      })
-    : [];
+  const dbProducts = await prisma.product.findMany({
+    where: { id: { in: itemIds }, archived: false },
+    select: { id: true, price: true },
+  });
   const priceMap = new Map(dbProducts.map(p => [p.id, p.price]));
+  if (priceMap.size !== itemIds.length) {
+    return NextResponse.json({ error: 'Някой от артикулите вече не е наличен. Обнови количката.' }, { status: 400 });
+  }
 
   const serverItems = body.items.map(item => ({
     ...item,
     name:  sanitize(String(item.name  ?? ''), 200),
     slug:  sanitize(String(item.slug  ?? ''), 200),
     image: sanitize(String(item.image ?? ''), 500),
-    // Use DB price if product found; otherwise reject
-    price: priceMap.get(item.id) ?? item.price,
+    price: priceMap.get(item.id)!,
   }));
 
-  // Reject if any item price is missing from DB (unknown product)
-  const unknownItems = serverItems.filter(
-    (item, idx) => typeof body.items[idx].id === 'number' && !priceMap.has(body.items[idx].id)
-  );
-  if (unknownItems.length > 0 && itemIds.length > 0 && dbProducts.length < itemIds.length) {
-    // Some products not found — still allow (product may have been added without ID)
-  }
-
   const itemsTotal = +serverItems.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2);
+  if (itemsTotal <= 0) {
+    return NextResponse.json({ error: 'Невалидна сума на поръчката.' }, { status: 400 });
+  }
 
   // Promo code, like item prices above, is validated and applied server-side —
   // the discount percent is never taken from the client.

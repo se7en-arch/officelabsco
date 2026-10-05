@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const featured = searchParams.get('featured') === 'true';
   const sort = searchParams.get('sort') ?? 'newest';
 
-  const where: Record<string, unknown> = {};
+  const where: Record<string, unknown> = { archived: false };
 
   if (seriesSlug) where.series = { slug: seriesSlug };
   if (categorySlug) where.category = { slug: categorySlug };
