@@ -5,7 +5,7 @@ import { sendOrderNotification, sendCustomerConfirmation } from '@/lib/mailer';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
 import { BUNDLE_PROMO_CODE, cartQualifyingBundleProductIds } from '@/lib/bundle-check';
 
-const isRateLimited = createRateLimiter(5, 60_000);
+const isRateLimited = createRateLimiter(5, 60_000, 'orders');
 
 interface GeoResult {
   country?: string;
@@ -67,7 +67,7 @@ function sanitize(s: string, maxLen: number): string {
 export async function POST(req: NextRequest) {
   const ip = getIp(req);
 
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 

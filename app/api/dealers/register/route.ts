@@ -7,10 +7,10 @@ const EIK_RX   = /^\d{9}(\d{4})?$/;
 const PHONE_RX = /^(\+359|0)([ \-]?\d){8,10}$/;
 
 // M-04: 7 registrations per hour per IP
-const isRateLimited = createRateLimiter(7, 60 * 60_000);
+const isRateLimited = createRateLimiter(7, 60 * 60_000, 'dealer-register');
 
 export async function POST(req: NextRequest) {
-  if (isRateLimited(getIp(req))) {
+  if (await isRateLimited(getIp(req))) {
     return NextResponse.json({ error: 'Твърде много опити. Опитайте след един час.' }, { status: 429 });
   }
 

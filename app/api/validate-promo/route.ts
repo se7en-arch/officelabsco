@@ -4,10 +4,10 @@ import { createRateLimiter, getIp } from '@/lib/rate-limit';
 import { BUNDLE_PROMO_CODE, cartQualifyingBundleProductIds } from '@/lib/bundle-check';
 
 // M-02: 20 attempts per 10 minutes per IP
-const isRateLimited = createRateLimiter(20, 10 * 60_000);
+const isRateLimited = createRateLimiter(20, 10 * 60_000, 'validate-promo');
 
 export async function POST(req: NextRequest) {
-  if (isRateLimited(getIp(req))) {
+  if (await isRateLimited(getIp(req))) {
     return NextResponse.json({ error: 'too_many' }, { status: 429 });
   }
 

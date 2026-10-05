@@ -5,7 +5,7 @@ import { BUNDLE_PROMO_CODE } from '@/lib/bundle-check';
 
 export const dynamic = 'force-dynamic';
 
-const isRateLimited = createRateLimiter(30, 60_000);
+const isRateLimited = createRateLimiter(30, 60_000, 'bundle-deal');
 
 // Ensured lazily here (rather than requiring manual setup in
 // /adminpanel/promos) so the popup always has a working code — an admin can
@@ -26,7 +26,7 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export async function GET(req: NextRequest) {
-  if (isRateLimited(getIp(req))) {
+  if (await isRateLimited(getIp(req))) {
     return NextResponse.json({ error: 'too_many' }, { status: 429 });
   }
 

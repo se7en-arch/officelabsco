@@ -2,13 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
 
-const isRateLimited = createRateLimiter(8, 60_000);
+const isRateLimited = createRateLimiter(8, 60_000, 'subscribe');
 const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 // Email signup — from the email popup (which can hand out a discount code)
 // or the shop's newsletter form. Consent is mandatory and recorded.
 export async function POST(req: NextRequest) {
-  if (isRateLimited(getIp(req))) return NextResponse.json({ error: 'too_many' }, { status: 429 });
+  if (await isRateLimited(getIp(req))) return NextResponse.json({ error: 'too_many' }, { status: 429 });
 
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return NextResponse.json({ error: 'bad_request' }, { status: 400 }); }

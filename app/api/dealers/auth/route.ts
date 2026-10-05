@@ -4,10 +4,10 @@ import { verifyAndUpgrade, setDealerCookie, clearDealerCookie } from '@/lib/deal
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
 
 // H-02: 5 attempts per 15 minutes per IP
-const isRateLimited = createRateLimiter(5, 15 * 60_000);
+const isRateLimited = createRateLimiter(5, 15 * 60_000, 'dealer-login');
 
 export async function POST(req: NextRequest) {
-  if (isRateLimited(getIp(req))) {
+  if (await isRateLimited(getIp(req))) {
     return NextResponse.json({ error: 'Твърде много опити. Опитайте след 15 минути.' }, { status: 429 });
   }
 

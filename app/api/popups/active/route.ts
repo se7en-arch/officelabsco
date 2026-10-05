@@ -5,14 +5,14 @@ import type { PopupFrequency, PopupType, PopupPublic } from '@/lib/popup-types';
 
 export const dynamic = 'force-dynamic';
 
-const isRateLimited = createRateLimiter(60, 60_000);
+const isRateLimited = createRateLimiter(60, 60_000, 'popups-active');
 
 // The popups (modal) and top bars that are live for a page right now, in
 // priority order. The client shows the first one the visitor hasn't already
 // seen/dismissed (that memory lives in their browser), one modal and one
 // bar at a time.
 export async function GET(req: NextRequest) {
-  if (isRateLimited(getIp(req))) return NextResponse.json({ popups: [], bars: [] }, { status: 429 });
+  if (await isRateLimited(getIp(req))) return NextResponse.json({ popups: [], bars: [] }, { status: 429 });
 
   const sp = req.nextUrl.searchParams;
   const page = ['shop', 'home'].includes(sp.get('page') ?? '') ? sp.get('page')! : 'other';

@@ -5,13 +5,13 @@ import { createResetToken } from '@/lib/dealer-reset';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
 
 // 3 requests per hour per IP — stops someone from spamming reset emails.
-const isRateLimited = createRateLimiter(3, 60 * 60_000);
+const isRateLimited = createRateLimiter(3, 60 * 60_000, 'dealer-forgot');
 
 // Dealer-facing site (middleware rewrites dealers.* → /dealers/*).
 const DEALERS_BASE = process.env.NEXT_PUBLIC_DEALERS_URL ?? 'https://dealers.officelabsco.com';
 
 export async function POST(req: NextRequest) {
-  if (isRateLimited(getIp(req))) {
+  if (await isRateLimited(getIp(req))) {
     return NextResponse.json({ error: 'Твърде много опити. Опитайте след час.' }, { status: 429 });
   }
 

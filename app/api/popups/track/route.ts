@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
 
-const isRateLimited = createRateLimiter(120, 60_000);
+const isRateLimited = createRateLimiter(120, 60_000, 'popups-track');
 
 const FIELD = { view: 'views', click: 'clicks', close: 'closes' } as const;
 
 // Daily aggregate counters (not one row per event) so the table stays tiny
 // no matter how much traffic a popup gets.
 export async function POST(req: NextRequest) {
-  if (isRateLimited(getIp(req))) return NextResponse.json({ ok: false }, { status: 429 });
+  if (await isRateLimited(getIp(req))) return NextResponse.json({ ok: false }, { status: 429 });
 
   let body: { id?: unknown; event?: unknown };
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false }, { status: 400 }); }

@@ -3,14 +3,14 @@ import { prisma } from '@/lib/prisma';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
 
 // M-01: 5 reviews per 10 minutes per IP
-const isRateLimited = createRateLimiter(5, 10 * 60_000);
+const isRateLimited = createRateLimiter(5, 10 * 60_000, 'reviews');
 
 function stripHtml(s: string): string {
   return s.replace(/<[^>]*>/g, '').replace(/javascript:/gi, '').trim();
 }
 
 export async function POST(req: NextRequest) {
-  if (isRateLimited(getIp(req))) {
+  if (await isRateLimited(getIp(req))) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
   }
 

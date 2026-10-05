@@ -5,10 +5,10 @@ import { consumeResetToken } from '@/lib/dealer-reset';
 import { createRateLimiter, getIp } from '@/lib/rate-limit';
 
 // 10 attempts per 15 minutes per IP — tokens are 256-bit, this only slows brute-force of the id.
-const isRateLimited = createRateLimiter(10, 15 * 60_000);
+const isRateLimited = createRateLimiter(10, 15 * 60_000, 'dealer-reset');
 
 export async function POST(req: NextRequest) {
-  if (isRateLimited(getIp(req))) {
+  if (await isRateLimited(getIp(req))) {
     return NextResponse.json({ error: 'Твърде много опити. Опитайте след 15 минути.' }, { status: 429 });
   }
 
