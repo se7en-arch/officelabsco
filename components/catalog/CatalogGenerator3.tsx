@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { COLOR_VARIANTS } from '@/lib/color-variants';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabsco.com';
@@ -37,15 +38,17 @@ export interface SeriesInfo {
   color: string;
 }
 
-/* ─── Series hero image URL ─── */
+/* ─── Series hero image URL ───
+   Compressed copies (1200px wide, WebP ~27-250 KB) — the original
+   JPEGs were 6-9 MB each and the main reason this tool loaded slowly. */
 function seriesHeroImage(slug: string): string {
   const nameMap: Record<string, string> = {
-    astra: '/images/moodboard-astra.jpeg',
-    terra: '/images/moodboard-terra.jpeg',
-    nova:  '/images/moodboard-nova.jpeg',
-    loft:  '/images/moodboard-loft.jpeg',
+    astra: '/images/moodboard-astra.webp',
+    terra: '/images/moodboard-terra.webp',
+    nova:  '/images/moodboard-nova.webp',
+    loft:  '/images/moodboard-loft.webp',
   };
-  return nameMap[slug] ?? '/images/moodboard-astra.jpeg';
+  return nameMap[slug] ?? '/images/moodboard-astra.webp';
 }
 
 /* ─── Series Divider Page ───────────────────────────── */
@@ -186,20 +189,19 @@ function CatalogPageGroup({
             !variants && colors && `${L.colors}: ${colors}`,
           ].filter(Boolean) as string[];
           const href = `${SITE_URL}${lang === 'en' ? '/en' : ''}/shop/${product.slug}`;
+          // Stored paths are .png; the matching lossless .webp sits next to every
+          // one of them in public/ (converted earlier) and is roughly half the size.
+          const webpImage = product.image.replace(/\.png$/i, '.webp');
 
           return (
             <div key={product.id} className={`cl-row${reverse ? ' cl-row--reverse' : ''}`}>
               <div className="cl-row-media">
-                <img src={product.image} alt={name} />
+                <img src={webpImage} alt={name} />
               </div>
               <div className="cl-row-text">
                 <div className="cl-row-eyebrow">{category}</div>
                 <div className="cl-row-headline">
                   <a className="cl-row-name" href={href} target="_blank" rel="noopener noreferrer">{name}</a>
-                  <div className="cl-row-price">
-                    {product.price.toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                    <span className="cl-eur"> €</span>
-                  </div>
                 </div>
                 {product.sku && <div className="cl-row-sku">{L.ref} {product.sku}</div>}
 
@@ -456,7 +458,7 @@ export default function CatalogGenerator3({
             {filtered.map(p => (
               <label key={p.id} className={`cl-pitem${selected.has(p.id) ? ' cl-pitem--on' : ''}`}>
                 <input type="checkbox" checked={selected.has(p.id)} onChange={() => toggle(p.id)} className="cl-pcheck" />
-                <div className="cl-pthumb"><img src={p.image} alt="" /></div>
+                <div className="cl-pthumb"><Image src={p.image} alt="" fill sizes="38px" style={{ objectFit: 'contain' }} /></div>
                 <div className="cl-pinfo">
                   <div className="cl-pname-sb">{p.name}</div>
                   <div className="cl-pmeta">
@@ -549,7 +551,7 @@ body { background: #D8D8D4; -webkit-print-color-adjust: exact; print-color-adjus
 .cl-pitem:hover { background: #F8F8F6; }
 .cl-pitem--on { background: #F0F6FF; }
 .cl-pcheck { width: 14px; height: 14px; flex-shrink: 0; cursor: pointer; accent-color: #111; }
-.cl-pthumb { width: 38px; height: 38px; flex-shrink: 0; border-radius: 4px; background: #F5F5F3; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.cl-pthumb { position: relative; width: 38px; height: 38px; flex-shrink: 0; border-radius: 4px; background: #F5F5F3; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .cl-pthumb img { width: 100%; height: 100%; object-fit: contain; }
 .cl-pinfo { flex: 1; min-width: 0; }
 .cl-pname-sb { font-size: 12px; font-weight: 600; color: #111; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
