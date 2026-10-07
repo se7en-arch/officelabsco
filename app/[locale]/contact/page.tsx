@@ -10,11 +10,13 @@ const CONTACT_BG = {
   info: 'Информация за контакт',
   email: 'Имейл',
   replyTime: 'Отговаряме в рамките на 1 работен ден',
+  phone: 'Телефон',
+  phoneVal: '+359 876 303225',
   hours: 'Работно време',
   weekdays: 'Понеделник – Петък: 9:00 – 18:00',
-  saturday: 'Събота: 10:00 – 14:00',
+  weekend: 'Събота и неделя: почивни дни',
   address: 'Адрес',
-  country: 'България',
+  addressVal: '4000 Пловдив, България',
   formLabel: 'Изпратете съобщение',
   sentTitle: 'Съобщението е изпратено!',
   sentText: 'Ще се свържем с вас в рамките на 1 работен ден.',
@@ -34,11 +36,13 @@ const CONTACT_EN = {
   info: 'Contact information',
   email: 'Email',
   replyTime: 'We reply within 1 working day',
+  phone: 'Phone',
+  phoneVal: '+359 876 303225',
   hours: 'Working hours',
   weekdays: 'Monday – Friday: 9:00 – 18:00',
-  saturday: 'Saturday: 10:00 – 14:00',
+  weekend: 'Saturday and Sunday: closed',
   address: 'Address',
-  country: 'Bulgaria',
+  addressVal: '4000 Plovdiv, Bulgaria',
   formLabel: 'Send us a message',
   sentTitle: 'Your message has been sent!',
   sentText: 'We will get back to you within 1 working day.',
@@ -272,8 +276,7 @@ export default function ContactPage() {
           <p className="co-hero__eye">OfficeLabs Co</p>
           <h1>{C.h1}</h1>
           <p className="co-hero__sub">
-            {C.lead1}
-            {C.lead2}
+            {C.lead1} {C.lead2}
           </p>
         </div>
 
@@ -302,6 +305,20 @@ export default function ContactPage() {
             <div className="co-card">
               <div className="co-card__icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+              </div>
+              <div>
+                <p className="co-card__title">{C.phone}</p>
+                <p className="co-card__val">
+                  <a href="tel:+359876303225">{C.phoneVal}</a>
+                </p>
+              </div>
+            </div>
+
+            <div className="co-card">
+              <div className="co-card__icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
@@ -309,7 +326,7 @@ export default function ContactPage() {
               <div>
                 <p className="co-card__title">{C.hours}</p>
                 <p className="co-card__val">{C.weekdays}</p>
-                <p className="co-card__val">{C.saturday}</p>
+                <p className="co-card__val">{C.weekend}</p>
               </div>
             </div>
 
@@ -322,7 +339,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="co-card__title">{C.address}</p>
-                <p className="co-card__val">{C.country}</p>
+                <p className="co-card__val">{C.addressVal}</p>
               </div>
             </div>
           </div>
