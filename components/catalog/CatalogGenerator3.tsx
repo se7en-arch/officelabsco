@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { COLOR_VARIANTS } from '@/lib/color-variants';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabsco.com';
 
 export interface CatalogProduct {
   id: number;
@@ -114,8 +117,11 @@ function parseDescription(text: string): string[][] {
 }
 
 /* ─── First sentence only, for a short row blurb ────── */
-function firstSentence(text: string): string {
-  return parseDescription(text)[0]?.[0] ?? text;
+/* Full description as flowing paragraphs (not one sentence per line —
+   that reads fine in the original page-wide column, but wastes space
+   in this layout's half-width text column). */
+function splitParagraphs(text: string): string[] {
+  return text.split('\n\n').map(p => p.replace(/\n/g, ' ').trim()).filter(Boolean);
 }
 
 /* ─── One A4 page holding 3 products in alternating
@@ -172,12 +178,14 @@ function CatalogPageGroup({
           const material    = isBg ? product.material    : (product.materialEn    ?? product.material);
           const colors      = isBg ? product.colors      : (product.colorsEn      ?? product.colors);
           const category    = isBg ? product.category    : (product.categoryEn    ?? product.category);
-          const blurb = firstSentence(description);
+          const paragraphs = splitParagraphs(description);
+          const variants = COLOR_VARIANTS[product.slug];
           const specParts = [
             material && `${L.material}: ${material}`,
             product.dimensions && `${L.dims}: ${product.dimensions}`,
-            colors && `${L.colors}: ${colors}`,
+            !variants && colors && `${L.colors}: ${colors}`,
           ].filter(Boolean) as string[];
+          const href = `${SITE_URL}${lang === 'en' ? '/en' : ''}/shop/${product.slug}`;
 
           return (
             <div key={product.id} className={`cl-row${reverse ? ' cl-row--reverse' : ''}`}>
@@ -186,16 +194,39 @@ function CatalogPageGroup({
               </div>
               <div className="cl-row-text">
                 <div className="cl-row-eyebrow">{category}</div>
-                <div className="cl-row-name">{name}</div>
-                {blurb && <div className="cl-row-blurb">{blurb}</div>}
-                {specParts.length > 0 && <div className="cl-row-specs">{specParts.join('   ·   ')}</div>}
-                <div className="cl-row-foot">
+                <div className="cl-row-headline">
+                  <a className="cl-row-name" href={href} target="_blank" rel="noopener noreferrer">{name}</a>
                   <div className="cl-row-price">
                     {product.price.toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     <span className="cl-eur"> €</span>
                   </div>
-                  {product.sku && <div className="cl-row-sku">{L.ref} {product.sku}</div>}
                 </div>
+                {product.sku && <div className="cl-row-sku">{L.ref} {product.sku}</div>}
+
+                {paragraphs.length > 0 && (
+                  <div className="cl-row-desc">
+                    {paragraphs.map((p, pi) => <p key={pi}>{p}</p>)}
+                  </div>
+                )}
+
+                {variants && variants.length > 0 ? (
+                  <div className="cl-row-colors">
+                    <span className="cl-row-colors-lbl">{L.colors}</span>
+                    {variants.map(v => (
+                      <span key={v.name} className="cl-row-color-chip">
+                        <span className="cl-row-color-dot" style={{ background: v.color }} />
+                        {v.name}
+                      </span>
+                    ))}
+                  </div>
+                ) : colors && (
+                  <div className="cl-row-colors">
+                    <span className="cl-row-colors-lbl">{L.colors}</span>
+                    <span className="cl-row-color-chip">{colors}</span>
+                  </div>
+                )}
+
+                {specParts.length > 0 && <div className="cl-row-specs">{specParts.join('   ·   ')}</div>}
               </div>
             </div>
           );
@@ -575,22 +606,22 @@ body { background: #D8D8D4; -webkit-print-color-adjust: exact; print-color-adjus
 ══════════════════════════════════════ */
 .cl-group-page {
   min-height: 297mm;
-  padding: 11mm 13mm 9mm;
+  padding: 7mm 12mm 5mm;
   display: flex; flex-direction: column;
 }
 
 /* Header (shared with the old single-product page) */
-.cl-header { display: flex; align-items: center; gap: 6mm; margin-bottom: 2.5mm; }
+.cl-header { display: flex; align-items: center; gap: 6mm; margin-bottom: 2mm; }
 .cl-logo { font-size: 12.5pt; letter-spacing: -.03em; flex-shrink: 0; }
 .cl-header-mid { display: flex; align-items: center; gap: 3mm; flex: 1; }
 .cl-series-tag { font-size: 6.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; border: 1px solid; padding: .8mm 2.5mm; border-radius: 1.5mm; flex-shrink: 0; }
 .cl-cat-label { font-size: 7.5pt; color: #888; }
 .cl-pageno { font-size: 7.5pt; color: #ccc; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-.cl-hr { height: .7mm; margin-bottom: 4.5mm; flex-shrink: 0; }
+.cl-hr { height: .7mm; margin-bottom: 3.5mm; flex-shrink: 0; }
 
 /* Rows: 3 per page, each a fixed-height image/text pair */
-.cl-rows { display: flex; flex-direction: column; gap: 8mm; flex: 1; min-height: 0; }
-.cl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; height: 78mm; flex-shrink: 0; }
+.cl-rows { display: flex; flex-direction: column; gap: 4mm; flex-shrink: 0; }
+.cl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9mm; height: 86mm; flex-shrink: 0; }
 .cl-row--reverse .cl-row-media { order: 2; }
 .cl-row--reverse .cl-row-text { order: 1; }
 
@@ -603,21 +634,31 @@ body { background: #D8D8D4; -webkit-print-color-adjust: exact; print-color-adjus
 }
 .cl-row-media img { width: 100%; height: 100%; object-fit: contain; padding: 4mm; display: block; }
 
-.cl-row-text { height: 100%; display: flex; flex-direction: column; min-width: 0; padding: 1mm 0; }
-.cl-row-eyebrow { font-size: 6.5pt; text-transform: uppercase; letter-spacing: .12em; color: #aaa; margin-bottom: 2mm; }
-.cl-row-name { font-size: 13pt; font-weight: 800; line-height: 1.18; letter-spacing: -.02em; color: #111; margin-bottom: 2.5mm; }
-.cl-row-blurb {
-  font-size: 8pt; line-height: 1.6; color: #666; margin-bottom: 3.5mm;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.cl-row-specs { font-size: 7.5pt; color: #777; line-height: 1.6; margin-bottom: auto; }
-.cl-row-foot { display: flex; align-items: baseline; gap: 4mm; margin-top: 3.5mm; }
-.cl-row-price { font-size: 15pt; font-weight: 900; letter-spacing: -.03em; color: #111; }
-.cl-eur { font-size: 10pt; font-weight: 500; opacity: .5; }
-.cl-row-sku { font-size: 6.5pt; color: #ccc; letter-spacing: .08em; text-transform: uppercase; }
+.cl-row-text { height: 100%; display: flex; flex-direction: column; min-width: 0; padding: 1mm 0; overflow: hidden; }
+.cl-row-eyebrow { font-size: 6.5pt; text-transform: uppercase; letter-spacing: .12em; color: #aaa; margin-bottom: 1.5mm; flex-shrink: 0; }
+
+/* Name (linked to the live product page) + price, on one line */
+.cl-row-headline { display: flex; align-items: baseline; justify-content: space-between; gap: 4mm; flex-shrink: 0; }
+.cl-row-name { font-size: 12.5pt; font-weight: 800; line-height: 1.18; letter-spacing: -.02em; color: #111; text-decoration: none; }
+.cl-row-name:hover { text-decoration: underline; }
+.cl-row-price { font-size: 13pt; font-weight: 900; letter-spacing: -.03em; color: #111; white-space: nowrap; flex-shrink: 0; }
+.cl-eur { font-size: 9pt; font-weight: 500; opacity: .5; }
+.cl-row-sku { font-size: 6.5pt; color: #ccc; letter-spacing: .08em; text-transform: uppercase; margin-top: .8mm; flex-shrink: 0; }
+
+/* Full description, flowing paragraphs */
+.cl-row-desc { margin: 2mm 0; display: flex; flex-direction: column; gap: 1.3mm; flex-shrink: 0; }
+.cl-row-desc p { font-size: 7.2pt; line-height: 1.48; color: #3D3D3D; }
+
+/* Colour options, named with their actual swatch */
+.cl-row-colors { display: flex; align-items: center; flex-wrap: wrap; gap: 1.5mm 3mm; margin-bottom: 1.5mm; flex-shrink: 0; }
+.cl-row-colors-lbl { font-size: 6.5pt; text-transform: uppercase; letter-spacing: .1em; color: #aaa; }
+.cl-row-color-chip { display: inline-flex; align-items: center; gap: 1.3mm; font-size: 7.3pt; color: #333; }
+.cl-row-color-dot { width: 2.8mm; height: 2.8mm; border-radius: 50%; border: .2mm solid rgba(0,0,0,.15); display: inline-block; flex-shrink: 0; }
+
+.cl-row-specs { font-size: 7pt; color: #999; line-height: 1.5; margin-top: auto; flex-shrink: 0; }
 
 /* Footer */
-.cl-foot-rule { height: .3mm; background: #E6E6E2; margin-top: auto; flex-shrink: 0; margin-bottom: 3mm; }
+.cl-foot-rule { height: .3mm; background: #E6E6E2; margin-top: auto; flex-shrink: 0; margin-bottom: 2mm; }
 .cl-foot { display: flex; justify-content: space-between; font-size: 7pt; color: #bbb; letter-spacing: .04em; flex-shrink: 0; }
 
 /* ══════════════════════════════════════
