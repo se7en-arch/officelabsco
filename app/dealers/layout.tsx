@@ -2,6 +2,15 @@ import type { ReactNode } from 'react';
 
 export const metadata = { title: 'OfficeLabs — Дилърски портал' };
 
+// The CSP in middleware.ts uses a fresh per-request nonce on every script tag.
+// A statically prerendered page is built once and can never match that nonce,
+// so every script on it gets blocked and the page never becomes interactive
+// (forms look normal but clicking submit does nothing). Login, register and
+// reset are plain client components with no per-request data, so Next.js was
+// prerendering them statically. Forcing the whole /dealers subtree to render
+// per request keeps the nonce correct everywhere under it.
+export const dynamic = 'force-dynamic';
+
 export default function DealersLayout({ children }: { children: ReactNode }) {
   return (
     <>
