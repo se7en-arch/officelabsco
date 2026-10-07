@@ -47,7 +47,7 @@ const GROUPS_BG = [
     items: [
       {
         q: 'Колко е срокът за доставка?',
-        a: 'Производството и доставката отнемат 20 работни дни след потвърждение на поръчката. Доставяме на територията на цялата страна.',
+        a: 'Производството и доставката отнемат 30 работни дни след потвърждение на поръчката. Доставяме на територията на цялата страна.',
       },
       {
         q: 'Каква е цената на доставката?',
@@ -174,7 +174,7 @@ const EN_QA: [string, string][][] = [
     ['Is my order confirmed if I did not receive an email?', 'Check your "Spam" folder. If the email is missing, contact us and we will check the status of your order.'],
   ],
   [
-    ['How long does delivery take?', 'Production and delivery take 20 working days from order confirmation. We deliver anywhere in Bulgaria.'],
+    ['How long does delivery take?', 'Production and delivery take 30 working days from order confirmation. We deliver anywhere in Bulgaria.'],
     ['How much does delivery cost?', 'Delivery is free.'],
     ['Can I have my order delivered to a courier office?', 'Yes. When you place your order you can choose delivery to an address or to an office. The exact courier and office are agreed with you after the order is confirmed.'],
     ['What should I do if the parcel arrives damaged?', 'Refuse to accept the parcel and contact us immediately at info@officelabsco.com. We will arrange a replacement or a full refund.'],

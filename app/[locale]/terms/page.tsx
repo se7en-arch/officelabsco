@@ -112,15 +112,64 @@ function TermsBg() {
       <section className="lgl-section" id="delivery">
         <h2>Доставка</h2>
         <p>
-          Доставките се извършват на територията на Република България чрез куриерски
-          компании. Производството и доставката отнемат <strong>20 работни дни</strong> след
-          потвърждение на поръчката. Доставката е безплатна.
+          Доставките се извършват на територията на Република България. Производството и
+          доставката отнемат <strong>30 работни дни</strong> след потвърждение на поръчката.
         </p>
-        <h3>Доставка до адрес или до офис</h3>
+
+        <h3>Условия за доставка</h3>
+        <p>Доставката на поръчаните стоки може да се извършва:</p>
+        <ul>
+          <li>чрез куриерска фирма SPEEDY;</li>
+          <li>чрез куриерска фирма CVC за палетни пратки;</li>
+          <li>със собствен фирмен транспорт на „Office Labs Co.";</li>
+          <li>чрез лично получаване от обект на Търговеца, когато тази възможност е избрана и потвърдена.</li>
+        </ul>
         <p>
-          При оформяне на поръчката можете да изберете доставка до посочен адрес или до
-          офис. Точният куриер и офисът се уговарят с вас след потвърждение на поръчката.
+          Обичайният срок за доставка е от 2 до 4 работни дни, когато поръчаните стоки са
+          налични на склад.
         </p>
+        <p>
+          При липса на наличност или при други обстоятелства, които могат да доведат до
+          удължаване на срока, Клиентът се уведомява своевременно.
+        </p>
+
+        <h3>5.1. Доставка до гр. Пловдив и региона</h3>
+        <p>
+          „Office Labs Co." предлага безплатна доставка с фирмен транспорт до гр. Пловдив и
+          региона.
+        </p>
+        <p>
+          Посочените условия се прилагат при доставка с фирмен транспорт и при наличие на
+          поръчаните стоки на склад.
+        </p>
+
+        <h3>5.2. Доставка до други населени места</h3>
+        <p>
+          „Office Labs Co." предлага безплатна доставка с фирмен транспорт до гр. София,
+          Пазарджик, Асеновград, Карлово, Казанлък, Стара Загора, Димитровград, Хасково,
+          Харманли, Кърджали, Момчилград, Ямбол и други населени места, обслужвани от
+          Търговеца.
+        </p>
+        <p>
+          Възможността за доставка с фирмен транспорт до конкретен адрес зависи от
+          маршрутите и районите, обслужвани от Търговеца.
+        </p>
+        <p>
+          За Клиенти, които имат качеството на потребители, окончателният размер на
+          разходите за доставка, включително приложимият ДДС, се посочва преди
+          финализиране на поръчката.
+        </p>
+
+        <h3>5.4. Лично получаване</h3>
+        <p>
+          Клиентът може да избере лично получаване на стоката от обект на „Office Labs
+          Co.", когато тази възможност се предлага за съответната поръчка.
+        </p>
+        <p>
+          Конкретният адрес и възможното време за получаване се посочват в онлайн магазина
+          или се уточняват с Клиента.
+        </p>
+
         <h3>Повредена или грешна пратка</h3>
         <p>
           При получаване на увредена или грешна стока, моля откажете приемането и се
@@ -362,14 +411,59 @@ function TermsEn() {
       <section className="lgl-section" id="delivery">
         <h2>Delivery</h2>
         <p>
-          Deliveries are made within the Republic of Bulgaria through courier companies. Production and
-          delivery take <strong>20 working days</strong> from order confirmation. Delivery is free.
+          Deliveries are made within the Republic of Bulgaria. Production and delivery take{' '}
+          <strong>30 working days</strong> from order confirmation.
         </p>
-        <h3>Delivery to an address or to an office</h3>
+
+        <h3>Delivery terms</h3>
+        <p>Delivery of the ordered goods may be carried out:</p>
+        <ul>
+          <li>by the courier company SPEEDY;</li>
+          <li>by the courier company CVC, for pallet shipments;</li>
+          <li>with "Office Labs Co."'s own company transport;</li>
+          <li>by personal collection from a location of the Trader, when this option is selected and confirmed.</li>
+        </ul>
         <p>
-          When placing your order you can choose delivery to a specified address or to an office. The exact
-          courier and office are agreed with you after the order is confirmed.
+          The usual delivery time is 2 to 4 working days, when the ordered goods are in stock.
         </p>
+        <p>
+          If the goods are out of stock, or other circumstances may extend this period, the Customer is
+          notified in good time.
+        </p>
+
+        <h3>5.1. Delivery to Plovdiv and the surrounding region</h3>
+        <p>
+          "Office Labs Co." offers free delivery by company transport to Plovdiv and the surrounding region.
+        </p>
+        <p>
+          These terms apply to deliveries made by company transport, when the ordered goods are in stock.
+        </p>
+
+        <h3>5.2. Delivery to other towns</h3>
+        <p>
+          "Office Labs Co." offers free delivery by company transport to Sofia, Pazardzhik, Asenovgrad,
+          Karlovo, Kazanlak, Stara Zagora, Dimitrovgrad, Haskovo, Harmanli, Kardzhali, Momchilgrad, Yambol
+          and other towns served by the Trader.
+        </p>
+        <p>
+          Whether delivery by company transport is available to a specific address depends on the Trader's
+          routes and service areas.
+        </p>
+        <p>
+          For Customers acting as consumers, the final delivery cost, including applicable VAT, is shown
+          before the order is finalised.
+        </p>
+
+        <h3>5.4. Personal collection</h3>
+        <p>
+          The Customer may choose to collect the goods in person from a location of "Office Labs Co.",
+          when this option is offered for the relevant order.
+        </p>
+        <p>
+          The specific address and the available collection time are shown in the online store, or
+          arranged directly with the Customer.
+        </p>
+
         <h3>Damaged or incorrect parcel</h3>
         <p>
           If you receive damaged or incorrect goods, please refuse acceptance and contact us immediately at{' '}
