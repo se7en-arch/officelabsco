@@ -22,7 +22,11 @@ export async function GET(request: Request) {
   const json = JSON.stringify(products.map(p => ({ slug: p.slug, name: p.name.trim(), colors: p.colors })))
     .replace(/</g, '\\u003c');
 
-  return new NextResponse(STICKER_TEMPLATE.replace('/*PRODUCTS*/', json), {
+  // The site CSP (middleware.ts) only runs inline scripts that carry this request's nonce.
+  const nonce = request.headers.get('x-nonce') ?? '';
+  const html = STICKER_TEMPLATE.replace('/*PRODUCTS*/', json).replaceAll('__CSP_NONCE__', nonce);
+
+  return new NextResponse(html, {
     headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
   });
 }
