@@ -7,41 +7,6 @@ const ITEMS = [
     title: 'Bundle попъп — върни честотата на "веднъж на 7 дни"',
     desc: 'Попъпите вече се управляват от Админ панел → Попъпи. Bundle попъпът е оставен на честота "При всяко зареждане" (тестов режим) — смени я на "Веднъж на X дни" (7), когато приключиш с тестването.',
   },
-  {
-    icon: '💳',
-    title: 'Stripe плащане',
-    desc: 'Плащане с карта не е имплементирано. Създай акаунт на stripe.com, вземи publishable + secret ключове, добави @stripe/stripe-js и @stripe/react-stripe-js, направи /api/checkout-session и замени бутона "Плащане с карта" с Stripe Elements форма.',
-  },
-  {
-    icon: '📱',
-    title: 'Социални мрежи',
-    desc: 'Facebook, Instagram, LinkedIn линковете в Footer-а са празни (#). Добави реалните URL-и в components/Footer.tsx.',
-  },
-  {
-    icon: '🚧',
-    title: 'Under Construction страница',
-    desc: 'Преди пускане: изтрий PREVIEW_SECRET от Vercel → Settings → Environment Variables. Изтрий app/under-construction/ и app/api/unlock/ от кода и направи нов deploy.',
-  },
-  {
-    icon: '💰',
-    title: 'Плащане на кредит (Buy Now Pay Later)',
-    desc: 'BuyNowPayLater компонентът е само визуален — без реална интеграция. Опции: Paytaka (paytaka.bg) или TBI Bank — и двете имат готови JS widget-и за онлайн магазини. Заявяваш партньорски достъп, те дават скрипт/iframe, интегрира се в product и checkout страниците.',
-  },
-  {
-    icon: '📦',
-    title: 'Econt Plugin — избор на офис',
-    desc: 'Заяви API достъп: econt.com → Партньори → API (безплатно за онлайн магазини). Дават JS скрипт + callback функция. При избор на "До офис" в checkout зареждаш widget-а в модал — той връща обект с избрания офис и адрес.',
-  },
-  {
-    icon: '🚐',
-    title: 'Speedy Widget — избор на офис',
-    desc: 'Регистрирай се на api.speedy.bg за API ключ (безплатно). Предоставят JS widget "Speedy Map" — iframe с карта за избор на офис. При избор на "До офис" и куриер Speedy го зареждаш в модал с callback при потвърждение.',
-  },
-  {
-    icon: '📧',
-    title: 'Имейл — info@officelabsco.com (3 стъпки)',
-    desc: 'Стъпка 1 — Cloudflare Email Routing (получаване): Cloudflare → officelabsco.com → Email → Email Routing → активирай → добави правило info@officelabsco.com → препрати към твоя личен имейл. | Стъпка 2 — Resend Domain Verification (изпращане от сайта): resend.com → Domains → Add Domain → officelabsco.com → вземи DNS записите (TXT/CNAME) → добави ги в Cloudflare DNS → натисни Verify в Resend. | Стъпка 3 — Gmail "Send mail as" (отговаряне от info@): Gmail → Settings → See all settings → Accounts and Import → Send mail as → Add another email address → info@officelabsco.com → потвърди verification имейла.',
-  },
 ];
 
 export default function AnnouncementBanner() {
@@ -74,7 +39,7 @@ export default function AnnouncementBanner() {
           ⚠ TO DO!
         </span>
         <span style={{ fontSize: 12, opacity: .55, marginLeft: 4 }}>
-          {ITEMS.length} задачи
+          {ITEMS.length} {ITEMS.length === 1 ? 'задача' : 'задачи'}
         </span>
         <span style={{
           marginLeft: 'auto',
