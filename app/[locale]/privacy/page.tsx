@@ -19,7 +19,6 @@ const SECTIONS = [
   { id: 'rights',     title: 'Вашите права' },
   { id: 'retention',  title: 'Съхранение на данните' },
   { id: 'security',   title: 'Сигурност' },
-  { id: 'children',   title: 'Деца' },
   { id: 'changes',    title: 'Промени в политиката' },
   { id: 'contact',    title: 'Свържете се с нас' },
 ];
@@ -69,23 +68,22 @@ function PrivacyBg() {
         <h3>Технически данни, събирани автоматично</h3>
         <ul>
           <li>IP адрес и приблизително географско местоположение (държава, град)</li>
-          <li>Вид и версия на браузър (User-Agent)</li>
-          <li>Страница, от която сте дошли (Referer)</li>
+          <li>Вид и версия на браузър</li>
+          <li>Страница, от която сте дошли</li>
           <li>Предпочитан език на браузъра</li>
           <li>Часова зона</li>
         </ul>
 
         <h3>Маркетингови данни (UTM)</h3>
         <p>
-          При посещение от рекламна връзка съхраняваме UTM параметри (utm_source,
-          utm_medium, utm_campaign) единствено за анализ на ефективността на
-          маркетинговите канали.
+          При посещение от рекламна връзка съхраняваме UTM параметри единствено за
+          анализ на ефективността на маркетинговите канали.
         </p>
 
         <h3>Данни от количката</h3>
         <p>
-          Съдържанието на количката се съхранява локално в браузъра ви (localStorage)
-          и не се предава на нашите сървъри, докато не финализирате поръчка.
+          Съдържанието на количката се съхранява локално в браузъра ви и не се
+          предава на нашите сървъри, докато не финализирате поръчка.
         </p>
       </section>
 
@@ -151,25 +149,6 @@ function PrivacyBg() {
           изпълнение на доставката.
         </p>
 
-        <h3>Технически доставчици</h3>
-        <ul>
-          <li>
-            <strong>Vercel Inc.</strong> — хостинг на уебсайта и съхранение на
-            изображения. Данните се обработват в ЦОД в рамките на ЕС и САЩ съгласно{' '}
-            <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">
-              политиката за поверителност на Vercel
-            </a>.
-          </li>
-          <li>
-            <strong>Turso / ChiselStrike Inc.</strong> — база данни, в която се
-            съхраняват поръчките.
-          </li>
-          <li>
-            <strong>Resend Inc.</strong> — изпращане на транзакционни имейли
-            (потвърждения за поръчки).
-          </li>
-        </ul>
-
         <h3>Държавни органи</h3>
         <p>
           Можем да разкрием данни пред компетентни органи, когато сме задължени по
@@ -189,19 +168,7 @@ function PrivacyBg() {
           Не използваме бисквитки за проследяване или реклама.
         </p>
 
-        <h3>Бисквитки, използвани от сайта</h3>
-        <ul>
-          <li>
-            <strong>ol_preview</strong> — временна бисквитка за достъп по
-            време на разработка. Ще бъде премахната след пускане на сайта.
-          </li>
-          <li>
-            <strong>admin_token</strong> — удостоверяване за административния
-            панел. Достъпна само за администратора.
-          </li>
-        </ul>
-
-        <h3>Локално съхранение (localStorage)</h3>
+        <h3>Локално съхранение</h3>
         <p>
           Количката за пазаруване се съхранява в localStorage на вашия браузър
           под ключа <code>officelabsco-cart</code>. Тези данни не се изпращат на
@@ -294,15 +261,6 @@ function PrivacyBg() {
         </p>
       </section>
 
-      <section className="lgl-section" id="children">
-        <h2>Деца</h2>
-        <p>
-          Сайтът не е предназначен за лица под 18 години и съзнателно не събира
-          лични данни от непълнолетни. Ако разберем, че сме обработили данни на
-          дете без родителско съгласие, ще ги изтрием незабавно.
-        </p>
-      </section>
-
       <section className="lgl-section" id="changes">
         <h2>Промени в политиката</h2>
         <p>
@@ -339,7 +297,6 @@ const SECTIONS_EN = [
   { id: 'rights',     title: 'Your rights' },
   { id: 'retention',  title: 'Data retention' },
   { id: 'security',   title: 'Security' },
-  { id: 'children',   title: 'Children' },
   { id: 'changes',    title: 'Changes to this policy' },
   { id: 'contact',    title: 'Contact us' },
 ];
@@ -389,22 +346,22 @@ function PrivacyEn() {
         <h3>Technical data collected automatically</h3>
         <ul>
           <li>IP address and approximate location (country, city)</li>
-          <li>Browser type and version (User-Agent)</li>
-          <li>The page you came from (Referer)</li>
+          <li>Browser type and version</li>
+          <li>The page you came from</li>
           <li>Preferred browser language</li>
           <li>Time zone</li>
         </ul>
 
         <h3>Marketing data (UTM)</h3>
         <p>
-          When you visit from an advertising link, we store UTM parameters (utm_source,
-          utm_medium, utm_campaign) solely to analyse the effectiveness of our marketing channels.
+          When you visit from an advertising link, we store UTM parameters solely to analyse the
+          effectiveness of our marketing channels.
         </p>
 
         <h3>Cart data</h3>
         <p>
-          The contents of your cart are stored locally in your browser (localStorage) and are
-          not sent to our servers until you complete an order.
+          The contents of your cart are stored locally in your browser and are not sent to our
+          servers until you complete an order.
         </p>
       </section>
 
@@ -467,23 +424,6 @@ function PrivacyEn() {
           out the delivery.
         </p>
 
-        <h3>Technical service providers</h3>
-        <ul>
-          <li>
-            <strong>Vercel Inc.</strong> — website hosting and image storage. Data is processed in
-            data centres within the EU and the USA, under{' '}
-            <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">
-              Vercel's privacy policy
-            </a>.
-          </li>
-          <li>
-            <strong>Turso / ChiselStrike Inc.</strong> — database in which orders are stored.
-          </li>
-          <li>
-            <strong>Resend Inc.</strong> — sending transactional emails (order confirmations).
-          </li>
-        </ul>
-
         <h3>Public authorities</h3>
         <p>
           We may disclose data to competent authorities where we are required to do so by law
@@ -503,19 +443,7 @@ function PrivacyEn() {
           use tracking or advertising cookies.
         </p>
 
-        <h3>Cookies used by the site</h3>
-        <ul>
-          <li>
-            <strong>ol_preview</strong> — a temporary cookie for access during development. It will
-            be removed after the site launches.
-          </li>
-          <li>
-            <strong>admin_token</strong> — authentication for the admin panel. Available only to
-            the administrator.
-          </li>
-        </ul>
-
-        <h3>Local storage (localStorage)</h3>
+        <h3>Local storage</h3>
         <p>
           The shopping cart is stored in the localStorage of your browser under the key{' '}
           <code>officelabsco-cart</code>. This data is not sent to our servers and is deleted when
@@ -602,15 +530,6 @@ function PrivacyEn() {
         <p>
           If a security breach is detected, we will notify the affected persons and the CPDP within
           the statutory deadlines.
-        </p>
-      </section>
-
-      <section className="lgl-section" id="children">
-        <h2>Children</h2>
-        <p>
-          The site is not intended for persons under 18, and we knowingly do not collect personal data
-          from minors. If we learn that we have processed a child's data without parental consent, we
-          will delete it immediately.
         </p>
       </section>
 
