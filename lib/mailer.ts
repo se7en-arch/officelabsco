@@ -32,7 +32,15 @@ export interface OrderEmailData {
     price:    number;
     quantity: number;
     color?:   string | null;
+    image?:   string | null;
   }>;
+}
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://officelabsco.com';
+// Absolute URL for an order-item photo — stored paths are relative ("/products/x.webp").
+function itemImageUrl(image: string | null | undefined): string | null {
+  if (!image) return null;
+  return image.startsWith('http') ? image : `${SITE_URL}${image}`;
 }
 
 function row(label: string, value: string | null | undefined): string {
@@ -44,12 +52,21 @@ function row(label: string, value: string | null | undefined): string {
     </tr>`;
 }
 
+// Small product photo next to the name in the items table. A nested table
+// (not float/flex) because that's what actually lines up across email clients.
+function itemThumb(image: string | null | undefined): string {
+  const url = itemImageUrl(image);
+  if (!url) return '';
+  return `
+    <td style="padding-right:10px;width:44px">
+      <img src="${url}" width="44" height="44" alt="" style="display:block;width:44px;height:44px;border-radius:7px;object-fit:contain;background:#f5f5f5;border:1px solid #eee">
+    </td>`;
+}
+
 // ─── Admin notification email ───────────────────────────────────────────────
 
-function buildAdminHtml(order: OrderEmailData): string {
+export function buildAdminHtml(order: OrderEmailData): string {
   const isCompany = !!(order.company || order.eik);
-  const displayNum = order.orderNumber ?? order.id;
-  const invoiceNo = `INV-${new Date(order.createdAt).getFullYear()}-${String(displayNum).padStart(5, '0')}`;
   const date = new Date(order.createdAt).toLocaleDateString('bg-BG', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
@@ -58,8 +75,11 @@ function buildAdminHtml(order: OrderEmailData): string {
 
   const itemRows = order.items.map((item, idx) => `
     <tr style="background:${idx % 2 === 0 ? '#fff' : '#f9f9f9'}">
-      <td style="padding:11px 14px;font-size:13px;color:#1a1a1a;border-bottom:1px solid #eee">
-        ${item.name}${item.color ? `<span style="margin-left:6px;padding:1px 7px;font-size:11px;font-weight:600;border-radius:99px;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb">${item.color}</span>` : ''}
+      <td style="padding:10px 14px;font-size:13px;color:#1a1a1a;border-bottom:1px solid #eee">
+        <table cellpadding="0" cellspacing="0"><tr>
+          ${itemThumb(item.image)}
+          <td style="vertical-align:middle">${item.name}${item.color ? `<span style="margin-left:6px;padding:1px 7px;font-size:11px;font-weight:600;border-radius:99px;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb">${item.color}</span>` : ''}</td>
+        </tr></table>
       </td>
       <td style="padding:11px 14px;font-size:13px;color:#555;border-bottom:1px solid #eee;text-align:right">€ ${item.price.toFixed(2)}</td>
       <td style="padding:11px 14px;font-size:13px;color:#555;border-bottom:1px solid #eee;text-align:center">${item.quantity}</td>
@@ -68,10 +88,10 @@ function buildAdminHtml(order: OrderEmailData): string {
 
   return `<!DOCTYPE html>
 <html lang="bg">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f0f0f0;font-family:'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>@media print{body{background:#fff !important}.ol-wrap{padding:0 !important}@page{size:A4;margin:8mm}}</style></head>
+<body style="margin:0;padding:0;background:#f0f0f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f0f0;padding:32px 16px">
+<table width="100%" cellpadding="0" cellspacing="0" class="ol-wrap" style="background:#f0f0f0;padding:32px 16px">
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
 
@@ -81,7 +101,7 @@ function buildAdminHtml(order: OrderEmailData): string {
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td>
-            <div style="font-size:16px;font-weight:800;color:#fff;letter-spacing:-0.3px">OFFICELABS CO</div>
+            <div style="font-size:17px;color:#fff;letter-spacing:-0.3px"><span style="font-weight:700">OfficeLabs</span><span style="font-weight:400;font-size:0.88em;opacity:.6">co.</span></div>
             <div style="font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:0.8px;margin-top:2px">Офис мебели и обзавеждане</div>
           </td>
           <td align="right">
@@ -98,7 +118,7 @@ function buildAdminHtml(order: OrderEmailData): string {
     <td style="background:#F59E0B;padding:10px 32px">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-          <td style="font-size:12px;font-weight:700;color:#1a1a1a">${invoiceNo} &nbsp;·&nbsp; ${date}</td>
+          <td style="font-size:12px;font-weight:700;color:#1a1a1a">${orderNo(order)} &nbsp;·&nbsp; ${date}</td>
           <td align="right" style="font-size:12px;font-weight:700;color:#1a1a1a">${isCompany ? 'Фирма' : 'Физическо лице'}</td>
         </tr>
       </table>
@@ -170,7 +190,7 @@ function buildAdminHtml(order: OrderEmailData): string {
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td style="font-size:11px;color:#aaa">OfficeLabs Co &nbsp;·&nbsp; Офис мебели и обзавеждане</td>
-          <td align="right" style="font-size:11px;color:#aaa">${invoiceNo}</td>
+          <td align="right" style="font-size:11px;color:#aaa">${orderNo(order)}</td>
         </tr>
       </table>
     </td>
@@ -186,15 +206,18 @@ function buildAdminHtml(order: OrderEmailData): string {
 
 // ─── Customer confirmation email ────────────────────────────────────────────
 
-function buildCustomerHtml(order: OrderEmailData): string {
+export function buildCustomerHtml(order: OrderEmailData): string {
   const date = new Date(order.createdAt).toLocaleDateString('bg-BG', {
     day: 'numeric', month: 'long', year: 'numeric',
   });
 
   const itemRows = order.items.map((item, idx) => `
     <tr style="background:${idx % 2 === 0 ? '#fff' : '#f9f9f9'}">
-      <td style="padding:11px 14px;font-size:13px;color:#1a1a1a;border-bottom:1px solid #eee">
-        ${item.name}${item.color ? `<span style="margin-left:6px;padding:1px 7px;font-size:11px;font-weight:600;border-radius:99px;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb">${item.color}</span>` : ''}
+      <td style="padding:10px 14px;font-size:13px;color:#1a1a1a;border-bottom:1px solid #eee">
+        <table cellpadding="0" cellspacing="0"><tr>
+          ${itemThumb(item.image)}
+          <td style="vertical-align:middle">${item.name}${item.color ? `<span style="margin-left:6px;padding:1px 7px;font-size:11px;font-weight:600;border-radius:99px;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb">${item.color}</span>` : ''}</td>
+        </tr></table>
       </td>
       <td style="padding:11px 14px;font-size:13px;color:#555;border-bottom:1px solid #eee;text-align:center">${item.quantity}</td>
       <td style="padding:11px 14px;font-size:13px;font-weight:700;color:#1a1a1a;border-bottom:1px solid #eee;text-align:right">€ ${(item.price * item.quantity).toFixed(2)}</td>
@@ -202,17 +225,17 @@ function buildCustomerHtml(order: OrderEmailData): string {
 
   return `<!DOCTYPE html>
 <html lang="bg">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#f0f0f0;font-family:'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>@media print{body{background:#fff !important}.ol-wrap{padding:0 !important}@page{size:A4;margin:8mm}}</style></head>
+<body style="margin:0;padding:0;background:#f0f0f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased">
 
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f0f0;padding:32px 16px">
+<table width="100%" cellpadding="0" cellspacing="0" class="ol-wrap" style="background:#f0f0f0;padding:32px 16px">
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%">
 
   <!-- Header -->
   <tr>
     <td style="background:#1c1c1c;padding:28px 32px;border-radius:10px 10px 0 0;text-align:center">
-      <div style="font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.3px">OFFICELABS CO</div>
+      <div style="font-size:19px;color:#fff;letter-spacing:-0.3px"><span style="font-weight:700">OfficeLabs</span><span style="font-weight:400;font-size:0.88em;opacity:.6">co.</span></div>
       <div style="font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:1px;margin-top:4px">Офис мебели и обзавеждане</div>
     </td>
   </tr>
@@ -224,7 +247,7 @@ function buildCustomerHtml(order: OrderEmailData): string {
       <h1 style="margin:0 0 8px;font-size:22px;font-weight:800;color:#1a1a1a;letter-spacing:-0.5px">Благодарим за поръчката!</h1>
       <p style="margin:0;font-size:14px;color:#666;line-height:1.6">
         Здравейте, <strong>${order.firstName}</strong>! Получихме вашата поръчка <strong>${orderNo(order)}</strong> от ${date}.<br>
-        Ще се свържем с вас при изпращане на пратката.
+        Очаквайте обаждане от нас за уточняване на доставката.
       </p>
     </td>
   </tr>
@@ -253,7 +276,7 @@ function buildCustomerHtml(order: OrderEmailData): string {
         <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin-bottom:10px">Доставка</div>
         <table cellpadding="0" cellspacing="0" width="100%">
           ${order.carrier !== 'none' ? row('Куриер', order.carrier.charAt(0).toUpperCase() + order.carrier.slice(1)) : ''}
-          ${row('Тип', order.delivType === 'address' ? 'До адрес' : 'До офис на куриера')}
+          ${row('Тип', order.delivType === 'address' ? 'До адрес' : 'До офис')}
           ${row('Град', order.city)}
           ${order.delivType === 'address' ? row('Адрес', order.address) : ''}
           ${row('Плащане', paymentLabel(order.payment))}
@@ -264,9 +287,10 @@ function buildCustomerHtml(order: OrderEmailData): string {
       <div style="margin-top:24px;border-left:3px solid #F59E0B;padding-left:16px">
         <div style="font-size:12px;font-weight:700;color:#1a1a1a;margin-bottom:6px">Какво следва?</div>
         <div style="font-size:13px;color:#555;line-height:1.7">
-          1. Ще прегледаме поръчката ви и ще я потвърдим.<br>
-          2. При изпращане ще получите имейл с номер за проследяване.<br>
-          3. При въпроси — пишете ни на <a href="mailto:info@officelabsco.com" style="color:#1a1a1a;font-weight:600">info@officelabsco.com</a>
+          1. Ще прегледаме поръчката ви и ще изпратим проформа фактура с банкова сметка за плащане.<br>
+          2. Ще се свържем с вас по телефон за уточняване на детайлите по доставката.<br>
+          3. Производството и доставката отнемат до 30 работни дни.<br>
+          4. При въпроси — пишете ни на <a href="mailto:info@officelabsco.com" style="color:#1a1a1a;font-weight:600">info@officelabsco.com</a>
         </div>
       </div>
 
@@ -304,17 +328,31 @@ export async function sendOrderNotification(order: OrderEmailData): Promise<void
 
   const to      = process.env.NOTIFY_EMAIL ?? 'info@officelabsco.com';
   const subject = `Нова поръчка ${orderNo(order)} — €${order.total.toFixed(2)} | OfficeLabs Co`;
+  const html    = buildAdminHtml(order);
+
+  // Same document as a printable A4 PDF attached to the email. If Chromium
+  // fails to launch for any reason, the notification still goes out —
+  // a missing attachment is better than a missing order notification.
+  let attachments: { filename: string; content: Buffer }[] | undefined;
+  try {
+    const { htmlToPdfBuffer } = await import('@/lib/pdf');
+    const pdf = await htmlToPdfBuffer(html);
+    attachments = [{ filename: `Поръчка-${order.orderCode ?? order.id}.pdf`, content: pdf }];
+  } catch (err) {
+    console.error('[Mailer] PDF генериране неуспешно, пращам само имейла:', err);
+  }
 
   const { error } = await resend.emails.send({
     from:    'OfficeLabs Co <noreply@officelabsco.com>',
     to,
     replyTo: order.email,
     subject,
-    html:    buildAdminHtml(order),
+    html,
+    attachments,
   });
 
   if (error) console.error('[Mailer] Admin имейл грешка:', error);
-  else console.log(`[Mailer] Admin нотификация → ${to}`);
+  else console.log(`[Mailer] Admin нотификация → ${to}${attachments ? ' (с PDF)' : ''}`);
 }
 
 export async function sendCustomerConfirmation(order: OrderEmailData): Promise<void> {

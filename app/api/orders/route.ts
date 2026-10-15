@@ -7,6 +7,10 @@ import { BUNDLE_PROMO_CODE, cartQualifyingBundleProductIds } from '@/lib/bundle-
 
 const isRateLimited = createRateLimiter(5, 60_000, 'orders');
 
+// The background after() task now also renders a PDF (headless Chromium) —
+// give it enough room beyond the platform default.
+export const maxDuration = 30;
+
 interface GeoResult {
   country?: string;
   regionName?: string;
