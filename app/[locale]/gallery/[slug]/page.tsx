@@ -87,17 +87,17 @@ const seriesBg: Record<string, SeriesData> = {
     heroImage: '/images/gallery-hero-loft.webp',
     headline: 'Автентичност вместо перфекция.',
     intro: [
-      'LOFT не крие материалите си — показва ги. Суров метал и масивно дърво се срещат в контраст, който не се извинява за характера си. Това е серия за пространства, в които индустриалният дух е част от идентичността, не компромис.',
+      'LOFT не крие индустриалния си характер — показва го. Тъмни матови повърхности се срещат с бетонен ефект на плотовете в контраст, който не се извинява за себе си. Това е серия за пространства, в които индустриалният дух е част от идентичността, не компромис.',
       'Открити конструкции, категорични линии и тъмна, наситена палитра — всеки елемент на LOFT заявява присъствие, без да се опитва да се впише незабелязано.',
     ],
     features: [
-      { image: '/products/loft-desk-black-1.webp', headline: 'Конструкция, изложена на показ', text: 'Металната рамка на бюрото LOFT не е скрита зад фасада — тя е част от визията.' },
-      { image: '/products/loft-coffee-table-black-1.webp', headline: 'Плот, който не крие конструкцията си', text: 'Металната рамка на кафе масата LOFT остава на показ — практична повърхност с категоричен индустриален характер.' },
+      { image: '/products/loft-desk-black-1.webp', headline: 'Индустриален финиш, изложен на показ', text: 'Бетонният ефект на плота и плътното матово тяло на бюрото LOFT изграждат суровия, индустриален характер на серията — без нищо излишно, което да го омекоти.' },
+      { image: '/products/loft-coffee-table-black-1.webp', headline: 'Плот, който не крие характера си', text: 'Същият бетонен финиш на плота се пренася в зоната за почивка — кафе масата LOFT съчетава практично затворено отделение с открити рафтове и категоричен индустриален вид.' },
       { image: '/products/loft-low-cab-black-1.webp', headline: 'Тегло, което внушава стабилност', text: 'Плътен корпус с индустриален финиш — шкафът LOFT изглежда толкова здрав, колкото е в действителност.' },
       { image: '/products/loft-high-cab-black-1.webp', headline: 'Височина с индустриален характер', text: 'Плътен корпус и категорична визия — високият шкаф LOFT организира пространството, без да омекотява тона на серията.' },
       { image: '/products/loft-container-black-1.webp', headline: 'Практичност без компромис във визията', text: 'Мобилен контейнер, който пази характера на серията дори в най-малката си форма.' },
       { image: '/products/loft-plant-black-1.webp', headline: 'Зеленото, поставено в суров контекст', text: 'Дори растенията в LOFT намират място в категорична, индустриална конструкция.' },
-      { image: '/products/loft-shelf-black-1.webp', headline: 'Отворени нива, категорична визия', text: 'Тръбна конструкция и открити рафтове — етажерката LOFT превръща съхранението в акцент, не в компромис.' },
+      { image: '/products/loft-shelf-black-1.webp', headline: 'Отворени нива, категорична визия', text: 'Плътни матови панели и открити рафтове с бетонен ефект — етажерката LOFT превръща съхранението в акцент, не в компромис.' },
     ],
   },
 };
@@ -161,17 +161,17 @@ const seriesCopyEn: Record<string, SeriesCopy> = {
     tag: 'LOFT SERIES',
     headline: 'Authenticity over perfection.',
     intro: [
-      'LOFT does not hide its materials — it shows them. Raw metal and solid wood meet in a contrast that makes no apology for its character. This is a series for spaces where the industrial spirit is part of the identity, not a compromise.',
+      'LOFT does not hide its industrial character — it shows it. Dark matte surfaces meet a concrete-effect finish on the tops, in a contrast that makes no apology for itself. This is a series for spaces where the industrial spirit is part of the identity, not a compromise.',
       'Exposed structures, decisive lines and a dark, deep palette — every element of LOFT declares its presence, without trying to blend in unnoticed.',
     ],
     features: [
-      ['Construction on display', 'The metal frame of the LOFT desk is not hidden behind a facade — it is part of the look.'],
-      ['A tabletop that does not hide its structure', 'The metal frame of the LOFT coffee table stays on show — a practical surface with a decisive industrial character.'],
+      ['An industrial finish, on display', 'The concrete-effect top and the solid matte body of the LOFT desk build the series\' raw, industrial character — with nothing extra to soften it.'],
+      ['A tabletop that does not hide its character', 'The same concrete-effect finish carries into the break area — the LOFT coffee table pairs a practical closed compartment with open shelving and a decisive industrial look.'],
       ['Weight that suggests stability', 'A solid body with an industrial finish — the LOFT cabinet looks as sturdy as it really is.'],
       ['Height with industrial character', 'A solid body and a decisive look — the tall LOFT cabinet organises the space without softening the tone of the series.'],
       ['Practicality without compromising the look', 'A mobile container that keeps the character of the series even in its smallest form.'],
       ['Greenery placed in a raw setting', 'Even the plants in LOFT find their place in a decisive, industrial structure.'],
-      ['Open levels, a decisive look', 'Tubular construction and open shelves — the LOFT shelf unit turns storage into a highlight rather than a compromise.'],
+      ['Open levels, a decisive look', 'Solid matte panels and open shelves with a concrete-effect finish — the LOFT shelf unit turns storage into a highlight rather than a compromise.'],
     ],
   },
 };
