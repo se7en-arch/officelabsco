@@ -4,6 +4,7 @@ import { Link } from '@/i18n/navigation';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
+import { getActiveCampaignDiscount } from '@/lib/campaign-badge';
 
 export const revalidate = 60;
 
@@ -70,7 +71,16 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
     { revalidate: 60 },
   );
 
-  const [allSeries, allCategories, totalCount] = await getStaticShopData();
+  const getCampaignDiscount = unstable_cache(
+    getActiveCampaignDiscount,
+    ['shop-campaign-discount'],
+    { revalidate: 60 },
+  );
+
+  const [[allSeries, allCategories, totalCount], campaignDiscount] = await Promise.all([
+    getStaticShopData(),
+    getCampaignDiscount(),
+  ]);
 
   const where: Record<string, unknown> = { archived: false };
   if (sp.series) where.series = { slug: sp.series };
@@ -210,6 +220,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                       categoryNameEn={p.category.nameEn}
                       description={en ? (p.descriptionEn || p.description) : p.description}
                       stock={p.stock}
+                      campaignDiscount={campaignDiscount}
                     />
                   ))}
                 </div>
@@ -278,6 +289,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
                   categoryNameEn={p.category.nameEn}
                   description={en ? (p.descriptionEn || p.description) : p.description}
                   stock={p.stock}
+                  campaignDiscount={campaignDiscount}
                 />
               ))}
             </div>

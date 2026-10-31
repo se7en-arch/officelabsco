@@ -12,6 +12,7 @@ import ProductColorSwitcher from '@/components/ProductColorSwitcher';
 import ProductTabs from '@/components/ProductTabs';
 import { COLOR_VARIANTS } from '@/lib/color-variants';
 import { ASSEMBLY_PRICES } from '@/lib/assembly-prices';
+import { getActiveCampaignDiscount } from '@/lib/campaign-badge';
 import { colourListLabel, materialLabel, weightLabel } from '@/lib/i18n-labels';
 
 export const revalidate = 120;
@@ -84,6 +85,8 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
     verified: r.verified,
     createdAt: r.createdAt.toISOString(),
   }));
+
+  const campaignDiscount = await getActiveCampaignDiscount();
 
   const related = await prisma.product.findMany({
     where: {
@@ -250,6 +253,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
                 categoryNameBg={p.category.name}
                 categoryNameEn={p.category.nameEn}
                 stock={p.stock}
+                campaignDiscount={campaignDiscount}
               />
             ))}
           </div>

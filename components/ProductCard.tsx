@@ -23,11 +23,14 @@ type Props = {
   categoryNameEn?: string | null;
   description?: string | null;
   stock?: number;
+  // % shown in a circular corner badge while a campaign (e.g. Black Friday)
+  // is running — null/omitted outside any campaign window.
+  campaignDiscount?: number | null;
 };
 
 export default function ProductCard({
   id, name, slug, price, image, seriesName, categoryName, description,
-  nameBg, nameEn, categoryNameBg, categoryNameEn,
+  nameBg, nameEn, categoryNameBg, categoryNameEn, campaignDiscount,
 }: Props) {
   const t = useTranslations('product');
   const locale = useLocale();
@@ -100,6 +103,9 @@ export default function ProductCard({
           sizes="(max-width: 600px) 100vw, (max-width: 1100px) 50vw, 33vw"
         />
         <span className="card__badge-series">{seriesName}</span>
+        {!!campaignDiscount && (
+          <span className="card__badge-campaign">-{campaignDiscount}%</span>
+        )}
       </div>
 
       <div className="card__body">

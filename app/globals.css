@@ -554,6 +554,16 @@ img { display: block; max-width: 100%; }
 }
 .card__badge-new { background: #252525; }
 
+/* Campaign discount badge (e.g. Black Friday) — top right, circular */
+.card__badge-campaign {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: #FF5733; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; letter-spacing: -.2px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.18);
+}
+
 /* Dots */
 .card__dots {
   position: absolute; bottom: 14px; left: 0; right: 0; z-index: 2;
