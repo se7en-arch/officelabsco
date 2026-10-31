@@ -2,6 +2,9 @@ export type ColorVariant = {
   name: string;
   color: string;
   images: string[];
+  // This colour's own price with VAT, from the pricing sheet — the two
+  // colours of a product are not always costed the same.
+  price: number;
 };
 
 export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
@@ -9,6 +12,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Снежен',
       color: '#E8DFD8',
+      price: 240,
       images: [
         '/products/low-cab-1-latte-1.webp',
         '/products/low-cab-1-latte-2.webp',
@@ -19,6 +23,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Ленен',
       color: '#AE9F8F',
+      price: 240,
       images: [
         '/products/low-cab-1-cappuccino-1.webp',
         '/products/low-cab-1-cappuccino-2.webp',
@@ -31,6 +36,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Снежен',
       color: '#E8DFD8',
+      price: 230,
       images: [
         '/products/astra-table-angora-1.webp',
         '/products/astra-table-angora-2.webp',
@@ -40,6 +46,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Ленен',
       color: '#AE9F8F',
+      price: 230,
       images: [
         '/products/astra-table-cubanit-1.webp',
         '/products/astra-table-cubanit-2.webp',
@@ -51,6 +58,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Снежен',
       color: '#E8DFD8',
+      price: 170,
       images: [
         '/products/astra-container-angora-1.webp',
         '/products/astra-container-angora-2.webp',
@@ -60,6 +68,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Ленен',
       color: '#AE9F8F',
+      price: 170,
       images: [
         '/products/astra-container-cubanit-1.webp',
         '/products/astra-container-cubanit-2.webp',
@@ -71,6 +80,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Снежен',
       color: '#E8DFD8',
+      price: 250,
       images: [
         '/products/high-cab-1-latte-1.webp',
         '/products/high-cab-1-latte-2.webp',
@@ -80,6 +90,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Ленен',
       color: '#AE9F8F',
+      price: 220,
       images: [
         '/products/high-cab-1-cappuccino-1.webp',
         '/products/high-cab-1-cappuccino-2.webp',
@@ -93,6 +104,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Евкалипт',
       color: '#7A9E87',
+      price: 370,
       images: [
         '/products/terra-coffee-table-eucalypt-1.webp',
         '/products/terra-coffee-table-eucalypt-2.webp',
@@ -102,6 +114,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Корал',
       color: '#C4956A',
+      price: 370,
       images: [
         '/products/terra-coffee-table-caramel-1.webp',
         '/products/terra-coffee-table-caramel-2.webp',
@@ -113,6 +126,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Евкалипт',
       color: '#7A9E87',
+      price: 360,
       images: [
         '/products/terra-container-eucalypt-1.webp',
         '/products/terra-container-eucalypt-2.webp',
@@ -122,6 +136,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Корал',
       color: '#C4956A',
+      price: 360,
       images: [
         '/products/terra-container-caramel-1.webp',
         '/products/terra-container-caramel-2.webp',
@@ -133,6 +148,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Евкалипт',
       color: '#7A9E87',
+      price: 330,
       images: [
         '/products/terra-desk-eucalypt-1.webp',
         '/products/terra-desk-eucalypt-2.webp',
@@ -142,6 +158,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Корал',
       color: '#C4956A',
+      price: 330,
       images: [
         '/products/terra-desk-caramel-1.webp',
         '/products/terra-desk-caramel-2.webp',
@@ -153,6 +170,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Евкалипт',
       color: '#7A9E87',
+      price: 490,
       images: [
         '/products/terra-low-cab-eucalypt-1.webp',
         '/products/terra-low-cab-eucalypt-2.webp',
@@ -162,6 +180,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Корал',
       color: '#C4956A',
+      price: 490,
       images: [
         '/products/terra-low-cab-caramel-1.webp',
         '/products/terra-low-cab-caramel-2.webp',
@@ -173,6 +192,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Евкалипт',
       color: '#7A9E87',
+      price: 660,
       images: [
         '/products/terra-high-cab-eucalypt-1.webp',
         '/products/terra-high-cab-eucalypt-2.webp',
@@ -182,6 +202,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Корал',
       color: '#C4956A',
+      price: 660,
       images: [
         '/products/terra-high-cab-caramel-1.webp',
         '/products/terra-high-cab-caramel-2.webp',
@@ -193,6 +214,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Евкалипт',
       color: '#7A9E87',
+      price: 420,
       images: [
         '/products/terra-plant-eucalypt-1.webp',
         '/products/terra-plant-eucalypt-2.webp',
@@ -202,6 +224,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Корал',
       color: '#C4956A',
+      price: 420,
       images: [
         '/products/terra-plant-caramel-1.webp',
         '/products/terra-plant-caramel-2.webp',
@@ -213,6 +236,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Евкалипт',
       color: '#7A9E87',
+      price: 410,
       images: [
         '/products/terra-shelf-eucalypt-1.webp',
         '/products/terra-shelf-eucalypt-2.webp',
@@ -222,6 +246,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Корал',
       color: '#C4956A',
+      price: 410,
       images: [
         '/products/terra-shelf-caramel-1.webp',
         '/products/terra-shelf-caramel-2.webp',
@@ -235,6 +260,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Графит',
       color: '#5A5654',
+      price: 450,
       images: [
         '/products/loft-desk-black-1.webp',
         '/products/loft-desk-black-2.webp',
@@ -244,6 +270,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Таупе',
       color: '#B7A891',
+      price: 430,
       images: [
         '/products/loft-desk-deep-green-1.webp',
         '/products/loft-desk-deep-green-2.webp',
@@ -255,6 +282,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Графит',
       color: '#5A5654',
+      price: 460,
       images: [
         '/products/loft-coffee-table-black-1.webp',
         '/products/loft-coffee-table-black-2.webp',
@@ -264,6 +292,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Таупе',
       color: '#B7A891',
+      price: 440,
       images: [
         '/products/loft-coffee-table-deep-green-1.webp',
         '/products/loft-coffee-table-deep-green-2.webp',
@@ -275,6 +304,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Графит',
       color: '#5A5654',
+      price: 620,
       images: [
         '/products/loft-low-cab-black-1.webp',
         '/products/loft-low-cab-black-2.webp',
@@ -284,6 +314,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Таупе',
       color: '#B7A891',
+      price: 590,
       images: [
         '/products/loft-low-cab-deep-green-1.webp',
         '/products/loft-low-cab-deep-green-2.webp',
@@ -295,6 +326,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Графит',
       color: '#5A5654',
+      price: 230,
       images: [
         '/products/loft-container-black-1.webp',
         '/products/loft-container-black-2.webp',
@@ -304,6 +336,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Таупе',
       color: '#B7A891',
+      price: 230,
       images: [
         '/products/loft-container-deep-green-1.webp',
         '/products/loft-container-deep-green-2.webp',
@@ -315,6 +348,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Графит',
       color: '#5A5654',
+      price: 300,
       images: [
         '/products/loft-plant-black-1.webp',
         '/products/loft-plant-black-2.webp',
@@ -324,6 +358,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Таупе',
       color: '#B7A891',
+      price: 280,
       images: [
         '/products/loft-plant-deep-green-1.webp',
         '/products/loft-plant-deep-green-2.webp',
@@ -335,6 +370,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Графит',
       color: '#5A5654',
+      price: 750,
       images: [
         '/products/loft-high-cab-black-1.webp',
         '/products/loft-high-cab-black-2.webp',
@@ -344,6 +380,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Таупе',
       color: '#B7A891',
+      price: 730,
       images: [
         '/products/loft-high-cab-deep-green-1.webp',
         '/products/loft-high-cab-deep-green-2.webp',
@@ -355,6 +392,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Графит',
       color: '#5A5654',
+      price: 330,
       images: [
         '/products/loft-shelf-black-1.webp',
         '/products/loft-shelf-black-2.webp',
@@ -364,6 +402,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Таупе',
       color: '#B7A891',
+      price: 300,
       images: [
         '/products/loft-shelf-deep-green-1.webp',
         '/products/loft-shelf-deep-green-2.webp',
@@ -377,6 +416,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Каменно сиво',
       color: '#B5C8D4',
+      price: 440,
       images: [
         '/products/nova-coffee-table-diamond-1.webp',
         '/products/nova-coffee-table-diamond-2.webp',
@@ -386,6 +426,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Пясъчно бежов',
       color: '#EDE8DF',
+      price: 480,
       images: [
         '/products/nova-coffee-table-cream-1.webp',
         '/products/nova-coffee-table-cream-2.webp',
@@ -397,6 +438,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Каменно сиво',
       color: '#B5C8D4',
+      price: 360,
       images: [
         '/products/nova-container-diamond-1.webp',
         '/products/nova-container-diamond-2.webp',
@@ -406,6 +448,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Пясъчно бежов',
       color: '#EDE8DF',
+      price: 380,
       images: [
         '/products/nova-container-cream-1.webp',
         '/products/nova-container-cream-2.webp',
@@ -417,6 +460,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Каменно сиво',
       color: '#B5C8D4',
+      price: 410,
       images: [
         '/products/nova-desk-diamond-1.webp',
         '/products/nova-desk-diamond-2.webp',
@@ -426,6 +470,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Пясъчно бежов',
       color: '#EDE8DF',
+      price: 450,
       images: [
         '/products/nova-desk-cream-1.webp',
         '/products/nova-desk-cream-2.webp',
@@ -437,6 +482,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Каменно сиво',
       color: '#B5C8D4',
+      price: 570,
       images: [
         '/products/nova-low-cab-diamond-1.webp',
         '/products/nova-low-cab-diamond-2.webp',
@@ -446,6 +492,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Пясъчно бежов',
       color: '#EDE8DF',
+      price: 610,
       images: [
         '/products/nova-low-cab-cream-1.webp',
         '/products/nova-low-cab-cream-2.webp',
@@ -457,6 +504,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Каменно сиво',
       color: '#B5C8D4',
+      price: 700,
       images: [
         '/products/nova-high-cab-diamond-1.webp',
         '/products/nova-high-cab-diamond-2.webp',
@@ -466,6 +514,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Пясъчно бежов',
       color: '#EDE8DF',
+      price: 790,
       images: [
         '/products/nova-high-cab-cream-1.webp',
         '/products/nova-high-cab-cream-2.webp',
@@ -477,6 +526,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Каменно сиво',
       color: '#B5C8D4',
+      price: 400,
       images: [
         '/products/nova-plant-diamond-1.webp',
         '/products/nova-plant-diamond-2.webp',
@@ -486,6 +536,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Пясъчно бежов',
       color: '#EDE8DF',
+      price: 440,
       images: [
         '/products/nova-plant-cream-1.webp',
         '/products/nova-plant-cream-2.webp',
@@ -497,6 +548,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Каменно сиво',
       color: '#B5C8D4',
+      price: 520,
       images: [
         '/products/nova-shelf-diamond-1.webp',
         '/products/nova-shelf-diamond-2.webp',
@@ -506,6 +558,7 @@ export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
     {
       name: 'Пясъчно бежов',
       color: '#EDE8DF',
+      price: 580,
       images: [
         '/products/nova-shelf-cream-1.webp',
         '/products/nova-shelf-cream-2.webp',

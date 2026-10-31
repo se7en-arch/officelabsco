@@ -75,12 +75,14 @@ export default function ProductCard({
     flashAdded();
   }
 
-  // Colour picked: add that colour with its own photo.
-  function handlePick(e: React.MouseEvent, variant: { name: string; images: string[] }) {
+  // Colour picked: add that colour with its own photo and price — the two
+  // colours of a product are not always costed the same.
+  function handlePick(e: React.MouseEvent, variant: { name: string; images: string[]; price: number }) {
     e.preventDefault();
     e.stopPropagation();
     addItem({
-      id, slug, price, seriesName,
+      id, slug, seriesName,
+      price: variant.price ?? price,
       name: nameBg ?? name,
       nameEn: nameEn ?? undefined,
       categoryName: categoryNameBg ?? categoryName,
@@ -139,6 +141,7 @@ export default function ProductCard({
                 >
                   <span className="card__color-opt__dot" style={{ background: v.color }} />
                   <span>{colourLabel(v.name, locale)}</span>
+                  <span className="card__color-opt__price">{v.price} €</span>
                 </button>
               ))}
             </div>

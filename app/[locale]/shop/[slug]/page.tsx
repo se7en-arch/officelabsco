@@ -9,6 +9,7 @@ import ProductCard from '@/components/ProductCard';
 import ProductGallery from '@/components/ProductGallery';
 import ProductColorGallery from '@/components/ProductColorGallery';
 import ProductColorSwitcher from '@/components/ProductColorSwitcher';
+import ProductPrice from '@/components/ProductPrice';
 import ProductTabs from '@/components/ProductTabs';
 import { COLOR_VARIANTS } from '@/lib/color-variants';
 import { ASSEMBLY_PRICES } from '@/lib/assembly-prices';
@@ -165,7 +166,7 @@ export default async function ProductPage({ params }: { params: Promise<{ locale
         <div className="product-info">
           <h1 className="product-info__name">{displayName}</h1>
           <p className="product-info__price-hint">
-            <span className="product-info__price-val">{product.price} €</span>
+            <ProductPrice basePrice={product.price} variants={COLOR_VARIANTS[product.slug]} />
           </p>
           <p className="product-info__vat-note">{t('vatNote')}</p>
           <AddToCartButton

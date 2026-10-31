@@ -6,6 +6,7 @@ export type ColorVariant = {
   name: string;
   color: string;
   images: string[];
+  price: number;
 };
 
 export default function ProductColorGallery({
