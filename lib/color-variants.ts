@@ -7,6 +7,17 @@ export type ColorVariant = {
   price: number;
 };
 
+// The variant shown/selected by default, before the visitor picks a
+// colour — always the cheaper one, so the price shown up front (card,
+// product page) matches the photo shown up front.
+export function cheapestVariantIndex(variants: ColorVariant[]): number {
+  let best = 0;
+  for (let i = 1; i < variants.length; i++) {
+    if (variants[i].price < variants[best].price) best = i;
+  }
+  return best;
+}
+
 export const COLOR_VARIANTS: Record<string, ColorVariant[]> = {
   'astra-low-cabinet': [
     {

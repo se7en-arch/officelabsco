@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import ProductGallery from './ProductGallery';
+import { cheapestVariantIndex } from '@/lib/color-variants';
 
 export type ColorVariant = {
   name: string;
@@ -16,7 +17,7 @@ export default function ProductColorGallery({
   variants: ColorVariant[];
   productName: string;
 }) {
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [activeIdx, setActiveIdx] = useState(() => cheapestVariantIndex(variants));
 
   useEffect(() => {
     function onVariantChange(e: Event) {

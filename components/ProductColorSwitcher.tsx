@@ -3,11 +3,12 @@ import { useState } from 'react';
 import type { ColorVariant } from './ProductColorGallery';
 import { useLocale, useTranslations } from 'next-intl';
 import { colourLabel } from '@/lib/i18n-labels';
+import { cheapestVariantIndex } from '@/lib/color-variants';
 
 export default function ProductColorSwitcher({ variants }: { variants: ColorVariant[] }) {
   const t = useTranslations('ui');
   const locale = useLocale();
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [activeIdx, setActiveIdx] = useState(() => cheapestVariantIndex(variants));
 
   function select(i: number) {
     setActiveIdx(i);

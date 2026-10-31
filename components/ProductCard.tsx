@@ -1,6 +1,6 @@
 'use client';
 import { Link } from '@/i18n/navigation';
-import { COLOR_VARIANTS } from '@/lib/color-variants';
+import { COLOR_VARIANTS, cheapestVariantIndex } from '@/lib/color-variants';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { useCart } from '@/lib/cart-store';
@@ -41,6 +41,9 @@ export default function ProductCard({
 
   const variants = COLOR_VARIANTS[slug];
   const hasColors = !!variants && variants.length > 0;
+  // The `price` prop is already the cheaper colour's price — show that
+  // colour's photo too, instead of whatever DB `image` happens to be set to.
+  const cardImage = hasColors ? variants[cheapestVariantIndex(variants)].images[0] : image;
 
   // Close the colour picker when clicking anywhere outside it.
   useEffect(() => {
@@ -98,7 +101,7 @@ export default function ProductCard({
     <Link href={`/shop/${slug}`} className="card">
       <div className="card__img">
         <Image
-          src={image}
+          src={cardImage}
           alt={name}
           fill
           style={{ objectFit: 'contain', padding: '20px' }}

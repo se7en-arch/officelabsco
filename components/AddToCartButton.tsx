@@ -2,11 +2,12 @@
 import { useState, useEffect } from 'react';
 import { useCart, CartItem } from '@/lib/cart-store';
 import { useTranslations } from 'next-intl';
+import { cheapestVariantIndex, type ColorVariant } from '@/lib/color-variants';
 
 type Props = {
   product: Omit<CartItem, 'quantity' | 'selectedColor'>;
   stock?: number;
-  variants?: { name: string; color: string; images?: string[]; price?: number }[];
+  variants?: ColorVariant[];
 };
 
 // Made-to-order: every product is produced and delivered after the order is
@@ -18,7 +19,7 @@ export default function AddToCartButton({ product, variants }: Props) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
-    variants?.[0]?.name
+    variants ? variants[cheapestVariantIndex(variants)]?.name : undefined
   );
 
   useEffect(() => {

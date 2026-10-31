@@ -1,14 +1,15 @@
 'use client';
 import { useState, useEffect } from 'react';
 import type { ColorVariant } from './ProductColorGallery';
+import { cheapestVariantIndex } from '@/lib/color-variants';
 
-// Mirrors the colour switcher's own default (index 0) so the price shown
-// before any click matches what Add to Cart would actually charge.
+// Mirrors the colour switcher's own default (cheapest colour first) so the
+// price shown before any click matches what Add to Cart would actually charge.
 export default function ProductPrice({ basePrice, variants }: {
   basePrice: number;
   variants?: ColorVariant[];
 }) {
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [activeIdx, setActiveIdx] = useState(() => (variants ? cheapestVariantIndex(variants) : 0));
 
   useEffect(() => {
     if (!variants) return;
