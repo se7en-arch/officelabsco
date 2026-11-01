@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import CartInitializer from '@/components/CartInitializer';
 import UTMCapture from '@/components/UTMCapture';
 import PopupHost from '@/components/PopupHost';
+import CampaignAutoApply from '@/components/CampaignAutoApply';
 import TopBar from '@/components/TopBar';
 
 const inter = Inter({
@@ -72,6 +73,7 @@ export default async function LocaleLayout({
       <body suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <CartInitializer />
+          <CampaignAutoApply />
           <UTMCapture />
           <TopBar />
           <Navbar />
