@@ -15,13 +15,13 @@ const REP_PRODUCT: Record<string, string> = {
   loft: 'loft-steel-desk',
 };
 
-// Each series' wood/material finish swatch — a third sticker alongside its
-// two fabric colours. Not a real product colour variant (so not in
-// lib/color-variants.ts); no entry yet for ASTRA.
-const FINISH: Record<string, { name: string; hex: string }> = {
-  terra: { name: 'Естествен дъб', hex: '#C9A876' },
-  nova: { name: 'Тъмен дъб', hex: '#5C4530' },
-  loft: { name: 'Опушен дъб и бетон', hex: '#8D8378' },
+// Each series' wood/material finish swatches — extra stickers alongside its
+// two fabric colours. Not real product colour variants (so not in
+// lib/color-variants.ts); no entries yet for ASTRA.
+const FINISH: Record<string, { name: string; hex: string }[]> = {
+  terra: [{ name: 'Естествен дъб', hex: '#C9A876' }],
+  nova: [{ name: 'Тъмен дъб', hex: '#5C4530' }],
+  loft: [{ name: 'Опушен дъб', hex: '#6B5A4A' }, { name: 'Бетон', hex: '#9C9892' }],
 };
 
 // Sticker generator for the four series' colour swatches (QR → shop filtered
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     brand: s.color,
     colors: [
       ...(COLOR_VARIANTS[REP_PRODUCT[s.slug]] ?? []).map((v) => ({ name: v.name, hex: v.color })),
-      ...(FINISH[s.slug] ? [FINISH[s.slug]] : []),
+      ...(FINISH[s.slug] ?? []),
     ],
   }));
 
