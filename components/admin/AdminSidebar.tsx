@@ -121,6 +121,14 @@ const navItems = [
         label: 'Стикери за детайли',
         icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"/><polyline points="15 3 15 9 21 9"/><rect x="7" y="13" width="4" height="4"/></svg>,
       },
+      {
+        key: 'swatch-stickers',
+        href: '/adminpanel/swatch-stickers',
+        // Served by a route handler (plain HTML), so it needs a full page load, not client-side navigation.
+        external: true,
+        label: 'Стикери за мостри',
+        icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg>,
+      },
     ],
   },
   {
